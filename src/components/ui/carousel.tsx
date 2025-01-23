@@ -15,7 +15,7 @@ import useInterval from "@/hooks/useInterval";
 import { effectCarousel } from "@/utils/constant";
 
 type Props = {
-  children: ReactNode[];
+  children: ReactNode[] | ReactNode;
   autoPlay?: boolean;
   interval?: number;
   pagination?: boolean;
@@ -35,7 +35,6 @@ const Carousel = ({
 }: Props) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const childrenArray = Children.toArray(children);
-  console.log(childrenArray);
 
   const changeSlide = useCallback(
     (direction: "next" | "prev") => {
@@ -64,11 +63,12 @@ const Carousel = ({
       )}
       {...rest}
     >
-      {thumb ? (
+      {thumb && childrenArray.length > 1 ? (
         <button
           className="text-4xl absolute left-2 z-[2] top-1/2 -translate-y-1/2 cursor-pointer text-white"
           onClick={() => changeSlide("prev")}
           aria-label="Previous slide"
+          type="button"
         >
           <MdOutlineKeyboardArrowLeft />
         </button>
@@ -87,11 +87,12 @@ const Carousel = ({
         </motion.div>
       </AnimatePresence>
       <div className="w-full h-full absolute inset-0 rounded-xl bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out" />
-      {thumb ? (
+      {thumb && childrenArray.length > 1 ? (
         <button
           className="text-4xl absolute right-2 z-[2] top-1/2 -translate-y-1/2 cursor-pointer text-white"
           onClick={() => changeSlide("next")}
           aria-label="Next slide"
+          type="button"
         >
           <MdOutlineKeyboardArrowRight />
         </button>

@@ -1,8 +1,11 @@
-// import { relations, sql } from "drizzle-orm";
-import { sql } from "drizzle-orm";
+import { TMedia, VariantSchemaT } from "@/types/product";
+import { DiscountSchemaT } from "@/types/promo";
+import { Address } from "@/types/user";
+import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  date,
   index,
   integer,
   jsonb,
@@ -17,11 +20,20 @@ import {
 
 export const UserRole = pgEnum("userRole", ["admin", "member"]);
 export const TypeLogin = pgEnum("typeLogin", ["google", "credentials"]);
-export const ThemeUser = pgEnum("themeUser", ["dark", "light", "system"]);
 export const StatusOrder = pgEnum("statusOrder", [
   "pending",
   "canceled",
   "success",
+]);
+
+export const CategoryProduct = pgEnum("categoryProduct", [
+  "Fashion",
+  "Electronic",
+  "Skincare",
+  "Foods",
+  "Furnitures",
+  "Sports",
+  "Otomotif",
 ]);
 
 export const UsersTable = pgTable(
@@ -30,16 +42,14 @@ export const UsersTable = pgTable(
     id: uuid("id").primaryKey().defaultRandom().notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     email: varchar("email", { length: 255 }).unique().notNull(),
-    password: varchar("password", { length: 255 }).notNull(),
-    avatar: varchar("avatar", { length: 255 }),
+    password: varchar("password", { length: 255 }).default(""),
+    avatar: jsonb("avatar").$type<TMedia>(),
     role: UserRole("role").default("member").notNull(),
     typeLogin: TypeLogin("type_login").default("credentials"),
-    theme: ThemeUser("theme").default("dark").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-    address: jsonb("address")
-      .array()
-      .default(sql`ARRAY[]::jsonb[]`),
+    phone: varchar("phone", { length: 255 }),
+    address: jsonb("address").$type<Address>(),
   },
   (table) => {
     return {
@@ -54,10 +64,8 @@ export const StoresTable = pgTable(
     id: uuid("id").primaryKey().defaultRandom().notNull(),
     name: varchar("name", { length: 255 }).unique().notNull(),
     description: text().default(""),
-    headerPhoto: varchar("headerPhoto", { length: 255 }),
-    address: jsonb("address")
-      .array()
-      .default(sql`ARRAY[]::jsonb[]`),
+    headerPhoto: jsonb("headerPhoto").$type<TMedia>(),
+    address: jsonb("address").$type<Address>(),
     userId: uuid("user_id").references(() => UsersTable.id, {
       onDelete: "cascade",
     }),
@@ -68,6 +76,7 @@ export const StoresTable = pgTable(
     return {
       idIndex: index("idStoreIndex").on(table.id),
       nameIndex: index("nameStoreIndex").on(table.name),
+      ownerIndex: index("ownerStoreIndex").on(table.userId),
     };
   }
 );
@@ -79,11 +88,15 @@ export const PromoTable = pgTable(
     code: varchar("code", { length: 255 }).unique().notNull(),
     amount: integer("amount").default(0).notNull(),
     uses: bigint("uses", { mode: "number" }).default(0).notNull(),
-    productsAllowed: jsonb("uses")
+    productsAllowed: jsonb("allow_products")
       .array()
-      .default(sql`ARRAY[]::jsonb[]`),
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<string>>(),
     createdAt: timestamp("created_at").defaultNow(),
-    expiredAt: timestamp("updated_at").defaultNow(),
+    expiredAt: date("expired_at").notNull().defaultNow(),
+    ownerId: uuid("owner_id").references(() => StoresTable.id, {
+      onDelete: "cascade",
+    }),
   },
   (table) => {
     return {
@@ -104,12 +117,12 @@ export const ProductsTable = pgTable(
     description: text().default(""),
     variant: jsonb("variant")
       .array()
-      .default(sql`ARRAY[]::jsonb[]`),
+      .notNull()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<VariantSchemaT>>(),
     rating: smallint("rating").default(0),
     category: varchar("category", { length: 255 }).default(""),
-    promoCode: jsonb("promo_code")
-      .array()
-      .default(sql`ARRAY[]::jsonb[]`),
+    soldout: bigint("soldout", { mode: "number" }).default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -119,6 +132,8 @@ export const ProductsTable = pgTable(
       storeIdIndex: index("storeIdProductIndex").on(table.storeId),
       nameIndex: index("nameProductIndex").on(table.name),
       categoryIndex: index("categoryProductIndex").on(table.category),
+      ratingIndex: index("ratingProductIndex").on(table.rating),
+      descriptionIndex: index("descriptionProductIndex").on(table.description),
     };
   }
 );
@@ -136,35 +151,224 @@ export const CartsTable = pgTable(
     variant: varchar("variant", { length: 255 }).notNull(),
     quantity: integer("quantity").default(1).notNull(),
     isCheckout: boolean("is_checkout").default(false).notNull(),
+    category: varchar("category", { length: 255 }).default(""),
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => {
     return {
       idIndex: index("idCartIndex").on(table.id),
       userIdIndex: index("userIdCartIndex").on(table.userId),
+      productIdIndex: index("productIdCartIndex").on(table.produtId),
+      checkoutIndex: index("checkoutIndex").on(table.isCheckout),
+      variantIndex: index("variantIndex").on(table.variant),
     };
   }
 );
 
-export const OrdersTable = pgTable("orders", {
+export const OrdersTable = pgTable(
+  "orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    userId: uuid("user_id").references(() => UsersTable.id, {
+      onDelete: "cascade",
+    }),
+    transactionCode: varchar("transaction_code", { length: 255 }).notNull(),
+    products: jsonb("products_order")
+      .array()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<
+        Array<{
+          variant: string;
+          category: string | null;
+          quantity: number;
+          productID: string | undefined;
+          productName: string | undefined;
+          productVariant: VariantSchemaT | undefined;
+        }>
+      >(),
+    status: StatusOrder("status").default("pending"),
+    promoCodes: jsonb("promo_codes")
+      .array()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<DiscountSchemaT>>(),
+    storeIds: jsonb("store_ids")
+      .array()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<string>>(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+    paymentMethod: varchar("payment_method", { length: 255 }).notNull(),
+    productsID: jsonb("products_id")
+      .array()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<string>>(),
+    vaNumber: varchar("va_number", { length: 255 }).notNull(),
+  },
+  (table) => {
+    return {
+      idIndex: index("idOrderIndex").on(table.id),
+      userIdIndex: index("userIdOrderIndex").on(table.userId),
+      storeIdsIndex: index("storeIdsOrderIndex").on(table.storeIds),
+      transactionCodeIndex: index("transactionCodeIndex").on(
+        table.transactionCode
+      ),
+    };
+  }
+);
+
+export const NewsTable = pgTable(
+  "news",
+  {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    content: text().default(""),
+    medias: jsonb("medias")
+      .array()
+      .default(sql`ARRAY[]::jsonb[]`)
+      .$type<Array<TMedia>>(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+    storeId: uuid("store_id").references(() => StoresTable.id, {
+      onDelete: "cascade",
+    }),
+  },
+  (table) => {
+    return {
+      idIndex: index("idNewsIndex").on(table.id),
+    };
+  }
+);
+
+export const CommentsTable = pgTable("comments", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   userId: uuid("user_id").references(() => UsersTable.id, {
     onDelete: "cascade",
   }),
-  products: jsonb("products_order")
-    .array()
-    .default(sql`ARRAY[]::jsonb[]`),
-  status: StatusOrder("status").default("pending"),
-  promoCode: varchar("promo_code").references(() => PromoTable.code, {
-    onDelete: "restrict",
+  productId: uuid("product_id").references(() => ProductsTable.id, {
+    onDelete: "cascade",
   }),
-  storeIds: jsonb("store_ids")
-    .array()
-    .default(sql`ARRAY[]::jsonb[]`),
+  content: text().default(""),
+  variant: varchar("variant", { length: 256 }),
+  rating: smallint("rating").default(0),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  medias: jsonb("medias")
+    .array()
+    .default(sql`ARRAY[]::jsonb[]`)
+    .$type<Array<TMedia>>(),
 });
+
+export const FollowTable = pgTable(
+  "follow",
+  {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    userId: uuid("user_id").references(() => UsersTable.id, {
+      onDelete: "cascade",
+    }),
+    storeId: uuid("store_id").references(() => StoresTable.id, {
+      onDelete: "cascade",
+    }),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => {
+    return {
+      storeIdIndex: index("storeIdIndex").on(table.storeId),
+    };
+  }
+);
+
+// All relation table
+export const userRelation = relations(UsersTable, ({ one, many }) => ({
+  store: one(StoresTable, {
+    fields: [UsersTable.id], // Ensure this references the correct column
+    references: [StoresTable.userId],
+  }),
+  followings: many(FollowTable),
+  carts: many(CartsTable),
+  orders: many(OrdersTable),
+  comments: many(CommentsTable),
+}));
+
+export const storeRelation = relations(StoresTable, ({ one, many }) => ({
+  owner: one(UsersTable, {
+    fields: [StoresTable.userId],
+    references: [UsersTable.id],
+  }),
+  followers: many(FollowTable),
+  products: many(ProductsTable),
+  news: many(NewsTable),
+  promos: many(PromoTable),
+}));
+
+export const productRelation = relations(ProductsTable, ({ one, many }) => ({
+  store: one(StoresTable, {
+    fields: [ProductsTable.storeId],
+    references: [StoresTable.id],
+  }),
+  comments: many(CommentsTable),
+}));
+
+export const cartRelation = relations(CartsTable, ({ one }) => ({
+  user: one(UsersTable, {
+    fields: [CartsTable.userId],
+    references: [UsersTable.id],
+  }),
+  product: one(ProductsTable, {
+    fields: [CartsTable.produtId],
+    references: [ProductsTable.id],
+  }),
+}));
+
+export const orderRelation = relations(OrdersTable, ({ one }) => ({
+  user: one(UsersTable, {
+    fields: [OrdersTable.userId],
+    references: [UsersTable.id],
+  }),
+}));
+
+export const newsRelation = relations(NewsTable, ({ one }) => ({
+  store: one(StoresTable, {
+    fields: [NewsTable.storeId],
+    references: [StoresTable.id],
+  }),
+}));
+
+export const promoRelation = relations(PromoTable, ({ one }) => ({
+  owner: one(StoresTable, {
+    fields: [PromoTable.ownerId],
+    references: [StoresTable.id],
+  }),
+}));
+
+export const commentsRelation = relations(CommentsTable, ({ one }) => ({
+  product: one(ProductsTable, {
+    fields: [CommentsTable.productId],
+    references: [ProductsTable.id],
+  }),
+  user: one(UsersTable, {
+    fields: [CommentsTable.userId],
+    references: [UsersTable.id],
+  }),
+}));
+
+export const followRelation = relations(FollowTable, ({ one }) => ({
+  user: one(UsersTable, {
+    fields: [FollowTable.userId],
+    references: [UsersTable.id],
+  }),
+  store: one(StoresTable, {
+    fields: [FollowTable.storeId],
+    references: [StoresTable.id],
+  }),
+}));
 
 // All type
 export type TUser = typeof UsersTable.$inferSelect;
 export type TUserInsert = typeof UsersTable.$inferInsert;
+export type TProducts = typeof ProductsTable.$inferSelect;
+export type TStore = typeof StoresTable.$inferSelect;
+export type TCart = typeof CartsTable.$inferSelect;
+export type TOrder = typeof OrdersTable.$inferSelect;
+export type TPromo = typeof PromoTable.$inferSelect;
+export type TNews = typeof NewsTable.$inferSelect;
+export type TComment = typeof CommentsTable.$inferSelect;
+export type TFollow = typeof FollowTable.$inferSelect;

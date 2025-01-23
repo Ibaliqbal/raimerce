@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, format } from "date-fns";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaCheck } from "react-icons/fa";
 import {
   Select,
   SelectContent,
@@ -34,27 +34,53 @@ import { AiOutlinePercentage } from "react-icons/ai";
 import CardProduct from "@/components/card/card-product";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { TProducts } from "@/lib/db/schema";
 
-const FormPromo = () => {
+type Props = {
+  products: Array<
+    Pick<TProducts, "id" | "name" | "description" | "rating" | "variant">
+  >;
+  fetchLoad: boolean;
+  type: "Create" | "Update";
+  withReset: boolean;
+  handleSubmit: (data: PromoSchemaT) => Promise<void>;
+  defaultValues: {
+    code: string;
+    allowedProducts: Array<string>;
+    expireAt?: Date;
+  };
+  amount: number;
+};
+
+const FormPromo = ({
+  products,
+  fetchLoad,
+  defaultValues,
+  type,
+  withReset,
+  handleSubmit,
+  amount,
+}: Props) => {
   const form = useForm<PromoSchemaT>({
     resolver: zodResolver(promoSchema),
     defaultValues: {
-      code: "",
-      amount: 0,
-      allowedProducts: [],
+      ...defaultValues,
+      amount,
     },
   });
-
-  const handleSubmit = (data: PromoSchemaT) => {
-    console.log(data);
-    // You can send the data to your API here.
-  };
 
   return (
     <Form {...form}>
       <form
         className="flex flex-col gap-4"
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(async (data) => {
+          try {
+            await handleSubmit(data);
+            if (withReset) form.reset();
+          } catch (error) {
+            console.log(error);
+          }
+        })}
       >
         <FormField
           control={form.control}
@@ -65,7 +91,7 @@ const FormPromo = () => {
               <FormControl>
                 <Input
                   {...field}
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || type === "Update"}
                   className="text-base py-7 border border-slate-700"
                   placeholder="Enter promo code..."
                 />
@@ -140,6 +166,7 @@ const FormPromo = () => {
                       onValueChange={(value) =>
                         field.onChange(addDays(new Date(), parseInt(value)))
                       }
+                      disabled={form.formState.isSubmitting}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select" />
@@ -172,31 +199,89 @@ const FormPromo = () => {
             )}
           />
         </section>
-        <section className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2>Allowed products</h2>
-            <div className="flex items-center gap-3">
-              <div className="flex space-x-2">
-                <Checkbox id="select all products" />
-                <Label
-                  htmlFor="select all products"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Select all products
-                </Label>
+        <FormField
+          control={form.control}
+          name="allowedProducts"
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h2>Allowed products</h2>
+                <div className="flex items-center gap-3">
+                  <div className="flex space-x-2">
+                    <Checkbox
+                      id="select all products"
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          field.onChange(products.map((product) => product.id));
+                        } else {
+                          field.onChange([]);
+                        }
+                      }}
+                      checked={field.value.length === products?.length}
+                      disabled={form.formState.isSubmitting}
+                    />
+                    <Label
+                      htmlFor="select all products"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Select all products
+                    </Label>
+                  </div>
+                  <p>
+                    {field.value.length} / {products?.length ?? 0}
+                  </p>
+                </div>
               </div>
-              <p>0 / 1000</p>
-            </div>
-          </div>
-          <div className="max-h-[600px] overflow-auto custom-vertical-scroll w-full grid grid-cols-3 pb-10">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <CardProduct key={i} i={i} />
-            ))}
-          </div>
-        </section>
-        <SubmitButton<PromoSchemaT>
-          formHook={form}
-          textBtn="Create"
+              <FormControl>
+                <div className="max-h-[600px] overflow-auto custom-vertical-scroll w-full grid grid-cols-3 pb-10 gap-4 px-3">
+                  {fetchLoad
+                    ? Array.from({ length: 3 }).map((_, i) => (
+                        <CardProduct.Skeleton key={i} />
+                      ))
+                    : products?.map((product) => (
+                        <div
+                          key={product.id}
+                          onClick={() => {
+                            if (!form.formState.isSubmitting) {
+                              const findIT = field.value.find(
+                                (id) => product.id === id
+                              );
+                              if (findIT) {
+                                field.onChange(
+                                  field.value.filter((id) => id !== product.id)
+                                );
+                              } else {
+                                field.onChange([...field.value, product.id]);
+                              }
+                            }
+                          }}
+                          className="relative"
+                        >
+                          <CardProduct {...product} disabledLicnk={false} />
+                          <div
+                            className={cn(
+                              "bg-black bg-opacity-50 rounded-md absolute w-full h-full top-0 left-0 transition-opacity duration-300 ease-in-out cursor-pointer flex items-center justify-center",
+                              field.value.find((id) => product.id === id)
+                                ? "opacity-100 z-10"
+                                : "opacity-0"
+                            )}
+                          >
+                            <FaCheck className="text-5xl text-white" />
+                          </div>
+                        </div>
+                      ))}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <SubmitButton
+          disabled={
+            form.formState.isSubmitting ||
+            form.getValues("allowedProducts").length === 0
+          }
+          textBtn={form.formState.isSubmitting ? "Loading..." : type}
           className="self-end"
         />
       </form>

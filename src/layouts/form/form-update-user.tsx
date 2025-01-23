@@ -12,19 +12,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { updateProfileSchema, UpdateProfileT } from "@/types/user";
 import SubmitButton from "./submit-button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import instance from "@/lib/axios/instance";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
-const FormUpdateUser = () => {
+type Props = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+const FormUpdateUser = ({ name, email, phone }: Props) => {
   const form = useForm<UpdateProfileT>({
     resolver: zodResolver(updateProfileSchema),
-    defaultValues: {
-      name: "",
-      email: "iqbalmuthahhary@gmail.com",
-      phone: undefined,
+    values: {
+      name: name ? name : "",
+      email: email ? email : "",
+      phone: phone ? phone : "",
     },
   });
 
-  const onSubmit = async (data: UpdateProfileT) => {
-    console.log(data);
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data: UpdateProfileT) =>
+      await instance.put(`/users/login?_type=update_profile`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["login-user"],
+      });
+    },
+    onError(error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+      }
+    },
+  });
+
+  const onSubmit = (data: UpdateProfileT) => {
+    mutate(data);
   };
   return (
     <Form {...form}>
@@ -102,9 +129,11 @@ const FormUpdateUser = () => {
             )}
           />
         </section>
-        <SubmitButton<UpdateProfileT>
-          formHook={form}
-          textBtn="Submit"
+        <SubmitButton
+          disabled={form.formState.isSubmitting}
+          textBtn={
+            form.formState.isSubmitting || isPending ? "Loading..." : "Submit"
+          }
           className="self-start"
         />
       </form>

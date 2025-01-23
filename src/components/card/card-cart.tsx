@@ -1,19 +1,28 @@
-import React from "react";
-import { useState } from "react";
 import { convertPrice } from "@/utils/helper";
-import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
-import { Button } from "../ui/button";
 import Card from "../ui/card";
+import { Skeleton } from "../ui/skeleton";
+import CheckboxCheckout from "../checkbox/checkbox-checkout";
+import { VariantSchemaT } from "@/types/product";
+import ButtonDeleteCart from "../button/button-delete-cart";
+import ButtonQtyCart from "../button/button-qty-cart";
 
 type Props = {
-  i: number;
-  handleTrash: (id: number) => void;
+  id: string;
   withAction: boolean;
-  handleToCheckout: (index: number) => void;
+  quantity: number;
+  isCheckout: boolean;
+  selectedVariant: VariantSchemaT | undefined;
+  name: string;
 };
 
-const CardCart = ({ i, handleTrash, withAction, handleToCheckout }: Props) => {
-  const [count, setCount] = useState(1);
+const CardCart = ({
+  id,
+  withAction,
+  name,
+  selectedVariant,
+  isCheckout,
+  quantity,
+}: Props) => {
   return (
     <Card
       className="rounded-md border border-gray-500 group"
@@ -21,40 +30,45 @@ const CardCart = ({ i, handleTrash, withAction, handleToCheckout }: Props) => {
       initial={{ opacity: 0, scale: 0 }}
       exit={{ opacity: 0, scale: 0 }}
     >
-      <Card.Image src="/Background.jpeg" className="h-[300px]" />
-      <Card.Description asLink={false} onClick={() => handleToCheckout(i)}>
-        <h1>Nike forece Air Jordan 20{i}, SS</h1>
-        <p>Price : {convertPrice(10000)}</p>
-        <p>variant : Vanilla</p>
+      {selectedVariant?.medias[0].type === "image" ? (
+        <Card.Image src={selectedVariant.medias[0].url} className="h-[300px]" />
+      ) : (
+        <Card.Image src="/Background.jpeg" className="h-[300px]" />
+      )}
+      <Card.Description asLink={false}>
+        <h1>{name}</h1>
+        <p>Price : {convertPrice(selectedVariant?.price ?? 0)}</p>
+        <p>variant : {selectedVariant?.name_variant}</p>
       </Card.Description>
       {withAction ? (
         <Card.Footer>
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="icon"
-              disabled={count === 1}
-              onClick={() => setCount((prev) => --prev)}
-            >
-              <FaMinus />
-            </Button>
-            <span>{count}</span>
-            <Button
-              size="sm"
-              variant="icon"
-              onClick={() => setCount((prev) => ++prev)}
-            >
-              <FaPlus />
-            </Button>
+            <ButtonQtyCart id={id} variant="dec" disabled={quantity === 1} />
+            <span>{quantity}</span>
+            <ButtonQtyCart id={id} variant="inc" />
           </div>
-          <FaTrash
-            className="text-xl cursor-pointer text-red-600"
-            onClick={() => handleTrash(i)}
-          />
+          <ButtonDeleteCart id={id} />
+        </Card.Footer>
+      ) : null}
+      {withAction ? (
+        <Card.Footer>
+          <CheckboxCheckout id={id} isCheckout={isCheckout} />
         </Card.Footer>
       ) : null}
     </Card>
   );
 };
+
+const CardCartSkeleton = () => {
+  return (
+    <Card className="rounded-md border border-gray-500">
+      <Skeleton className="h-[250px] w-full" />
+      <Skeleton className="h-[40px] w-full" />
+      <Skeleton className="h-[25px] w-full" />
+    </Card>
+  );
+};
+
+CardCart.Skeleton = CardCartSkeleton;
 
 export default CardCart;

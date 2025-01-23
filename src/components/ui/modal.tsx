@@ -25,17 +25,18 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children }) => {
             initial={{ opacity: 0 }}
             animate={{
               opacity: 1,
-              transition: {
-                duration: 0.3,
-              },
             }}
             exit={{
               opacity: 0,
             }}
-            className="fixed h-dvh w-full inset-0 bg-black bg-opacity-60 z-[61]"
+            transition={{
+              duration: 0.3,
+            }}
+            className="fixed h-dvh w-full inset-0 bg-black bg-opacity-60 z-[61] flex items-center justify-center"
             onClick={handleClose}
-          />
-          {children}
+          >
+            <div onClick={(e) => e.stopPropagation()}>{children}</div>
+          </motion.div>
         </Fragment>
       )}
     </AnimatePresence>

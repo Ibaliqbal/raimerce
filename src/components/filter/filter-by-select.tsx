@@ -53,7 +53,9 @@ const FilterBySelect: React.FC<FilterBySelectProps> = ({ filterBy, lists }) => {
 
   return (
     <Select value={getCurrentValue()} onValueChange={handleValueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger
+        className={filterBy === "rating" ? "w-[150px]" : "w-[180px]"}
+      >
         <SelectValue placeholder={`Select ${filterBy}`} />
       </SelectTrigger>
       <SelectContent>

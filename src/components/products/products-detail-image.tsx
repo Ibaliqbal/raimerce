@@ -1,17 +1,20 @@
 import Image from "@/components/ui/image";
 import Carousel from "../ui/carousel";
+import { TMedia } from "@/types/product";
 
-const kumpulanImg = ["/Background.jpeg", "/Background2.jpg"];
+type Props = {
+  medias: Array<TMedia>;
+};
 
-const ProductsDetailImage = () => {
+const ProductsDetailImage = ({ medias }: Props) => {
   return (
     <div className="sticky top-3 w-[40%] h-[600px]">
-      <Carousel thumb={false} pagination={false} effect="fade">
-        {kumpulanImg.map((img, i) => (
+      <Carousel thumb={false} effect="fade">
+        {medias.map((media) => (
           <Image
-            key={img}
-            src={img}
-            alt={`Bg ${i}`}
+            key={media.keyFile}
+            src={media.url}
+            alt={media.name}
             width={200}
             height={200}
             figureClassName="w-full h-full relative rounded-lg overflow-hidden"

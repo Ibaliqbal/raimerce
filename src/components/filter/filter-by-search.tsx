@@ -23,7 +23,7 @@ const FilterBySearch = () => {
       router.push(
         {
           pathname: router.pathname,
-          query: { ...otherQueries, q: search },
+          query: { ...otherQueries, q: encodeURIComponent(search) },
         },
         undefined,
         { shallow: true }

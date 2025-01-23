@@ -1,37 +1,56 @@
 import BaseLayout from "@/layouts/base-layout";
+import instance from "@/lib/axios/instance";
+import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
 import ProductsDetailView from "@/views/products/products-detail-view";
 import ProductsRelatedView from "@/views/products/products-similiar-view";
-// import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+
+type Props = Pick<
+  TProducts,
+  "id" | "description" | "name" | "rating" | "variant" | "storeId" | "category"
+> & {
+  productsCount: number;
+  followersCount: number;
+  store: Pick<TStore, "name"> | null;
+  comments: Array<
+    Pick<
+      TComment,
+      "content" | "createdAt" | "id" | "medias" | "rating" | "variant"
+    > & {
+      user: Pick<TUser, "name"> | null;
+    }
+  >;
+};
 
 // fetching in server side
 
-// export const getServerSideProps = (async ({ query, params }) => {
-//   console.log({ params });
-//   console.log({ query });
-//   const res = await fetch("https://fakestoreapi.com/products");
-//   const data = await res.json();
-//   return {
-//     props: {
-//       data,
-//     },
-//   };
-// }) satisfies GetServerSideProps<{
-//   data: {
-//     id: number;
-//     title: string;
-//     price: string;
-//     category: string;
-//     description: string;
-//     image: string;
-//   }[];
-// }>;
+export const getServerSideProps = (async ({ params, query }) => {
+  const { data } = await instance.get(`/products/${params?.id}`);
+  const product = data.data as Props;
+  return {
+    props: {
+      data: product,
+      selectedVariant: query.variant as string,
+    },
+  };
+}) satisfies GetServerSideProps<{
+  data: Props;
+  selectedVariant: string;
+}>;
 
-const Page = () => {
+const Page = ({
+  data,
+  selectedVariant,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <BaseLayout>
       <main className="flex flex-col gap-5 container xl:max-w-[1400px] max-w-7xl p-4 pb-10">
-        <ProductsDetailView />
-        <ProductsRelatedView />
+        <ProductsDetailView
+          {...data}
+          selectedVariant={selectedVariant}
+          key={selectedVariant}
+        />
+        <ProductsRelatedView id={data.id} />
       </main>
     </BaseLayout>
   );

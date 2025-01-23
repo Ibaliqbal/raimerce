@@ -14,6 +14,8 @@ import { FaCheck } from "react-icons/fa";
 import { resetPasswordSchema, TResetPasswordT } from "@/types/user";
 import { Input } from "@/components/ui/input";
 import SubmitButton from "./submit-button";
+import { AxiosError } from "axios";
+import instance from "@/lib/axios/instance";
 
 const FormChangePassword = () => {
   const [error, setError] = useState("");
@@ -27,7 +29,23 @@ const FormChangePassword = () => {
   });
 
   const onSubmit = async (data: TResetPasswordT) => {
-    console.log(data);
+    setError("");
+    try {
+      const res = await instance.put(
+        "/users/login?_type=change_password",
+        data
+      );
+
+      setIsSuccess(res.data.message);
+      form.reset();
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.data.message === "Password is incorrect") {
+          setError(error.response?.data.message);
+          form.resetField("oldPassword");
+        }
+      }
+    }
   };
   return (
     <Form {...form}>
@@ -81,9 +99,9 @@ const FormChangePassword = () => {
             </FormItem>
           )}
         />
-        <SubmitButton<TResetPasswordT>
+        <SubmitButton
           textBtn={form.formState.isSubmitting ? "Resetting..." : "Reset"}
-          formHook={form}
+          disabled={form.formState.isSubmitting}
           className="self-start"
         />
       </form>

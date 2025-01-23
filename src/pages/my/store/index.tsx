@@ -1,11 +1,11 @@
-import UserLayout from "@/layouts/user-layout";
+import StoreOwnerLayout from "@/layouts/store-owner-layout";
 import StoreDashboardView from "@/views/my/store/dashboard/store-dashboard-view";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <StoreOwnerLayout>
       <StoreDashboardView />
-    </UserLayout>
+    </StoreOwnerLayout>
   );
 };
 

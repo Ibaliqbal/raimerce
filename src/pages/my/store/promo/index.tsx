@@ -1,13 +1,13 @@
-import UserLayout from '@/layouts/user-layout'
-import StorePromoView from '@/views/my/store/promo/store-promo-view'
-import React from 'react'
+import StoreOwnerLayout from "@/layouts/store-owner-layout";
+import StorePromoView from "@/views/my/store/promo/store-promo-view";
+import React from "react";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <StoreOwnerLayout>
       <StorePromoView />
-    </UserLayout>
-  )
-}
+    </StoreOwnerLayout>
+  );
+};
 
-export default Page
+export default Page;

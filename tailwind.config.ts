@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import { withUt } from "uploadthing/tw";
 
-const config: Config = {
+const config: Config = withUt({
   darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -19,6 +20,12 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         descurative: "var(--descurative)",
+        primary: {
+          DEFAULT: "#3b82f6",
+          // You can also define different shades if needed
+          light: "#60a5fa",
+          dark: "#2563eb",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -50,5 +57,6 @@ const config: Config = {
     },
   },
   plugins: [animate],
-};
+});
+
 export default config;

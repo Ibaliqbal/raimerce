@@ -1,4 +1,3 @@
-import React from "react";
 import { FaEye, FaStar } from "react-icons/fa";
 import Modal from "@/components/ui/modal";
 import { useState } from "react";
@@ -7,33 +6,60 @@ import Image from "@/components/ui/image";
 import Link from "next/link";
 import Card from "../ui/card";
 import { TbEyeEdit } from "react-icons/tb";
+import { Skeleton } from "../ui/skeleton";
+import { TProducts } from "@/lib/db/schema";
+import Video from "../ui/video";
 
 type Props = {
-  i: number;
   hisMine?: boolean;
-};
+  disabledLicnk?: boolean;
+} & Pick<TProducts, "rating" | "description" | "id" | "name" | "variant">;
 
-const CardProduct = ({ i, hisMine = false }: Props) => {
+const CardProduct = ({
+  hisMine = false,
+  id,
+  disabledLicnk = true,
+  name,
+  variant,
+  rating,
+  description,
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Card
-        className="rounded-md border border-gray-500 group"
-        layoutId={`card-${i}`}
+        className="rounded-md border border-gray-500 group w-full"
+        layoutId={`card-${id}`}
       >
-        <Card.Image
-          src="/Background.jpeg"
-          layoutId={`card-${i}-image`}
-          className="h-[300px]"
-        />
-        <Card.Description href="/products/23" asLink>
-          <h1>Nike forece Air Jordan 20{i}, SS</h1>
+        {variant[0].medias[0].type === "image" ? (
+          <Card.Image
+            src={variant[0].medias[0].url}
+            layoutId={`card-${id}-image`}
+            className="h-[300px]"
+          />
+        ) : (
+          <Card.Video
+            videoProps={{
+              src: variant[0].medias[0].url,
+              loop: true,
+              autoPlay: true,
+              muted: true,
+            }}
+            layoutId={`card-${id}-image`}
+            className="h-[300px] w-full relative rounded-md"
+          />
+        )}
+        <Card.Description
+          href={`/products/${id}?variant=${variant[0].name_variant}`}
+          asLink={disabledLicnk}
+        >
+          <h1>{name}</h1>
         </Card.Description>
         <Card.Footer>
           <div className="flex items-center gap-2">
             <FaStar className="text-yellow-400" />
-            <span>4.2</span>
+            <span>{rating}</span>
           </div>
           {hisMine ? (
             <div className="flex items-center gap-3">
@@ -41,7 +67,7 @@ const CardProduct = ({ i, hisMine = false }: Props) => {
                 className="text-xl cursor-pointer"
                 onClick={() => setOpen(true)}
               />
-              <Link href={"/my/store/products/23/update"}>
+              <Link href={`/my/store/products/${id}/update`}>
                 <TbEyeEdit className="text-xl cursor-pointer" />
               </Link>
             </div>
@@ -55,46 +81,50 @@ const CardProduct = ({ i, hisMine = false }: Props) => {
       </Card>
       <Modal open={open} setOpen={setOpen}>
         <motion.article
-          layoutId={`card-${i}`}
+          layoutId={`card-${id}`}
           className="md:w-[900px] w-[320px] h-[500px] flex gap-4 overflow-auto style-base-modal p-3"
         >
-          <Image
-            motionProps={{
-              layoutId: `card-${i}-image`,
-            }}
-            src="/Background.jpeg"
-            alt="Product Image"
-            width={200}
-            height={200}
-            figureClassName="w-1/2 h-full relative rounded-md overflow-hidden"
-            className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
-          />
+          {variant[0].medias[0].type === "image" ? (
+            <Image
+              motionProps={{
+                layoutId: `card-${id}-image`,
+              }}
+              src={variant[0].medias[0].url}
+              alt="Product Image"
+              width={200}
+              height={200}
+              figureClassName="w-1/2 h-full relative rounded-md overflow-hidden"
+              className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
+            />
+          ) : (
+            <motion.div
+              className="w-1/2 h-full relative rounded-md"
+              layoutId={`card-${id}-image`}
+            >
+              <Video
+                className="w-full h-full absolute object-contain object-center rounded-md"
+                src={variant[0].medias[0].url}
+                loop
+                autoPlay
+                muted
+              />
+            </motion.div>
+          )}
           <section className="w-1/2 max-h-full h-full overflow-auto custom-vertical-scroll flex flex-col gap-2 relative pr-2">
-            <h1 className="text-xl blur-background">
-              Nike forece Air Jordan 20{i}, SS
-            </h1>
-            <p className="text-justify">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. A
-              laudantium ex, velit maiores ad necessitatibus, saepe tenetur
-              tempore neque molestiae excepturi inventore. Quis dolorem nemo qui
-              eaque, repellendus illum eos! Ipsam impedit eos unde voluptatem
-              possimus. Similique nemo expedita, consequuntur error iusto itaque
-              nisi. Modi delectus aspernatur, ipsam ratione asperiores voluptas,
-              odit laborum ullam doloribus iste reiciendis beatae, provident
-              incidunt. Saepe neque, porro debitis doloremque nam quod,
-              exercitationem alias beatae quaerat maxime voluptatum odit, soluta
-              rem atque. Necessitatibus numquam porro hic nihil sequi. Deserunt
-              possimus harum, eum non accusantium id? Deserunt recusandae eum
-              velit fugit voluptatibus inventore sequi consequatur saepe.
-              Tempora exercitationem, inventore quo eveniet quisquam nobis iste
-              rerum quaerat illo temporibus eaque blanditiis perspiciatis
-              doloribus modi aperiam laudantium sint. Voluptatum in praesentium,
-              atque ducimus rem eos officia placeat velit repellat facere?
-              Quaerat odio reprehenderit, sapiente excepturi iste accusantium
-              nulla aspernatur eligendi, odit et rerum debitis ipsa accusamus
-              explicabo quo.
-            </p>
-            <Link href={"/"} className="self-end hover:underline">
+            <h1 className="text-xl blur-background">{name}</h1>
+            {description?.split("\n\n").map((paragraph, index) => (
+              <p key={index} className="text-justify">
+                {paragraph.trim()}
+              </p>
+            ))}
+            <Link
+              href={
+                hisMine
+                  ? `/my/store/products/${id}?variant=${variant[0].name_variant}`
+                  : `/products/${id}?variant=${variant[0].name_variant}`
+              }
+              className="self-end hover:underline"
+            >
               More detail
             </Link>
           </section>
@@ -103,5 +133,17 @@ const CardProduct = ({ i, hisMine = false }: Props) => {
     </>
   );
 };
+
+const CardProductSkeleton = () => {
+  return (
+    <Card className="rounded-md border border-gray-500">
+      <Skeleton className="h-[250px] w-full" />
+      <Skeleton className="h-[40px] w-full" />
+      <Skeleton className="h-[25px] w-full" />
+    </Card>
+  );
+};
+
+CardProduct.Skeleton = CardProductSkeleton;
 
 export default CardProduct;

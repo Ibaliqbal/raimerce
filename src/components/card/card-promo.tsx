@@ -1,26 +1,74 @@
 import Card from "@/components/ui/card";
-import { FaEye, FaTrash } from "react-icons/fa";
-import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
+import { TPromo } from "@/lib/db/schema";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
-const CardPromo = () => {
+type Props = Pick<
+  TPromo,
+  "amount" | "code" | "id" | "uses" | "productsAllowed" | "expiredAt"
+>;
+
+const CardPromo = ({ code, uses, expiredAt, id }: Props) => {
   return (
-    <Card className="border border-gray-500 rounded-xl">
+    <Card
+      className={`border ${
+        new Date().getTime() > new Date(expiredAt).getTime()
+          ? "border-red-600"
+          : "border-gray-500"
+      } rounded-xl`}
+    >
+      <div className="self-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <HiOutlineDotsVertical className="text-xl" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/my/store/promo/${encodeURIComponent(id)}/update`}
+                className="cursor-pointer"
+              >
+                Update
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <Card.Icon src="/icon/discount-voucher-icon.png" className="h-[150px]" />
       <Card.Description asLink={false}>
-        <h2>Code Promo : DIS-2022-1234</h2>
-        <p>Expire : 31 Desember 2022</p>
-        <p>Uses : 20</p>
+        <h2>Code Promo : {code}</h2>
+        <p>Expire : {expiredAt}</p>
+        <p>Uses : {uses}</p>
       </Card.Description>
-      <Card.Footer>
-        <Button variant="icon" size="sm" className="text-xl">
-          <FaEye />
-        </Button>
-        <Button variant="icon" size="sm" className="text-xl ">
-          <FaTrash className="text-red-600" />
-        </Button>
-      </Card.Footer>
     </Card>
   );
 };
+
+const CardPromoSkeleton = () => {
+  return (
+    <Card className="border border-gray-500 rounded-xl">
+      <Skeleton className="w-full h-[200px]" />
+      <Card.Description asLink={false}>
+        <Skeleton className="w-full h-[20px]" />
+        <Skeleton className="w-full h-[20px]" />
+        <Skeleton className="w-full h-[20px]" />
+      </Card.Description>
+    </Card>
+  );
+};
+
+CardPromo.Skeleton = CardPromoSkeleton;
 
 export default CardPromo;

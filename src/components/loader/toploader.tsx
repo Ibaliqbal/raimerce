@@ -1,10 +1,10 @@
-import NextTopLoader from "nextjs-toploader";
+import { PagesTopLoader } from "nextjs-toploader/pages";
 import React from "react";
 
 export default function TopLoader() {
   return (
     <>
-      <NextTopLoader
+      <PagesTopLoader
         color="#2299DD"
         initialPosition={0.08}
         crawlSpeed={200}

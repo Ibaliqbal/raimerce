@@ -8,8 +8,6 @@ const TabNavigationStore: React.FC = () => {
   const router = useRouter();
   const name = router.query.name as string | undefined;
 
-  console.log(router);
-
   return (
     <section className="grid grid-cols-2 gap-3">
       {navigationStore(name || "").map((navigate) => (

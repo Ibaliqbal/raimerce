@@ -16,44 +16,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { productSchema, ProductSchemaT } from "@/types/product";
+import { productSchema, ProductSchemaT, VariantSchemaT } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import ProductsListVariant from "@/components/products/products-list-variant";
 import FormVariantProduct from "./form-variant-product";
 import { categories } from "@/utils/constant";
 import SubmitButton from "./submit-button";
+import CardProductVariant from "@/components/card/card-product-variant";
 
 type Props = {
-  onSubmit: (data: ProductSchemaT) => void;
+  handleSubmit: (data: ProductSchemaT) => Promise<void>;
   title: string;
   textBtn: string;
+  defaultValues: ProductSchemaT;
+  withReset?: boolean;
 };
 
-const FormProduct = ({ title, textBtn }: Props) => {
+const FormProduct = ({
+  title,
+  textBtn,
+  handleSubmit,
+  defaultValues,
+  withReset = false,
+}: Props) => {
   const form = useForm<ProductSchemaT>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      category: "",
-      variant: [],
-    },
+    defaultValues,
   });
 
-  const onSubmit = (data: ProductSchemaT) => {
-    console.log(data);
-  };
-
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-center">{title}</h1>
       <Form {...form}>
         <form
           className="flex flex-col gap-4"
           id="form-product"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(async (data) => {
+            try {
+              await handleSubmit(data);
+              if (withReset) form.reset();
+            } catch (error) {
+              console.error(error);
+            }
+          })}
         >
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -113,11 +119,43 @@ const FormProduct = ({ title, textBtn }: Props) => {
               )}
             />
           </div>
-          <div className="flex flex-col gap-4">
-            <h3>Variants</h3>
-            <ProductsListVariant onChangeVariant={() => {}} />
-            <FormVariantProduct />
-          </div>
+          <FormField
+            control={form.control}
+            name="variant"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-3">
+                <h3 className="text-lg">Variants</h3>
+                <FormControl>
+                  <div className="flex flex-col gap-4">
+                    {field.value.length > 0 ? (
+                      <div className="grid grid-cols-4 gap-4">
+                        {field.value.map((data, i) => (
+                          <CardProductVariant
+                            i={i}
+                            key={i}
+                            {...data}
+                            handleRemove={(index: number) =>
+                              field.onChange(
+                                field.value.filter((_, i) => index !== i)
+                              )
+                            }
+                            withDelete
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                    <FormVariantProduct
+                      disabledUploadBtn={form.formState.isSubmitting}
+                      handleAdd={(data: VariantSchemaT) => {
+                        field.onChange([...field.value, data]);
+                      }}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="description"
@@ -140,7 +178,13 @@ const FormProduct = ({ title, textBtn }: Props) => {
               </FormItem>
             )}
           />
-          <SubmitButton<ProductSchemaT> formHook={form} textBtn={textBtn} />
+          <SubmitButton
+            disabled={
+              form.formState.isSubmitting ||
+              form.getValues("variant").length === 0
+            }
+            textBtn={form.formState.isSubmitting ? "Loading..." : textBtn}
+          />
         </form>
       </Form>
     </section>

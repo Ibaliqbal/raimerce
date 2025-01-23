@@ -9,8 +9,21 @@ import {
 
 import SideLink from "@/components/side-link";
 import SideListsStore from "@/components/store/side-lists";
+import { useGetUserLogin } from "@/context/user-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SidebarUser = () => {
+  const data = useGetUserLogin();
+
+  if (data?.loading)
+    return (
+      <aside className="col-span-1 flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
+        <Skeleton className="w-full h-12" />
+        <Skeleton className="w-full h-12" />
+        <Skeleton className="w-full h-12" />
+      </aside>
+    );
+
   return (
     <aside className="col-span-1 flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
       <SideLink
@@ -31,7 +44,7 @@ const SidebarUser = () => {
         iconNonActive={<BsCart />}
         text="Cart"
       />
-      <SideListsStore />
+      {data?.user?.store?.id ? <SideListsStore /> : null}
     </aside>
   );
 };

@@ -1,26 +1,21 @@
-import CardProduct from "@/components/card/card-product";
 import FilterBySelect from "@/components/filter/filter-by-select";
-import { categories } from "@/utils/constant";
-import React from "react";
+import StoreListProducts from "./store-list-products";
+import { categories, ratings } from "@/utils/constant";
 
 const StoreProductsView = () => {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 pb-10">
       <div className="flex items-center gap-2">
         <FilterBySelect
           filterBy="category"
-          lists={categories.map((category) => category.name.toLowerCase())}
+          lists={categories.map((category) => category.name)}
         />
         <FilterBySelect
           filterBy="rating"
-          lists={categories.map((category) => category.name.toLowerCase())}
+          lists={ratings.map((rating) => rating.toString())}
         />
       </div>
-      <div className="w-full grid grid-cols-4 gap-4">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <CardProduct key={i} i={i} />
-        ))}
-      </div>
+      <StoreListProducts />
     </section>
   );
 };

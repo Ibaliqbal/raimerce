@@ -4,10 +4,12 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FaRegUser } from "react-icons/fa";
 import { useMotionValueEvent, useScroll, motion } from "framer-motion";
+import { signIn, useSession } from "next-auth/react";
 
 const NavbarBase = () => {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState<boolean>(false);
+  const session = useSession();
 
   useMotionValueEvent(scrollY, "change", (latest: number) => {
     // const previous = scrollY.getPrevious() ?? 0;
@@ -17,7 +19,6 @@ const NavbarBase = () => {
       setHidden(false);
     }
   });
-  const isLogin = true;
   return (
     <motion.header
       variants={{
@@ -29,7 +30,9 @@ const NavbarBase = () => {
       className="w-full flex justify-between items-center px-4 py-3 z-[50] blur-background mb-4"
     >
       <h1 className="text-2xl">RAY-COMMERCE</h1>
-      {isLogin ? (
+      {session.status === "loading" ? (
+        <p>Loading...</p>
+      ) : session.data ? (
         <nav className="flex items-center gap-5">
           <Link href="/">Home</Link>
           <Link href={"/settings"}>
@@ -43,7 +46,7 @@ const NavbarBase = () => {
           </Link>
         </nav>
       ) : (
-        <Button>Login</Button>
+        <Button onClick={() => signIn()}>Login</Button>
       )}
     </motion.header>
   );

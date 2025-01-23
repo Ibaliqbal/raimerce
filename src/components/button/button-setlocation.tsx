@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Modal from "../ui/modal";
 import { motion } from "framer-motion";
+import FormAddLocation from "@/layouts/form/form-add-location";
 
 const ButtonSetLocation = () => {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,7 @@ const ButtonSetLocation = () => {
       </Button>
       <Modal open={open} setOpen={setOpen}>
         <motion.div
-          className="md:w-[900px] w-[320px] h-fit style-base-modal p-3"
+          className="md:w-[900px] w-[320px] style-base-modal p-6 custom-vertical-scroll overflow-auto h-[500px]"
           initial={{ opacity: 0, translateY: 200 }}
           animate={{
             opacity: 1,
@@ -33,7 +34,7 @@ const ButtonSetLocation = () => {
             type: "tween",
           }}
         >
-          Hai
+          <FormAddLocation />
         </motion.div>
       </Modal>
     </>

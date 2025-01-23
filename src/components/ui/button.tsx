@@ -21,10 +21,13 @@ const buttonVariants = cva(
           "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-50",
         link: "text-gray-900 underline-offset-4 hover:underline dark:text-gray-50",
         primary:
-          "text-gray-50 bg-blue-600 hover:bg-blue-600/80 dark:text-gray-100 dark:bg-blue-700 dark:hover:bg-blue-700/80",
+          "text-gray-50 bg-blue-600 hover:bg-blue-600/80 dark:text-gray-100 dark:bg-blue-700 dark:hover:bg-blue-700/80 transition-all before:absolute before:right-0 before:top-0 before:h-12 before:w-6 before:translate-x-12 before:rotate-6 before:bg-white before:opacity-10 before:duration-1000 hover:before:-translate-x-48 duration-700 before:ease relative overflow-hidden",
         icon: "text-slate-900 dark:text-slate-50",
         checkout:
-          "dark:bg-green-500 dark:hover:bg-green-500/80 dark:text-gray-50 bg-green-600 hover:bg-green-600/80 shadow-sm text-gray-50",
+          "dark:bg-green-500 dark:hover:bg-green-500/80 dark:text-gray-50 bg-green-600 hover:bg-green-600/80 shadow-sm text-gray-50 transition-all before:absolute before:right-0 before:top-0 before:h-12 before:w-6 before:translate-x-12 before:rotate-6 before:bg-white before:opacity-10 before:duration-1000 hover:before:-translate-x-48 duration-700 before:ease relative overflow-hidden",
+        auth: "border border-gray-200 bg-white shadow-md hover:bg-gray-100 hover:text-gray-900 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90",
+        logout:
+          "bg-red-600 text-slate-100 shadow-sm hover:bg-red-600/80 dark:bg-red-600 dark:text-slate-50 dark:hover:bg-red-600/80 transition-all before:absolute before:right-0 before:top-0 before:h-12 before:w-6 before:translate-x-12 before:rotate-6 before:bg-white before:opacity-10 before:duration-1000 hover:before:-translate-x-48 duration-700 before:ease relative overflow-hidden",
       },
       size: {
         default: "h-9 px-4 py-2",

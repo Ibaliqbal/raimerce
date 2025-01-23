@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { motion, type MotionProps } from "framer-motion";
 
 type Props = {
-  figureClassName: string;
+  figureClassName?: string;
   motionProps?: MotionProps;
 } & ImageProps;
 
@@ -31,7 +31,10 @@ const Image = ({
         onLoadingComplete={() => setLoading(false)}
         {...rest}
         sizes="100%"
-        className={cn(className, loading ? "animate-pulse bg-gray-700" : "")}
+        className={cn(
+          className,
+          loading ? "animate-pulse duration-300 bg-gray-700" : ""
+        )}
       />
     </motion.figure>
   );

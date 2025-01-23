@@ -1,5 +1,9 @@
 import { ThinRoundedStar } from "@smastrom/react-rating";
 
+const ratings = [1, 2, 3, 4, 5];
+
+const banks = ["BCA", "BRI", "BNI", "CIMB"];
+
 const categories = [
   {
     image: "/icon/fashions-icon.png",
@@ -198,6 +202,10 @@ const dataDemoPromo = [
   },
 ];
 
+const pageSize = 12;
+
+const fee = 20000;
+
 export {
   categories,
   myBanners,
@@ -207,4 +215,8 @@ export {
   effectCarousel,
   filterPopularProducts,
   dataDemoPromo,
+  ratings,
+  banks,
+  pageSize,
+  fee,
 };

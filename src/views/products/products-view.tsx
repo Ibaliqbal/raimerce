@@ -1,31 +1,29 @@
-import CardProduct from "@/components/card/card-product";
 import FilterBySelect from "@/components/filter/filter-by-select";
 import FilterBySearch from "@/components/filter/filter-by-search";
-import { categories } from "@/utils/constant";
+import { categories, ratings } from "@/utils/constant";
+import ListProducts from "./list-products";
+import PaginationProducts from "./pagination-products";
 
 const ProductsView = () => {
   return (
-    <main className="flex flex-col gap-4 wrapper-page">
+    <main className="flex flex-col gap-4 wrapper-page pb-10">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <FilterBySelect
             filterBy="category"
-            lists={categories.map((category) => category.name.toLowerCase())}
+            lists={categories.map((category) => category.name)}
           />
           <FilterBySelect
             filterBy="rating"
-            lists={categories.map((category) => category.name.toLowerCase())}
+            lists={ratings.map((rating) => rating.toString())}
           />
         </div>
         <div>
           <FilterBySearch />
         </div>
       </div>
-      <div className="w-full grid grid-cols-4 gap-4">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <CardProduct key={i} i={i} />
-        ))}
-      </div>
+      <ListProducts />
+      <PaginationProducts />
     </main>
   );
 };

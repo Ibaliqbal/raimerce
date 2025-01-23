@@ -1,12 +1,11 @@
-import UserLayout from "@/layouts/user-layout";
+import StoreOwnerLayout from "@/layouts/store-owner-layout";
 import StoreOrdersView from "@/views/my/store/orders/store-orders-view";
-import React from "react";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <StoreOwnerLayout>
       <StoreOrdersView />
-    </UserLayout>
+    </StoreOwnerLayout>
   );
 };
 

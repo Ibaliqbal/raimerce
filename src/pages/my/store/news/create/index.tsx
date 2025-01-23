@@ -1,13 +1,12 @@
-import UserLayout from '@/layouts/user-layout'
-import StoreCreateNewsView from '@/views/my/store/news/store-create-news-view'
-import React from 'react'
+import StoreOwnerLayout from "@/layouts/store-owner-layout";
+import StoreCreateNewsView from "@/views/my/store/news/store-create-news-view";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <StoreOwnerLayout>
       <StoreCreateNewsView />
-    </UserLayout>
-  )
-}
+    </StoreOwnerLayout>
+  );
+};
 
-export default Page
+export default Page;

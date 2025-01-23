@@ -1,3 +1,9 @@
+import { TCart, TOrder, TProducts } from "@/lib/db/schema";
+import { VariantSchemaT } from "@/types/product";
+import { DiscountSchemaT } from "@/types/promo";
+import jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
+
 export function convertPrice(price: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -28,3 +34,117 @@ export function generateRGBA(total: number): string[] {
 
   return rgbaColors;
 }
+
+export const verify = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  callback: (decode: string | jwt.JwtPayload | undefined) => void
+) => {
+  const token = req.headers.authorization?.split(" ")[1] || "";
+  if (token) {
+    jwt.verify(token, process.env.AUTH_SECRET || "", async (_, decode) => {
+      if (decode) {
+        callback(decode);
+      } else {
+        return res
+          .status(403)
+          .json({ statusCode: 403, message: "Access denied", data: null });
+      }
+    });
+  } else {
+    return res
+      .status(401)
+      .json({ statusCode: 401, message: "Unautorized", data: null });
+  }
+};
+
+export const randomData = <T>(data: T[], gap: number): T[] => {
+  const first = ~~(Math.random() * (data.length - gap) + 1);
+  const last = first + gap;
+  const response = data.slice(first, last);
+  return response;
+};
+
+export const calculateAfterDisc = (
+  total: number,
+  discPercentage: number
+): number => {
+  const discAmount = (total * discPercentage) / 100;
+  const afterDisc = total - discAmount;
+  return afterDisc;
+};
+
+export const convertDiscAmount = (
+  total: number,
+  discPercentage: number
+): number => {
+  return (total * discPercentage) / 100;
+};
+
+export const calculateProductTotal = (
+  product: Pick<TCart, "variant" | "quantity" | "id" | "category"> & {
+    product: Pick<TProducts, "name" | "id"> & {
+      variant: VariantSchemaT | undefined;
+    };
+    subTotal: number;
+  },
+  discounts: Array<DiscountSchemaT>
+) => {
+  const discount = discounts.find(
+    (disc) => disc.appliedTo === product.product.id
+  );
+  if (!discount) return product.subTotal;
+  return calculateAfterDisc(product.subTotal, discount.amount);
+};
+
+export const calculateOrderSubtotal = (
+  products: Array<
+    Pick<TCart, "variant" | "quantity" | "id" | "category"> & {
+      product: Pick<TProducts, "name" | "id"> & {
+        variant: VariantSchemaT | undefined;
+      };
+      subTotal: number;
+    }
+  >,
+  discounts: Array<DiscountSchemaT>
+) => {
+  return (
+    products?.reduce(
+      (acc, product) => acc + calculateProductTotal(product, discounts),
+      0
+    ) ?? 0
+  );
+};
+export function calculateTotalWithPromo(
+  products: Pick<TOrder, "products">,
+  promos: Pick<TOrder, "promoCodes">
+): number {
+  const totalAfterDisc = products.products?.map((product) => {
+    const { quantity, productVariant, productID } = product;
+    const findRelevantPromo = promos.promoCodes?.find(
+      (promo) => promo.appliedTo == productID
+    )?.amount;
+    const sum = quantity * (productVariant?.price || 0);
+    const sumWithDisc = calculateAfterDisc(sum, findRelevantPromo || 0);
+
+    return sumWithDisc;
+  });
+
+  return totalAfterDisc?.reduce((acc, curr) => acc + curr, 0) || 0;
+}
+
+export const groupDiscountsByCode = (discounts: Array<DiscountSchemaT>) => {
+  return discounts.reduce((acc, curr) => {
+    const existing = acc.find((item) => item.code === curr.code);
+    if (existing) {
+      existing.appliedTo.push(curr.appliedTo);
+    } else {
+      acc.push({
+        code: curr.code,
+        amount: curr.amount,
+        appliedTo: [curr.appliedTo],
+      });
+    }
+    return acc;
+  }, [] as Array<{ code: string; amount: number; appliedTo: string[] }>);
+};

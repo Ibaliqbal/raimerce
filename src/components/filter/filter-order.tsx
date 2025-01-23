@@ -11,30 +11,30 @@ import { useRouter } from "next/router";
 
 type Props = {
   lists: string[];
+  baseRoute: "/my/order" | "/my/store/orders";
 };
 
-const FilterOrder = ({ lists }: Props) => {
+const FilterOrder = ({ lists, baseRoute }: Props) => {
   const router = useRouter();
 
   return (
     <Select
       onValueChange={(e) => {
-        const status = router.query.status;
-
-        router.push(`/my/order?status=${e}`);
+        router.push(`${baseRoute}?status=${e}`);
       }}
+      defaultValue={router.query.status as string}
     >
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+        <SelectValue placeholder="Select status" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Filter</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
+          {lists.map((list) => (
+            <SelectItem value={list.toLowerCase()} key={list}>
+              {list}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
