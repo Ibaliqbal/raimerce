@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
-import { ProductsTable, PromoTable, TProducts, TPromo } from "@/lib/db/schema";
+import {
+  ProductsTable,
+  PromoTable,
+  TComment,
+  TProducts,
+  TPromo,
+  TUser,
+} from "@/lib/db/schema";
 import { productSchema, TMedia } from "@/types/product";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { getStoreiD } from "@/utils/db";
@@ -15,6 +22,14 @@ type Data = ApiResponse & {
   > & {
     promos: Array<Pick<TPromo, "code" | "id">>;
     medias: Array<TMedia>;
+    comments: Array<
+      Pick<
+        TComment,
+        "content" | "createdAt" | "id" | "medias" | "rating" | "variant"
+      > & {
+        user: Pick<TUser, "email" | "avatar">;
+      }
+    >;
   };
 };
 
@@ -36,6 +51,26 @@ export default function handler(
           category: true,
           variant: true,
           description: true,
+        },
+        with: {
+          comments: {
+            columns: {
+              content: true,
+              createdAt: true,
+              id: true,
+              rating: true,
+              medias: true,
+              variant: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  email: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
         },
       });
 

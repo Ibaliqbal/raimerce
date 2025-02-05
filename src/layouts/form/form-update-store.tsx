@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { updateStoreSchema, UpdateStoreSchemaT } from "@/types/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import SubmitButton from "./submit-button";
 import { Textarea } from "@/components/ui/textarea";

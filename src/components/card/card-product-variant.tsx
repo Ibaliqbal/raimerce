@@ -132,9 +132,15 @@ const CardProductVariant = ({
           </Carousel>
 
           <section className="w-full max-h-full h-full overflow-auto custom-vertical-scroll flex flex-col gap-2 relative pr-2">
-            <p>Variant: {name_variant}</p>
-            <p>Price: {convertPrice(price)}</p>
-            <p>Stock: {stock}</p>
+            <p>
+              <strong>Variant</strong> : {name_variant}
+            </p>
+            <p>
+              <strong>Price</strong> : {convertPrice(price)}
+            </p>
+            <p>
+              <strong>Stock</strong> : {stock}
+            </p>
             <div className="grid grid-cols-2 gap-3">
               {medias.map((media) =>
                 media.type === "image" ? (

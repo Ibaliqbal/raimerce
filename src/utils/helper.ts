@@ -148,3 +148,61 @@ export const groupDiscountsByCode = (discounts: Array<DiscountSchemaT>) => {
     return acc;
   }, [] as Array<{ code: string; amount: number; appliedTo: string[] }>);
 };
+
+export const groupCheckoutByProduct = (
+  checkout: Array<
+    Pick<TCart, "id" | "quantity" | "variant" | "category"> & {
+      product: Pick<TProducts, "variant" | "id" | "name" | "soldout">;
+    }
+  >
+): Array<{
+  productID: string;
+  sumSoldout: number;
+  variant: Array<VariantSchemaT>;
+}> => {
+  const grouped = checkout.reduce(
+    (
+      acc: Array<{
+        productID: string;
+        sumSoldout: number;
+        variant: Array<VariantSchemaT>;
+      }>,
+      curr
+    ) => {
+      const existing = acc.find((item) => item.productID === curr.product.id);
+
+      if (existing) {
+        existing.sumSoldout += curr.quantity;
+        existing.variant = existing.variant.map((v) => {
+          if (v.name_variant === curr.variant) {
+            console.log(true);
+            return {
+              ...v,
+              stock: v.stock - curr.quantity,
+            };
+          }
+          return v;
+        });
+      } else {
+        acc.push({
+          productID: curr.product.id,
+          sumSoldout: curr.product.soldout + curr.quantity,
+          variant: curr.product.variant.map((v) => {
+            if (v.name_variant === curr.variant) {
+              return {
+                ...v,
+                stock: v.stock - curr.quantity,
+              };
+            }
+            return v;
+          }),
+        });
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  return grouped;
+};

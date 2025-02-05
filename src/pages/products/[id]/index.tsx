@@ -1,8 +1,8 @@
 import BaseLayout from "@/layouts/base-layout";
 import instance from "@/lib/axios/instance";
 import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
-import ProductsDetailView from "@/views/products/products-detail-view";
-import ProductsRelatedView from "@/views/products/products-similiar-view";
+import ProductsDetailView from "@/views/products/detail/products-detail-view";
+import ProductsSimilarView from "@/views/products/products-similar-view";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 type Props = Pick<
@@ -11,7 +11,7 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name"> | null;
+  store: Pick<TStore, "name" | "id"> | null;
   comments: Array<
     Pick<
       TComment,
@@ -50,7 +50,7 @@ const Page = ({
           selectedVariant={selectedVariant}
           key={selectedVariant}
         />
-        <ProductsRelatedView id={data.id} />
+        <ProductsSimilarView id={data.id} />
       </main>
     </BaseLayout>
   );

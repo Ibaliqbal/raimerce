@@ -1,5 +1,4 @@
 import FormNews from "@/layouts/form/form-news";
-import React from "react";
 
 const StoreCreateNewsView = () => {
   return (

@@ -34,7 +34,7 @@ const HomeView = () => {
           variant="outline"
           size="lg"
         >
-          <Link href={"/products"}>More products</Link>
+          <Link href={"/products?page=1"}>More products</Link>
         </Button>
       </section>
     </main>

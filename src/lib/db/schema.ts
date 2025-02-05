@@ -5,13 +5,14 @@ import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  customType,
   date,
   index,
   integer,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
-  smallint,
   text,
   timestamp,
   uuid,
@@ -25,6 +26,22 @@ export const StatusOrder = pgEnum("statusOrder", [
   "canceled",
   "success",
 ]);
+
+export const tsVector = customType<{
+  data: string;
+  config: {
+    sources: string[];
+  };
+}>({
+  dataType(config) {
+    if (config) {
+      const sources = config.sources.join(" || ' ' || ");
+      return `tsvector generated always as (to_tsvector('english', ${sources})) stored`;
+    } else {
+      return "tsvector";
+    }
+  },
+});
 
 export const CategoryProduct = pgEnum("categoryProduct", [
   "Fashion",
@@ -66,9 +83,11 @@ export const StoresTable = pgTable(
     description: text().default(""),
     headerPhoto: jsonb("headerPhoto").$type<TMedia>(),
     address: jsonb("address").$type<Address>(),
-    userId: uuid("user_id").references(() => UsersTable.id, {
-      onDelete: "cascade",
-    }),
+    userId: uuid("user_id")
+      .references(() => UsersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -94,9 +113,11 @@ export const PromoTable = pgTable(
       .$type<Array<string>>(),
     createdAt: timestamp("created_at").defaultNow(),
     expiredAt: date("expired_at").notNull().defaultNow(),
-    ownerId: uuid("owner_id").references(() => StoresTable.id, {
-      onDelete: "cascade",
-    }),
+    ownerId: uuid("owner_id")
+      .references(() => StoresTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
   },
   (table) => {
     return {
@@ -110,17 +131,21 @@ export const ProductsTable = pgTable(
   "products",
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
-    storeId: uuid("store_id").references(() => StoresTable.id, {
-      onDelete: "cascade",
-    }),
+    storeId: uuid("store_id")
+      .references(() => StoresTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    description: text().default(""),
+    description: text("description").default("").notNull(),
     variant: jsonb("variant")
       .array()
       .notNull()
       .default(sql`ARRAY[]::jsonb[]`)
       .$type<Array<VariantSchemaT>>(),
-    rating: smallint("rating").default(0),
+    rating: numeric("rating", { precision: 10, scale: 2 })
+      .default("0")
+      .notNull(),
     category: varchar("category", { length: 255 }).default(""),
     soldout: bigint("soldout", { mode: "number" }).default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
@@ -133,7 +158,6 @@ export const ProductsTable = pgTable(
       nameIndex: index("nameProductIndex").on(table.name),
       categoryIndex: index("categoryProductIndex").on(table.category),
       ratingIndex: index("ratingProductIndex").on(table.rating),
-      descriptionIndex: index("descriptionProductIndex").on(table.description),
     };
   }
 );
@@ -142,12 +166,16 @@ export const CartsTable = pgTable(
   "carts",
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
-    userId: uuid("user_id").references(() => UsersTable.id, {
-      onDelete: "cascade",
-    }),
-    produtId: uuid("produt_id").references(() => ProductsTable.id, {
-      onDelete: "cascade",
-    }),
+    userId: uuid("user_id")
+      .references(() => UsersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    produtId: uuid("produt_id")
+      .references(() => ProductsTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     variant: varchar("variant", { length: 255 }).notNull(),
     quantity: integer("quantity").default(1).notNull(),
     isCheckout: boolean("is_checkout").default(false).notNull(),
@@ -170,9 +198,11 @@ export const OrdersTable = pgTable(
   "orders",
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
-    userId: uuid("user_id").references(() => UsersTable.id, {
-      onDelete: "cascade",
-    }),
+    userId: uuid("user_id")
+      .references(() => UsersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     transactionCode: varchar("transaction_code", { length: 255 }).notNull(),
     products: jsonb("products_order")
       .array()
@@ -185,6 +215,7 @@ export const OrdersTable = pgTable(
           productID: string | undefined;
           productName: string | undefined;
           productVariant: VariantSchemaT | undefined;
+          status: "confirmed" | "recieved" | "not-confirmed";
         }>
       >(),
     status: StatusOrder("status").default("pending"),
@@ -228,9 +259,11 @@ export const NewsTable = pgTable(
       .$type<Array<TMedia>>(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-    storeId: uuid("store_id").references(() => StoresTable.id, {
-      onDelete: "cascade",
-    }),
+    storeId: uuid("store_id")
+      .references(() => StoresTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
   },
   (table) => {
     return {
@@ -241,15 +274,19 @@ export const NewsTable = pgTable(
 
 export const CommentsTable = pgTable("comments", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
-  userId: uuid("user_id").references(() => UsersTable.id, {
-    onDelete: "cascade",
-  }),
-  productId: uuid("product_id").references(() => ProductsTable.id, {
-    onDelete: "cascade",
-  }),
+  userId: uuid("user_id")
+    .references(() => UsersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  productId: uuid("product_id")
+    .references(() => ProductsTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
   content: text().default(""),
   variant: varchar("variant", { length: 256 }),
-  rating: smallint("rating").default(0),
+  rating: numeric("rating", { scale: 2, precision: 10 }).default("0").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   medias: jsonb("medias")
     .array()
@@ -261,12 +298,16 @@ export const FollowTable = pgTable(
   "follow",
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
-    userId: uuid("user_id").references(() => UsersTable.id, {
-      onDelete: "cascade",
-    }),
-    storeId: uuid("store_id").references(() => StoresTable.id, {
-      onDelete: "cascade",
-    }),
+    userId: uuid("user_id")
+      .references(() => UsersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    storeId: uuid("store_id")
+      .references(() => StoresTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => {

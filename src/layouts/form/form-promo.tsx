@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
 import { promoSchema, PromoSchemaT } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, format } from "date-fns";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { FaCalendarAlt, FaCheck } from "react-icons/fa";
 import {

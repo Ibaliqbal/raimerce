@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ProductsTable, TProducts } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { eq, gte, ilike, or } from "drizzle-orm";
+import { eq, gte, ilike, or, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = ApiResponse & {
@@ -20,12 +20,20 @@ export default function handler(
     const category = req.query.c as string;
     const rating = req.query.r as string;
     const search = req.query.q as string;
+    const page = req.query.page as string;
+    const limit = req.query.limit as string;
+
+    if (isNaN(Number(page)) || isNaN(Number(limit)))
+      return res.status(400).json({
+        message: "Invalid page or limit",
+        statusCode: 400,
+      });
 
     if (!category && !rating) {
       const data = await db.query.ProductsTable.findMany({
         where: or(
-          ilike(ProductsTable.description, `%${search}%`),
-          ilike(ProductsTable.name, `%${search}%`)
+          ilike(ProductsTable.name, `%${search}%`),
+          sql`to_tsvector('english', ${ProductsTable.description}) @@ plainto_tsquery('english', ${search})`
         ),
         columns: {
           id: true,
@@ -34,6 +42,8 @@ export default function handler(
           description: true,
           variant: true,
         },
+        limit: Number(limit),
+        offset: (Number(page) - 1) * Number(limit),
       });
 
       return res.status(200).json({
@@ -46,7 +56,7 @@ export default function handler(
     if (category && !rating) {
       const data = await db.query.ProductsTable.findMany({
         where: or(
-          ilike(ProductsTable.description, `%${search}%`),
+          sql`to_tsvector('english', ${ProductsTable.description}) @@ plainto_tsquery('english', ${search})`,
           ilike(ProductsTable.name, `%${category}`),
           eq(ProductsTable.category, category)
         ),
@@ -57,6 +67,8 @@ export default function handler(
           description: true,
           variant: true,
         },
+        limit: Number(limit),
+        offset: (Number(page) - 1) * Number(limit),
       });
 
       return res.status(200).json({
@@ -69,9 +81,9 @@ export default function handler(
     if (rating && !category) {
       const data = await db.query.ProductsTable.findMany({
         where: or(
-          ilike(ProductsTable.description, `%${search}%`),
+          sql`to_tsvector('english', ${ProductsTable.description}) @@ plainto_tsquery('english', ${search})`,
           ilike(ProductsTable.name, `%${search}%`),
-          gte(ProductsTable.rating, parseInt(rating))
+          gte(ProductsTable.rating, rating)
         ),
         columns: {
           id: true,
@@ -80,6 +92,8 @@ export default function handler(
           description: true,
           variant: true,
         },
+        limit: Number(limit),
+        offset: (Number(page) - 1) * Number(limit),
       });
 
       return res.status(200).json({
@@ -92,9 +106,9 @@ export default function handler(
     const data = await db.query.ProductsTable.findMany({
       where: or(
         eq(ProductsTable.category, category),
-        gte(ProductsTable.rating, parseInt(rating)),
-        ilike(ProductsTable.description, `%${search}%`),
-        ilike(ProductsTable.name, `%${search}%`)
+        gte(ProductsTable.rating, rating),
+        ilike(ProductsTable.name, `%${search}%`),
+        sql`to_tsvector('english', ${ProductsTable.description}) @@ plainto_tsquery('english', ${search})`
       ),
       columns: {
         id: true,
@@ -103,6 +117,8 @@ export default function handler(
         description: true,
         variant: true,
       },
+      limit: Number(limit),
+      offset: (Number(page) - 1) * Number(limit),
     });
 
     return res.status(200).json({

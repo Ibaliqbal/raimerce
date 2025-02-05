@@ -1,5 +1,4 @@
 import { PagesTopLoader } from "nextjs-toploader/pages";
-import React from "react";
 
 export default function TopLoader() {
   return (

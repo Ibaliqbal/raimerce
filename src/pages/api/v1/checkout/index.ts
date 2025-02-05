@@ -1,6 +1,10 @@
 import { ApiResponse, secureMethods } from "@/utils/api";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { groupDiscountsByCode, verify } from "@/utils/helper";
+import {
+  groupCheckoutByProduct,
+  groupDiscountsByCode,
+  verify,
+} from "@/utils/helper";
 import { JWT } from "next-auth/jwt";
 import { chekcoutBody } from "@/types/checkout";
 import { db } from "@/lib/db";
@@ -13,6 +17,8 @@ import {
 } from "@/lib/db/schema";
 import { eq, inArray, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { VariantSchemaT } from "@/types/product";
+import axios from "axios";
 
 type Data = ApiResponse & {
   data?: {
@@ -21,6 +27,7 @@ type Data = ApiResponse & {
 };
 
 const acceptMethod = ["POST"];
+const secretKeyMidtrans = process.env.MIDTRANS_SERVER_KEY as string;
 
 export default function handler(
   req: NextApiRequest,
@@ -31,6 +38,47 @@ export default function handler(
       const decoded = decode as JWT;
       const body = req.body;
       const { data, success } = chekcoutBody.safeParse(body);
+      const encodedSecretKeyMidtrans = Buffer.from(
+        secretKeyMidtrans + ":"
+      ).toString("base64");
+      const basicAuth = `Basic ${encodedSecretKeyMidtrans}`;
+      const codeTransaction = `TRX-${nanoid(10)}-${nanoid(10)}`;
+
+      if (!success)
+        return res.status(400).json({
+          message: "Invalid data",
+          statusCode: 400,
+        });
+
+      // const parameter = {
+      //   payment_type: "bank_transfer",
+      //   transaction_details: {
+      //     order_id: codeTransaction,
+      //     gross_amount: 40000,
+      //   },
+      //   bank_transfer: {
+      //     bank: data.paymentMethod.toLowerCase(),
+      //   },
+      // };
+
+      // const responseMidtrans = await axios.post(
+      //   "https://api.sandbox.midtrans.com/v2/charge",
+      //   parameter,
+      //   {
+      //     headers: {
+      //       Accept: "application/json",
+      //       "Content-Type": "application/json",
+      //       Authorization: basicAuth,
+      //     },
+      //   }
+      // );
+
+      // console.log(responseMidtrans.data);
+
+      // return res.status(201).json({
+      //   message: "Checkout success",
+      //   statusCode: 201,
+      // });
 
       const detailUser = await db.query.UsersTable.findFirst({
         where: eq(UsersTable.id, decoded.id),
@@ -42,14 +90,8 @@ export default function handler(
 
       if (!detailUser?.address || !detailUser?.phone)
         return res.status(403).json({
-          message: "Please fill your address or phone number",
+          message: "Fill your address or phone number first",
           statusCode: 403,
-        });
-
-      if (!success)
-        return res.status(400).json({
-          message: "Invalid data",
-          statusCode: 400,
         });
 
       const carts = await db.query.CartsTable.findMany({
@@ -71,67 +113,81 @@ export default function handler(
           },
         },
       });
-      
-      const updateProducts = carts.map(async (product) => {
-        await db
-          .update(ProductsTable)
-          .set({
-            updatedAt: sql`NOW()`,
-            soldout: product.product?.soldout ?? 0 + product.quantity,
-            variant: product.product?.variant.map((variant) => {
-              if (variant.name_variant === product.variant) {
-                return {
-                  ...variant,
-                  stock: variant.stock - product.quantity,
-                };
-              } else {
-                return variant;
-              }
-            }),
-          })
-          .where(eq(ProductsTable.id, product.product?.id as string));
-        return;
-      });
-      
-      const deletedCarts = data.productsID.map(async (cart) => {
-        await db.delete(CartsTable).where(eq(CartsTable.id, cart));
-        return;
-      });
 
-      const filteredVariantProduct = carts.map((cart) => ({
+      const updateProducts = async () => {
+        for (const product of groupCheckoutByProduct(carts)) {
+          try {
+            await db
+              .update(ProductsTable)
+              .set({
+                updatedAt: sql`NOW()`,
+                soldout: product.sumSoldout,
+                variant: product.variant,
+              })
+              .where(eq(ProductsTable.id, product?.productID as string));
+          } catch (error) {
+            console.error(
+              `Failed to update product ${product?.productID}:`,
+              error
+            );
+          }
+        }
+      };
+
+      const updatePromo = async () => {
+        for (const promo of groupDiscountsByCode(data.discounts)) {
+          try {
+            const usesPromo = await db.query.PromoTable.findFirst({
+              where: eq(PromoTable.code, promo.code),
+              columns: {
+                id: true,
+                uses: true,
+              },
+            });
+
+            if (!usesPromo) continue;
+
+            await db
+              .update(PromoTable)
+              .set({
+                uses: (usesPromo.uses || 0) + 1,
+              })
+              .where(eq(PromoTable.id, usesPromo.id));
+          } catch (error) {
+            console.error(`Failed to update promo ${promo.code}:`, error);
+          }
+        }
+      };
+
+      const filteredVariantProduct: Array<{
+        variant: string;
+        category: string | null;
+        quantity: number;
+        productID: string | undefined;
+        productName: string | undefined;
+        productVariant: VariantSchemaT | undefined;
+        status: "confirmed" | "recieved" | "not-confirmed";
+      }> = carts.map((cart) => ({
         quantity: cart.quantity,
         variant: cart.variant,
         category: cart.category,
         productID: cart.product?.id,
         productName: cart.product?.name,
+        status: "not-confirmed",
         productVariant: cart.product?.variant.find(
           (variant) => variant.name_variant === cart.variant
         ),
       }));
 
-
-      const updatePromo = groupDiscountsByCode(data.discounts).map(
-        async (promo) => {
-          const usesPromo = await db.query.PromoTable.findFirst({
-            where: eq(PromoTable.code, promo.code),
-            columns: {
-              id: true,
-              uses: true,
-            },
-          });
-
-          if (!usesPromo) return;
-          await db
-            .update(PromoTable)
-            .set({
-              uses: usesPromo.uses++,
-            })
-            .where(eq(PromoTable.id, usesPromo.id));
-          return;
+      const deletedCarts = async () => {
+        for (const cart of data.productsID) {
+          try {
+            await db.delete(CartsTable).where(eq(CartsTable.id, cart));
+          } catch (error) {
+            console.error(`Failed to delete cart ${cart}:`, error);
+          }
         }
-      );
-
-      const codeTransaction = `TRX-${nanoid(10)}-${nanoid(10)}`;
+      };
 
       const [orderID] = await Promise.all([
         db
@@ -148,13 +204,13 @@ export default function handler(
             promoCodes: data.discounts,
           })
           .returning({ id: OrdersTable.id }),
-        deletedCarts,
-        updateProducts,
-        updatePromo,
+        deletedCarts(),
+        updateProducts(),
+        updatePromo(),
       ]);
 
       return res.status(201).json({
-        message: "User created successfully",
+        message: "Checkout successfully",
         statusCode: 201,
         data: {
           orderID: orderID[0].id,

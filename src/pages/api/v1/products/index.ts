@@ -33,7 +33,7 @@ export default function handler(
 
       // Fetch random products with rating >= 3
       const dataUpRating = await db.query.ProductsTable.findMany({
-        where: gte(ProductsTable.rating, 3),
+        where: gte(ProductsTable.rating, "3"),
         columns: {
           id: true,
           name: true,
@@ -45,7 +45,7 @@ export default function handler(
         orderBy: (_, { sql }) => sql`RANDOM()`,
       });
 
-      if (dataUpRating.length >= 4) {
+      if (dataUpRating.length >= limit) {
         return res.status(200).json({
           message: "Getting recommendations products",
           statusCode: 200,
@@ -136,7 +136,7 @@ export default function handler(
 
     if (rating && !category) {
       const data = await db.query.ProductsTable.findMany({
-        where: gte(ProductsTable.rating, parseInt(rating)),
+        where: gte(ProductsTable.rating, rating),
         columns: {
           id: true,
           name: true,
@@ -158,7 +158,7 @@ export default function handler(
     const data = await db.query.ProductsTable.findMany({
       where: or(
         eq(ProductsTable.category, category),
-        gte(ProductsTable.rating, parseInt(rating))
+        gte(ProductsTable.rating, rating)
       ),
       columns: {
         id: true,

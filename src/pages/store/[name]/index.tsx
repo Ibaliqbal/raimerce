@@ -9,6 +9,7 @@ type Props = Pick<
   "address" | "name" | "headerPhoto" | "description" | "id"
 > & {
   productsCount: number;
+  followersCount: number;
 };
 
 // fetching in server side

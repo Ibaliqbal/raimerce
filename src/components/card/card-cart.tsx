@@ -5,6 +5,8 @@ import CheckboxCheckout from "../checkbox/checkbox-checkout";
 import { VariantSchemaT } from "@/types/product";
 import ButtonDeleteCart from "../button/button-delete-cart";
 import ButtonQtyCart from "../button/button-qty-cart";
+import { Separator } from "../ui/separator";
+import NumberFlow from "@number-flow/react";
 
 type Props = {
   id: string;
@@ -25,34 +27,45 @@ const CardCart = ({
 }: Props) => {
   return (
     <Card
-      className="rounded-md border border-gray-500 group"
+      className="rounded-md border border-gray-500"
       animate={{ opacity: 1, scale: 1 }}
       initial={{ opacity: 0, scale: 0 }}
       exit={{ opacity: 0, scale: 0 }}
     >
-      {selectedVariant?.medias[0].type === "image" ? (
-        <Card.Image src={selectedVariant.medias[0].url} className="h-[300px]" />
-      ) : (
-        <Card.Image src="/Background.jpeg" className="h-[300px]" />
-      )}
-      <Card.Description asLink={false}>
-        <h1>{name}</h1>
-        <p>Price : {convertPrice(selectedVariant?.price ?? 0)}</p>
-        <p>variant : {selectedVariant?.name_variant}</p>
-      </Card.Description>
-      {withAction ? (
-        <Card.Footer>
-          <div className="flex items-center gap-2">
+      <div className="flex gap-3">
+        {selectedVariant?.medias[0].type === "image" ? (
+          <Card.Image
+            src={selectedVariant.medias[0].url}
+            className="h-[300px] w-[300px] group"
+          />
+        ) : (
+          <Card.Video
+            videoProps={{
+              src: selectedVariant?.medias[0].url as string,
+            }}
+            className="h-[300px] w-[300px]"
+          />
+        )}
+        <Card.Description asLink={false}>
+          <h1 className="text-xl font-semibold">{name}</h1>
+          <p className="text-base">
+            <strong>Price</strong> : {convertPrice(selectedVariant?.price ?? 0)}
+          </p>
+          <p className="text-base">
+            <strong>Variant</strong> : {selectedVariant?.name_variant}
+          </p>
+          <div className="flex items-center gap-4">
             <ButtonQtyCart id={id} variant="dec" disabled={quantity === 1} />
-            <span>{quantity}</span>
+            <NumberFlow value={quantity} willChange />
             <ButtonQtyCart id={id} variant="inc" />
           </div>
-          <ButtonDeleteCart id={id} />
-        </Card.Footer>
-      ) : null}
+        </Card.Description>
+      </div>
+      <Separator className="my-2" />
       {withAction ? (
         <Card.Footer>
           <CheckboxCheckout id={id} isCheckout={isCheckout} />
+          <ButtonDeleteCart id={id} />
         </Card.Footer>
       ) : null}
     </Card>

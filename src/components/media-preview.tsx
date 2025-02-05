@@ -6,7 +6,7 @@ import { RiLoader5Line } from "react-icons/ri";
 import Image from "./ui/image";
 import { cn } from "@/lib/utils";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import instance from "@/lib/axios/instance";
 import { ApiResponse } from "@/utils/api";
 

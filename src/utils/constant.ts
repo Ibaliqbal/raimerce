@@ -172,8 +172,6 @@ const effectCarousel = {
   slideAndOpacity: slideAndOpacityCarousel,
 };
 
-const filterPopularProducts = ["selling", "rating"];
-
 const dataDemoPromo = [
   {
     label: "D-01",
@@ -202,9 +200,28 @@ const dataDemoPromo = [
   },
 ];
 
-const pageSize = 12;
+const pageSizeProduct = 12;
+
+const pageSizeOrders = 2;
+
+const pageSizeCarts = 2;
 
 const fee = 20000;
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export {
   categories,
@@ -213,10 +230,12 @@ export {
   styleReactRating,
   navigationStore,
   effectCarousel,
-  filterPopularProducts,
   dataDemoPromo,
   ratings,
   banks,
-  pageSize,
+  pageSizeProduct,
   fee,
+  pageSizeOrders,
+  pageSizeCarts,
+  months,
 };

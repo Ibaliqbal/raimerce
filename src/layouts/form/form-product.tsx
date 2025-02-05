@@ -18,7 +18,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { productSchema, ProductSchemaT, VariantSchemaT } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import FormVariantProduct from "./form-variant-product";
 import { categories } from "@/utils/constant";
@@ -163,7 +162,7 @@ const FormProduct = ({
               <FormItem>
                 <div className="flex justify-between items-center">
                   <FormLabel className="text-lg">Description</FormLabel>
-                  <p>{field.value?.length ?? 0}/1500</p>
+                  <p>{field.value?.replace(/\s/g, "").length ?? 0}/1500</p>
                 </div>
                 <FormControl>
                   <Textarea

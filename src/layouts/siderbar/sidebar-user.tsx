@@ -5,8 +5,9 @@ import {
   BsBagFill,
   BsCart,
   BsCartFill,
+  BsBell,
+  BsBellFill,
 } from "react-icons/bs";
-
 import SideLink from "@/components/side-link";
 import SideListsStore from "@/components/store/side-lists";
 import { useGetUserLogin } from "@/context/user-context";
@@ -30,20 +31,44 @@ const SidebarUser = () => {
         href="/settings"
         iconActive={<BsGearFill />}
         iconNonActive={<BsGear />}
-        text="Settings"
-      />
+      >
+        Settings
+      </SideLink>
       <SideLink
         href="/my/order"
         iconActive={<BsBagFill />}
         iconNonActive={<BsBag />}
-        text="Order"
-      />
+      >
+        <p className="relative">
+          Order
+          {(data?.user?.pendingOrdersCount ?? 0) > 0 && (
+            <span className="bg-red-500 text-sm w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1">
+              {data?.user?.pendingOrdersCount}
+            </span>
+          )}
+        </p>
+      </SideLink>
       <SideLink
         href="/my/cart"
         iconActive={<BsCartFill />}
         iconNonActive={<BsCart />}
-        text="Cart"
-      />
+      >
+        <p className="relative">
+          Cart
+          {(data?.user?.cartsCount ?? 0) > 0 && (
+            <span className="bg-red-500 text-sm w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1">
+              {data?.user?.cartsCount}
+            </span>
+          )}
+        </p>
+      </SideLink>
+      <SideLink
+        href="/my/notifications"
+        iconActive={<BsBellFill />}
+        iconNonActive={<BsBell />}
+      >
+        Notifications
+      </SideLink>
       {data?.user?.store?.id ? <SideListsStore /> : null}
     </aside>
   );

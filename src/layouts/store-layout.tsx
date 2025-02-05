@@ -7,6 +7,7 @@ import { TStore } from "@/lib/db/schema";
 type Props = {
   children: ReactNode;
   productsCount: number;
+  followersCount: number;
 } & Pick<TStore, "address" | "name" | "headerPhoto" | "description" | "id">;
 
 const StoreLayout = ({ children, ...data }: Props) => {

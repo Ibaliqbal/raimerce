@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import * as React from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 type UserContextType = {
   user:
@@ -19,6 +19,8 @@ type UserContextType = {
         "address" | "avatar" | "email" | "name" | "typeLogin" | "phone"
       > & {
         store: Pick<TStore, "id">;
+        cartsCount: number;
+        pendingOrdersCount: number;
       })
     | null;
   loading: boolean;

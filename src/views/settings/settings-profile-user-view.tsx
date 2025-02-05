@@ -37,6 +37,14 @@ const SettingProfileUserView = () => {
             onClientUploadComplete={(res) => {
               data?.updateAvatar.mutate(res[0].serverData.media);
             }}
+            onBeforeUploadBegin={(files) => {
+              return files.map((f) => {
+                const timestamp = new Date().getTime();
+                return new File([f], `${timestamp}-${f.name}`, {
+                  type: f.type,
+                });
+              });
+            }}
           />
         </div>
         <FormUpdateUser

@@ -1,10 +1,8 @@
 import Card from "@/components/ui/card";
 import { TNews } from "@/lib/db/schema";
 import { format } from "date-fns";
-import { BiShareAlt, BiTrash } from "react-icons/bi";
-import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
-// import { toast } from "sonner";
+import ButtonDeleteNews from "../button/button-delete-news";
 
 type Props = {
   isOwner?: boolean;
@@ -21,29 +19,22 @@ const CardStoreNews = ({
   handleDelete,
   disabled = false,
 }: Props) => {
-  // const handleShare = async () => {
-  //   await navigator.clipboard.writeText(
-  //     `${process.env.NEXT_PUBLIC_APP_URL}`
-  //   );
-  //   toast.success("Copied to clipboard");
-  // };
-
   return (
-    <Card>
+    <Card id={id.split("-")[0]} key={id.split("-")[0]}>
       <section className="h-[400px] grid grid-cols-2 gap-3">
         {medias?.length === 3 ? (
           <>
-            <Card.Image src="/Banner4.png" className="h-full" />
+            <Card.Image src="/Banner4.png" className="h-full group" />
             <div className="flex flex-col gap-4">
-              <Card.Image src="/Banner4.png" className="h-full" />
-              <Card.Image src="/Banner4.png" className="h-full" />
+              <Card.Image src="/Banner4.png" className="h-full group" />
+              <Card.Image src="/Banner4.png" className="h-full group" />
             </div>
           </>
         ) : (
           medias?.map((media) => (
             <Card.Image
               src={media.url}
-              className="h-full"
+              className="h-full group"
               key={media.keyFile}
             />
           ))
@@ -60,23 +51,12 @@ const CardStoreNews = ({
       </Card.Description>
       <Card.Footer>
         {isOwner && (
-          <Button
-            variant="icon"
-            size="icon"
-            onClick={() => handleDelete(id)}
+          <ButtonDeleteNews
+            id={id}
             disabled={disabled}
-          >
-            <BiTrash className="text-2xl text-red-500 cursor-pointer" />
-          </Button>
+            handleDelete={handleDelete}
+          />
         )}
-        <Button
-          variant="icon"
-          size="icon"
-          disabled={disabled}
-          // onClick={() => {}}
-        >
-          <BiShareAlt className="text-2xl cursor-pointer" />
-        </Button>
       </Card.Footer>
     </Card>
   );

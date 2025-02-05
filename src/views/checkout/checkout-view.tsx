@@ -21,10 +21,11 @@ import { banks, fee } from "@/utils/constant";
 import { MdClose } from "react-icons/md";
 import { RiLoader5Line } from "react-icons/ri";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { DiscountSchemaT } from "@/types/promo";
 import { useRouter } from "next/router";
 import { useLoadingScreen } from "@/context/loading-screen-context";
+import Video from "@/components/ui/video";
 
 const CheckoutView = () => {
   const { push } = useRouter();
@@ -132,15 +133,16 @@ const CheckoutView = () => {
 
       toast.success(res.data.message);
 
-      push(`/verification_payment?orderId=${res.data.data.orderID}`);
+      // push(`/verification_payment?orderId=${res.data.data.orderID}`);
 
       setStatus({
         type: "checkout",
         status: "success",
       });
-      setOpen(true);
 
-      setDiscount([]);
+      // setOpen(true);
+
+      // setDiscount([]);
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
@@ -165,13 +167,22 @@ const CheckoutView = () => {
         <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
         {data?.map((product) => (
           <div key={product.id} className="flex items-center mb-4">
-            <Image
-              src={product.product.variant?.medias[0].url as string}
-              alt={product.product.name}
-              width={200}
-              height={200}
-              className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
-            />
+            {product.product.variant?.medias[0].type === "image" ? (
+              <Image
+                src={product.product.variant?.medias[0].url as string}
+                alt={product.product.name}
+                width={200}
+                height={200}
+                className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
+              />
+            ) : (
+              <Video
+                src={product.product.variant?.medias[0].url as string}
+                width={200}
+                height={200}
+                className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
+              />
+            )}
             <div className="flex-grow">
               <h3 className="font-semibold">{product.product.name}</h3>
               <p className="text-sm text-gray-600">

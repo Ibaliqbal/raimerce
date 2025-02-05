@@ -5,8 +5,7 @@ import { TPromo } from "@/lib/db/schema";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
-import React from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const StoreUpdatePromoView = () => {
   const router = useRouter();

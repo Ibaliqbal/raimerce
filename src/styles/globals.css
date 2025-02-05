@@ -15,6 +15,12 @@
   }
 }
 
+*,
+html,
+body {
+  scroll-behavior: smooth;
+}
+
 body::-webkit-scrollbar,
 textarea::-webkit-scrollbar,
 .custom-vertical-scroll::-webkit-scrollbar {

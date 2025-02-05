@@ -1,11 +1,16 @@
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { ComponentPropsWithoutRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import instance from "@/lib/axios/instance";
 import { TCart, TProducts } from "@/lib/db/schema";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { RiLoader5Line } from "react-icons/ri";
+import { ApiResponse } from "@/utils/api";
 
 type Props = {
   variant: "inc" | "dec";
@@ -21,36 +26,88 @@ const ButtonQtyCart = ({ variant, id, disabled, ...rest }: Props) => {
         queryKey: ["cart"],
       });
 
-      queryClient.setQueryData<
-        Array<
-          Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
-            product: Pick<TProducts, "name" | "variant"> | null;
-          }
-        >
-      >(["cart"], (oldData) =>
-        oldData?.map((cart) =>
-          cart.id === id
-            ? {
-                ...cart,
-                quantity:
-                  variant === "inc" ? cart.quantity + 1 : cart.quantity - 1,
-              }
-            : cart
-        )
-      );
-
       const previousCart = queryClient.getQueryData<
-        Array<
-          Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
-            product: Pick<TProducts, "name" | "variant"> | null;
-          }
+        InfiniteData<
+          ApiResponse & {
+            data: Array<
+              Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
+                product: Pick<TProducts, "name" | "variant"> | null;
+              }
+            >;
+            totalPage: number;
+          },
+          number | undefined
         >
       >(["cart"]);
 
+      queryClient.setQueryData<
+        InfiniteData<
+          ApiResponse & {
+            data: Array<
+              Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
+                product: Pick<TProducts, "name" | "variant"> | null;
+              }
+            >;
+            totalPage: number;
+          },
+          unknown
+        >
+      >(["cart"], (oldData) => {
+        const findIndexPage = oldData?.pages.findIndex((data) =>
+          data.data.some((cart) => cart.id === id)
+        );
+        if (findIndexPage !== -1) {
+          return {
+            pages:
+              oldData?.pages.map((data, i) => {
+                if (findIndexPage === i) {
+                  return {
+                    ...data,
+                    data: data.data.map((cart) =>
+                      cart.id === id
+                        ? {
+                            ...cart,
+                            quantity:
+                              variant === "inc"
+                                ? cart.quantity + 1
+                                : cart.quantity - 1,
+                          }
+                        : cart
+                    ),
+                  };
+                } else {
+                  return data;
+                }
+              }) || [],
+            pageParams: oldData?.pageParams || [],
+          };
+        }
+      });
+
       return { previousCart };
     },
-    onError: (err) => {
+    onError: (
+      err: Error,
+      _: void,
+      ctx?: {
+        previousCart:
+          | InfiniteData<
+              ApiResponse & {
+                data: Array<
+                  Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
+                    product: Pick<TProducts, "name" | "variant"> | null;
+                  }
+                >;
+                totalPage: number;
+              }
+            >
+          | undefined;
+      }
+    ) => {
       console.log(err);
+      if (ctx) {
+        queryClient.setQueryData(["cart"], ctx?.previousCart);
+      }
       toast.error("Failed update data");
     },
     onSettled: () => {

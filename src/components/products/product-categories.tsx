@@ -1,4 +1,3 @@
-import React from "react";
 import Image from "../ui/image";
 import { categories } from "@/utils/constant";
 import Link from "next/link";

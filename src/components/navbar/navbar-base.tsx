@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { FaRegUser } from "react-icons/fa";
 import { useMotionValueEvent, useScroll, motion } from "framer-motion";
 import { signIn, useSession } from "next-auth/react";
@@ -19,6 +19,7 @@ const NavbarBase = () => {
       setHidden(false);
     }
   });
+  
   return (
     <motion.header
       variants={{
@@ -34,11 +35,11 @@ const NavbarBase = () => {
         <p>Loading...</p>
       ) : session.data ? (
         <nav className="flex items-center gap-5">
-          <Link href="/">Home</Link>
+          <Link href="/" className="font-semibold">
+            Home
+          </Link>
           <Link href={"/settings"}>
-            {" "}
             <Avatar>
-              <AvatarImage src="" />
               <AvatarFallback>
                 <FaRegUser />
               </AvatarFallback>

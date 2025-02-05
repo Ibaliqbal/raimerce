@@ -14,7 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import SubmitButton from "./submit-button";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import instance from "@/lib/axios/instance";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FaCheck } from "react-icons/fa";
@@ -56,7 +56,7 @@ const FormNews = () => {
         {isSuccess ? (
           <Alert variant="success">
             <FaCheck className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
+            <AlertTitle className="font-semibold">Success</AlertTitle>
             <AlertDescription>Create new news successfully</AlertDescription>
           </Alert>
         ) : null}
@@ -67,7 +67,7 @@ const FormNews = () => {
             <FormItem className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <FormLabel>Description</FormLabel>
-                <p>{field.value?.length ?? 0}/1150</p>
+                <p>{field.value?.replace(/\s/g, "").length ?? 0}/1150</p>
               </div>
               <FormControl>
                 <Textarea
@@ -108,6 +108,14 @@ const FormNews = () => {
                           ...res.map((data) => data.serverData.media),
                         ]);
                       }
+                    }}
+                    onBeforeUploadBegin={(files) => {
+                      return files.map((f) => {
+                        const timestamp = new Date().getTime();
+                        return new File([f], `${timestamp}-${f.name}`, {
+                          type: f.type,
+                        });
+                      });
                     }}
                   />
                   {field.value.length > 0 ? (

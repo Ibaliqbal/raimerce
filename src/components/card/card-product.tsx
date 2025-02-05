@@ -120,7 +120,7 @@ const CardProduct = ({
             <Link
               href={
                 hisMine
-                  ? `/my/store/products/${id}?variant=${variant[0].name_variant}`
+                  ? `/my/store/products/${id}`
                   : `/products/${id}?variant=${variant[0].name_variant}`
               }
               className="self-end hover:underline"

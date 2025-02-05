@@ -1,10 +1,9 @@
 import BaseLayout from "@/layouts/base-layout";
-import React from "react";
-
+import ProductCommentsView from "@/views/products/detail/product-comments-view";
 const Page = () => {
   return (
     <BaseLayout>
-      <main className="wrapper-page">Hai</main>
+      <ProductCommentsView />
     </BaseLayout>
   );
 };

@@ -15,6 +15,7 @@ type Data = ApiResponse & {
       "amount" | "code" | "id" | "uses" | "productsAllowed" | "expiredAt"
     >
   >;
+  totalPage?: number;
 };
 
 const acceptMethods = ["GET", "POST"];
@@ -83,11 +84,25 @@ export default function hanlder(
         });
       }
 
+      const _limit = req.query.limit as string;
+      const _page = req.query.page as string;
+
+      if (isNaN(Number(_page)) || isNaN(Number(_limit)))
+        return res.status(400).json({
+          message: "Invalid page or limit",
+          statusCode: 400,
+        });
+
       if (!storeID)
         return res.status(404).json({
           message: "User does not have a store, please create store first!!",
           statusCode: 404,
         });
+
+      const totalPromos = await db.$count(
+        PromoTable,
+        eq(PromoTable.ownerId, storeID)
+      );
 
       const data = await db.query.PromoTable.findMany({
         where: eq(PromoTable.ownerId, storeID),
@@ -99,12 +114,16 @@ export default function hanlder(
           productsAllowed: true,
           expiredAt: true,
         },
+        limit: Number(_limit),
+        offset: (Number(_page) - 1) * Number(_limit),
+        orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
 
       return res.status(200).json({
         message: "Success get all promo store",
         statusCode: 200,
         data,
+        totalPage: Math.ceil(totalPromos / Number(_limit)),
       });
     });
   });

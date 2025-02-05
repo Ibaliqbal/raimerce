@@ -48,9 +48,15 @@ const CardPromo = ({ code, uses, expiredAt, id }: Props) => {
       </div>
       <Card.Icon src="/icon/discount-voucher-icon.png" className="h-[150px]" />
       <Card.Description asLink={false}>
-        <h2>Code Promo : {code}</h2>
-        <p>Expire : {expiredAt}</p>
-        <p>Uses : {uses}</p>
+        <h2>
+          <strong>Code Promo</strong> : {code}
+        </h2>
+        <p>
+          <strong>Expire</strong> : {expiredAt}
+        </p>
+        <p>
+          <strong>Uses</strong> : {uses}
+        </p>
       </Card.Description>
     </Card>
   );

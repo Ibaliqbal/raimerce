@@ -8,15 +8,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 
 type Data = ApiResponse & {
-  data?: Array<{
-    storeName: string | undefined;
-    storeId: string | undefined;
-    carts: Array<
-      Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
-        product: Pick<TProducts, "name" | "variant"> | null;
-      }
-    >;
-  }>;
+  data?: Array<
+    Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
+      product: Pick<TProducts, "name" | "variant"> | null;
+    }
+  >;
+  totalPage?: number;
 };
 
 const acceptMethod = ["GET", "POST"];
@@ -62,7 +59,7 @@ export default function handler(
           });
 
           return res.status(201).json({
-            message: "Product has been successfully added to cart",
+            message: "Item added to cart",
             statusCode: 201,
           });
         }
@@ -76,10 +73,24 @@ export default function handler(
           .where(eq(CartsTable.id, checkInCart.id));
 
         return res.status(201).json({
-          message: "Product has been successfully added to cart",
+          message: "Item added to cart",
           statusCode: 201,
         });
       }
+
+      const _page = req.query.page as string;
+      const _limit = req.query.limit as string;
+
+      if (isNaN(Number(_page)) || isNaN(Number(_limit)))
+        return res.status(400).json({
+          message: "Invalid page or limit",
+          statusCode: 400,
+        });
+
+      const totalCart = await db.$count(
+        CartsTable,
+        eq(CartsTable.userId, decoded.id)
+      );
 
       const data = await db.query.CartsTable.findMany({
         where: eq(CartsTable.userId, decoded.id),
@@ -95,74 +106,18 @@ export default function handler(
               name: true,
               variant: true,
             },
-            with: {
-              store: {
-                columns: {
-                  name: true,
-                  id: true,
-                },
-              },
-            },
           },
         },
+        limit: Number(_limit),
+        offset: (Number(_page) - 1) * Number(_limit),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
-
-      const groupByStore = data.reduce(
-        (
-          acc: Array<{
-            storeName: string | undefined;
-            storeId: string | undefined;
-            carts: Array<
-              Pick<TCart, "id" | "isCheckout" | "quantity" | "variant"> & {
-                product: Pick<TProducts, "name" | "variant"> | null;
-              }
-            >;
-          }>,
-          curr
-        ) => {
-          const findSame = acc.find(
-            (cart) => cart.storeId === curr.product?.store?.id
-          );
-
-          if (findSame) {
-            findSame.carts.push({
-              id: curr.id,
-              isCheckout: curr.isCheckout,
-              quantity: curr.quantity,
-              variant: curr.variant,
-              product: {
-                name: curr.product?.name || "",
-                variant: curr.product?.variant || [],
-              },
-            });
-          } else {
-            acc.push({
-              storeName: curr.product?.store?.name,
-              storeId: curr.product?.store?.id,
-              carts: [
-                {
-                  id: curr.id,
-                  isCheckout: curr.isCheckout,
-                  quantity: curr.quantity,
-                  variant: curr.variant,
-                  product: {
-                    name: curr.product?.name || "",
-                    variant: curr.product?.variant || [],
-                  },
-                },
-              ],
-            });
-          }
-          return acc;
-        },
-        []
-      );
 
       return res.status(200).json({
         message: "Data fetched successfully",
         statusCode: 200,
-        data: groupByStore,
+        data,
+        totalPage: Math.ceil(totalCart / Number(_limit)),
       });
     });
   });

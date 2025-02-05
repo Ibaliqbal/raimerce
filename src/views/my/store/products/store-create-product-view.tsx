@@ -4,7 +4,7 @@ import instance from "@/lib/axios/instance";
 import { ProductSchemaT } from "@/types/product";
 import { useRouter } from "next/router";
 import { FaArrowLeft } from "react-icons/fa";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const StoreCreateProductView = () => {
   const router = useRouter();

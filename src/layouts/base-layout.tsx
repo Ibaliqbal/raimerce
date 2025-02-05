@@ -1,6 +1,6 @@
 import NavbarBase from "@/components/navbar/navbar-base";
 import { useRouter } from "next/router";
-import React, { ComponentPropsWithoutRef, ReactNode } from "react";
+import { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type Props = { children: ReactNode } & ComponentPropsWithoutRef<"section">;
 

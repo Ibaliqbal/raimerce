@@ -2,11 +2,10 @@ import CardProduct from "@/components/card/card-product";
 import instance from "@/lib/axios/instance";
 import { TProducts } from "@/lib/db/schema";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 
 type Props = Pick<TProducts, "id">;
 
-const ProductsRelatedView = ({ id }: Props) => {
+const ProductsSimilarView = ({ id }: Props) => {
   const { data, isLoading } = useQuery<
     Array<Pick<TProducts, "id" | "description" | "name" | "rating" | "variant">>
   >({
@@ -23,7 +22,7 @@ const ProductsRelatedView = ({ id }: Props) => {
 
   return (
     <section className="w-full">
-      <h1 className="text-xl">Similar Products</h1>
+      <h1 className="text-2xl font-semibold">Similar Products</h1>
       <div className="w-full grid grid-cols-4 gap-4 mt-4">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
@@ -37,4 +36,4 @@ const ProductsRelatedView = ({ id }: Props) => {
   );
 };
 
-export default ProductsRelatedView;
+export default ProductsSimilarView;

@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import instance from "@/lib/axios/instance";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import SubmitButton from "../submit-button";
 
 const FormSignup = () => {

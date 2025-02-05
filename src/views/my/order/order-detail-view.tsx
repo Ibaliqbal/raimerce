@@ -129,6 +129,7 @@ const OrderDetailView = ({ order }: Props) => {
                 <TableHead className="text-right">Jumlah</TableHead>
                 <TableHead className="text-right">Harga per Unit</TableHead>
                 <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -168,6 +169,18 @@ const OrderDetailView = ({ order }: Props) => {
                           (item.productVariant?.price || 0) * item.quantity
                         )
                       )}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right ${
+                        item.status === "recieved"
+                          ? "text-green-500"
+                          : item.status === "confirmed"
+                          ? "text-blue-400"
+                          : "text-red-500"
+                      } font-bold`}
+                    >
+                      {item.status.charAt(0).toUpperCase() +
+                        item.status.slice(1).split("-").join(" ")}
                     </TableCell>
                   </TableRow>
                 );

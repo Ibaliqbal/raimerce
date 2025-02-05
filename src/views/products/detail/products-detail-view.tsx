@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaMinus, FaPlus, FaUser } from "react-icons/fa";
 import ProductsListComment from "@/components/products/products-list-comment";
 import ProductsListVariant from "@/components/products/products-list-variant";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import ProductsDetailImage from "@/components/products/products-detail-image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,8 @@ import { RiLoader5Line } from "react-icons/ri";
 import instance from "@/lib/axios/instance";
 import { VariantSchemaT } from "@/types/product";
 import { AxiosError } from "axios";
+import ButtonFollow from "@/components/button/button-follow";
+import NumberFlow from "@number-flow/react";
 
 type Props = Pick<
   TProducts,
@@ -24,7 +26,7 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name"> | null;
+  store: Pick<TStore, "name" | "id"> | null;
   selectedVariant: string;
   comments: Array<
     Pick<
@@ -70,7 +72,7 @@ const ProductsDetailView = ({
           .filter((vari) => vari.type === "image")}
       />
       <section className="w-[60%] flex flex-col gap-5">
-        <h1 className="text-2xl">{name}</h1>
+        <h1 className="text-4xl font-semibold">{name}</h1>
         <div className="flex items-end">
           <div className="text-3xl font-bold ">
             {convertPrice(selectedVariant.price)}
@@ -79,7 +81,7 @@ const ProductsDetailView = ({
         <div className="flex items-center gap-2">
           <Rating
             readOnly
-            value={rating as number}
+            value={Number(rating)}
             style={{
               maxWidth: 120,
               marginBottom: ".5rem",
@@ -87,7 +89,7 @@ const ProductsDetailView = ({
             }}
             itemStyles={styleReactRating}
           />
-          <p className="text-lg">{rating?.toFixed(2)}</p>
+          <p className="text-lg">{Number(rating).toFixed(2)}</p>
         </div>
         <div className="flex flex-col gap-4">
           <h3>Variants</h3>
@@ -112,7 +114,7 @@ const ProductsDetailView = ({
               >
                 <FaMinus />
               </Button>
-              <span>{quantity}</span>
+              <NumberFlow value={quantity} willChange />
               <Button
                 size="icon"
                 variant="icon"
@@ -189,9 +191,7 @@ const ProductsDetailView = ({
               <strong>Products</strong> : {productsCount}
             </p>
           </div>
-          <Button className="self-start " size="lg">
-            Follow
-          </Button>
+          <ButtonFollow id={store?.id || ""} className="self-start" />
         </div>
         <ProductsListComment datas={comments} />
         <div className="flex flex-col gap-4">

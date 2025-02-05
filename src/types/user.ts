@@ -43,11 +43,29 @@ export const signupSchema = z
     password: z
       .string()
       .min(8, { message: "Password minimun 8 char" })
-      .max(16, { message: "Password miximum 20 char" }),
+      .max(16, { message: "Password miximum 20 char" })
+      .refine((val) => /[A-Z]/.test(val), {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .refine((val) => /[0-9]/.test(val), {
+        message: "Password must contain at least one number",
+      })
+      .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+        message: "Password must contain at least one special character",
+      }),
     confirmPassword: z
       .string()
       .min(8, { message: "Password minimun 8 char" })
-      .max(16, { message: "Password miximum 20 char" }),
+      .max(16, { message: "Password miximum 20 char" })
+      .refine((val) => /[A-Z]/.test(val), {
+        message: "Confirm password must contain at least one uppercase letter",
+      })
+      .refine((val) => /[0-9]/.test(val), {
+        message: "Confirm password must contain at least one number",
+      })
+      .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+        message: "Confirm password must contain at least one special character",
+      }),
   })
   .refine((val) => val.password === val.confirmPassword, {
     message: "Confirm password is not same as password",

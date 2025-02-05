@@ -9,6 +9,7 @@ import {
   PointElement,
   BarElement,
   ArcElement,
+  Filler,
 } from "chart.js";
 import { Button } from "@/components/ui/button";
 import CardStoreNews from "@/components/card/card-store-news";
@@ -28,7 +29,8 @@ ChartJs.register(
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 const StoreDashboardView = () => {
@@ -44,7 +46,7 @@ const StoreDashboardView = () => {
       <FollowersChart />
       <div>
         <div className="flex justify-between items-center">
-          <h2 className="text-xl">Your latest news</h2>
+          <h2 className="text-xl font-semibold">Your latest news</h2>
           <Button asChild>
             <Link href={"/my/store/news/create"}>Create news</Link>
           </Button>
@@ -67,7 +69,7 @@ const StoreDashboardView = () => {
             ) : null}
           </div>
         ) : (
-          <h3 className="text-center text-xl mt-10">
+          <h3 className="text-center text-xl mt-10 italic">
             Create your news about your store...
           </h3>
         )}

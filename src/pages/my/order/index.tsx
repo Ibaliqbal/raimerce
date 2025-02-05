@@ -1,11 +1,14 @@
+import { LoadingScreenProvider } from "@/context/loading-screen-context";
 import UserLayout from "@/layouts/user-layout";
 import OrderView from "@/views/my/order/order-view";
 
 const Page = () => {
   return (
-    <UserLayout>
-      <OrderView />
-    </UserLayout>
+    <LoadingScreenProvider>
+      <UserLayout>
+        <OrderView />
+      </UserLayout>
+    </LoadingScreenProvider>
   );
 };
 

@@ -36,39 +36,44 @@ const SideListsStore = () => {
         <AccordionContent className="pl-3 flex flex-col gap-1">
           <SideLink
             href="/my/store"
-            text="Dashboard"
             iconActive={<MdDashboard />}
             iconNonActive={<MdOutlineDashboard />}
             className="text-xl"
-          />
+          >
+            Dashboard
+          </SideLink>
           <SideLink
             href="/my/store/products"
-            text="Products"
             iconActive={<BsBagPlusFill />}
             iconNonActive={<BsBagPlus />}
             className="text-xl"
-          />
+          >
+            Products
+          </SideLink>
           <SideLink
             href="/my/store/promo"
-            text="Promo"
             iconActive={<RiCoupon3Fill />}
             iconNonActive={<RiCoupon3Line />}
             className="text-xl"
-          />
+          >
+            Promo
+          </SideLink>
           <SideLink
             href="/my/store/orders"
-            text="Orders"
             iconActive={<BsBagFill />}
             iconNonActive={<BsBag />}
             className="text-xl"
-          />
+          >
+            Orders
+          </SideLink>
           <SideLink
             href="/my/store/settings"
             iconActive={<BsGearFill />}
             iconNonActive={<BsGear />}
-            text="Settings"
             className="text-xl"
-          />
+          >
+            Settings
+          </SideLink>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

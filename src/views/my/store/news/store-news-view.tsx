@@ -6,13 +6,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "@/lib/axios/instance";
 import { TNews } from "@/lib/db/schema";
 import Loader from "@/components/ui/loader";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const keyQuery = "store-news-owner";
 
 const StoreNewsView = () => {
   const router = useRouter();
-  
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

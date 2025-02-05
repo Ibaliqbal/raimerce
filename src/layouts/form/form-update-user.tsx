@@ -15,7 +15,7 @@ import SubmitButton from "./submit-button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import instance from "@/lib/axios/instance";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 type Props = {
   name: string;

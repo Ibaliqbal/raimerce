@@ -2,14 +2,13 @@ import { cn } from "@/lib/utils";
 import { navigationStore } from "@/utils/constant";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 
 const TabNavigationStore: React.FC = () => {
   const router = useRouter();
   const name = router.query.name as string | undefined;
 
   return (
-    <section className="grid grid-cols-2 gap-3">
+    <section className="grid grid-cols-2 gap-3" id="tab">
       {navigationStore(name || "").map((navigate) => (
         <Link
           href={navigate.href}

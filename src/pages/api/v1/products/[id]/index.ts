@@ -25,7 +25,7 @@ type Data = ApiResponse & {
   > & {
     productsCount: number;
     followersCount: number;
-    store: Pick<TStore, "name"> | null;
+    store: Pick<TStore, "name" | "id"> | null;
     comments: Array<
       Pick<
         TComment,
@@ -60,6 +60,7 @@ export default function handler(
         store: {
           columns: {
             name: true,
+            id: true,
           },
         },
       },

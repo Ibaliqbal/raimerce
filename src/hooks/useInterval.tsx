@@ -1,11 +1,16 @@
 import { useEffect, useCallback } from "react";
 
-const useInterval = (callback: () => void, delay: number | null) => {
+const useInterval = (
+  callback: (id: NodeJS.Timeout) => void,
+  delay: number | null
+) => {
   const savedCallback = useCallback(callback, [callback]);
 
   useEffect(() => {
     if (delay !== null) {
-      const id = setInterval(savedCallback, delay);
+      const id = setInterval(() => {
+        savedCallback(id);
+      }, delay);
       return () => clearInterval(id);
     }
   }, [delay, savedCallback]);

@@ -12,6 +12,7 @@ type Data = ApiResponse & {
   data?: Array<
     Pick<TProducts, "id" | "name" | "description" | "rating" | "variant">
   >;
+  totalPage?: number;
 };
 
 const acceptMethod = ["POST", "GET"];
@@ -26,6 +27,8 @@ export default function handler(
       const body = req.body;
       const storeID = await getStoreiD(decoded.id);
       const category = req.query.c as string;
+      const _page = req.query.page as string;
+      const _limit = req.query.limit as string;
 
       if (req.method === "POST") {
         const validation = productSchema.safeParse(body);
@@ -55,13 +58,26 @@ export default function handler(
         });
       }
 
-      if (category) {
-        if (!storeID)
-          return res.status(404).json({
-            message: "User does not have a store, please create store first!!",
-            statusCode: 404,
-          });
+      if (!storeID)
+        return res.status(404).json({
+          message: "User does not have a store, please create store first!!",
+          statusCode: 404,
+        });
 
+      if (isNaN(Number(_page)) || isNaN(Number(_limit)))
+        return res.status(400).json({
+          message: "Invalid page or limit",
+          statusCode: 400,
+        });
+
+      if (category) {
+        const totalProducts = await db.$count(
+          ProductsTable,
+          and(
+            eq(ProductsTable.storeId, storeID),
+            eq(ProductsTable.category, category)
+          )
+        );
         const data = await db.query.ProductsTable.findMany({
           where: and(
             eq(ProductsTable.storeId, storeID),
@@ -74,6 +90,8 @@ export default function handler(
             rating: true,
             variant: true,
           },
+          limit: Number(_limit),
+          offset: (Number(_page) - 1) * Number(_limit),
           orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
         });
 
@@ -81,14 +99,14 @@ export default function handler(
           message: "Success",
           statusCode: 200,
           data,
+          totalPage: Math.ceil(totalProducts / Number(_limit)),
         });
       }
 
-      if (!storeID)
-        return res.status(404).json({
-          message: "User does not have a store, please create store first!!",
-          statusCode: 404,
-        });
+      const totalProducts = await db.$count(
+        ProductsTable,
+        eq(ProductsTable.storeId, storeID)
+      );
 
       const data = await db.query.ProductsTable.findMany({
         where: eq(ProductsTable.storeId, storeID),
@@ -99,6 +117,8 @@ export default function handler(
           variant: true,
           rating: true,
         },
+        limit: Number(_limit),
+        offset: (Number(_page) - 1) * Number(_limit),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
 
@@ -106,6 +126,7 @@ export default function handler(
         message: "Success",
         statusCode: 200,
         data,
+        totalPage: Math.ceil(totalProducts / Number(_limit)),
       });
     });
   });

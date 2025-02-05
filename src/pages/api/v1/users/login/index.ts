@@ -1,12 +1,19 @@
 import { db } from "@/lib/db";
-import { StoresTable, TStore, TUser, UsersTable } from "@/lib/db/schema";
+import {
+  CartsTable,
+  OrdersTable,
+  StoresTable,
+  TStore,
+  TUser,
+  UsersTable,
+} from "@/lib/db/schema";
 import {
   addLocationSchema,
   resetPasswordSchema,
   updateProfileSchema,
 } from "@/types/user";
 import { verify } from "@/utils/helper";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 import bcrypt from "bcrypt";
@@ -22,6 +29,8 @@ type Data = ApiResponse & {
         "address" | "avatar" | "email" | "name" | "typeLogin" | "phone"
       > & {
         store: Pick<TStore, "id">;
+        cartsCount: number;
+        pendingOrdersCount: number;
       })
     | null;
 };
@@ -127,7 +136,7 @@ export default async function handler(
             .where(eq(UsersTable.id, decoded.id));
 
           return res.status(200).json({
-            message: "Success address was updated",
+            message: "Success photo profile was updated",
             statusCode: 200,
           });
         }
@@ -216,6 +225,19 @@ export default async function handler(
         },
       });
 
+      const cartsCount = await db.$count(
+        CartsTable,
+        eq(CartsTable.userId, decoded.id)
+      );
+
+      const pendingOrdersCount = await db.$count(
+        OrdersTable,
+        and(
+          eq(OrdersTable.userId, decoded.id),
+          eq(OrdersTable.status, "pending")
+        )
+      );
+
       if (!data)
         return res
           .status(404)
@@ -224,7 +246,11 @@ export default async function handler(
       return res.status(200).json({
         message: "Success get data user login",
         statusCode: 200,
-        data,
+        data: {
+          ...data,
+          cartsCount,
+          pendingOrdersCount,
+        },
       });
     });
   });

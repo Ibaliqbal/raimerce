@@ -1,15 +1,18 @@
-import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaUser } from "react-icons/fa";
-import { Button } from "../ui/button";
 import Image from "../ui/image";
 import { TStore } from "@/lib/db/schema";
+import { MdLocationOn } from "react-icons/md";
+import { FaUsers } from "react-icons/fa";
+import { IoBagHandleSharp } from "react-icons/io5";
+import ButtonFollow from "../button/button-follow";
 
 type Props = Pick<
   TStore,
   "address" | "name" | "headerPhoto" | "description" | "id"
 > & {
   productsCount: number;
+  followersCount: number;
 };
 
 const ProfileStore = ({
@@ -17,6 +20,8 @@ const ProfileStore = ({
   name,
   description,
   headerPhoto,
+  followersCount,
+  id,
 }: Props) => {
   return (
     <section className="flex flex-col gap-4 pb-4 border-b border-gray-500">
@@ -47,18 +52,25 @@ const ProfileStore = ({
         </div>
         <div>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl">{name}</h1>
-            <Button size="lg">Follow</Button>
+            <h1 className="text-3xl font-bold">{name}</h1>
+            <ButtonFollow id={id} />
           </div>
-          <div className="flex items-center gap-4">
-            <p>
-              Location : <span>Jakarta, Indonesia</span>
+          <div className="flex items-center gap-4 ">
+            <p className="flex items-center gap-1">
+              <MdLocationOn className="text-gray-500 text-lg" />
+              <span>Jakarta, Indonesia</span>
             </p>
-            <p>Follower : 10000</p>
-            <p>Products : {productsCount}</p>
+            <p className="flex items-center gap-1">
+              <FaUsers className="text-gray-500 text-lg" />{" "}
+              <span>{followersCount}</span>
+            </p>
+            <p className="flex items-center gap-1">
+              <IoBagHandleSharp className="text-gray-500 text-lg" />
+              <span>{productsCount}</span>
+            </p>
           </div>
         </div>
-        <p className={description ? "" : "italic"}>
+        <p className={description ? "text-lg" : "italic"}>
           {description ?? "No description about this store"}
         </p>
       </div>

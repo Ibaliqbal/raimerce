@@ -1,3 +1,4 @@
+import instance from "@/lib/axios/instance";
 import { db } from "@/lib/db";
 import { NewsTable, StoresTable } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
@@ -31,6 +32,7 @@ export default function handler(
         columns: {
           id: true,
           storeId: true,
+          medias: true,
         },
       });
 
@@ -46,7 +48,15 @@ export default function handler(
           statusCode: 403,
         });
 
-      await db.delete(NewsTable).where(eq(NewsTable.id, news.id));
+      const deletesMedia = news.medias?.map(async (media) => {
+        await instance.delete(`/files/${media.keyFile}`);
+        return;
+      });
+
+      await Promise.all([
+        deletesMedia,
+        db.delete(NewsTable).where(eq(NewsTable.id, news.id)),
+      ]);
 
       return res.status(200).json({
         message: "News success deleted",

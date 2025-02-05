@@ -1,10 +1,11 @@
 import { db } from "@/lib/db";
-import { StoresTable } from "@/lib/db/schema";
+import { StoresTable, UsersTable } from "@/lib/db/schema";
 import { verify } from "@/utils/helper";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 import { gettingStartedSchema } from "@/types/store";
 import { ApiResponse } from "@/utils/api";
+import { eq } from "drizzle-orm";
 
 type Data = ApiResponse;
 
@@ -27,6 +28,13 @@ export default async function handler(
       const body = req.body;
       const validation = gettingStartedSchema.safeParse(body);
 
+      const getAddress = await db.query.UsersTable.findFirst({
+        where: eq(UsersTable.id, decoded.id),
+        columns: {
+          address: true,
+        },
+      });
+
       if (!validation.success)
         return res
           .status(400)
@@ -36,6 +44,8 @@ export default async function handler(
         name: validation.data.name,
         description: validation.data.description,
         userId: decoded.id,
+        headerPhoto: validation.data.headerPhoto,
+        address: getAddress?.address,
       });
 
       return res

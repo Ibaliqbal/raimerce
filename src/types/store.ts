@@ -10,7 +10,7 @@ export const updateStoreSchema = z.object({
 export type UpdateStoreSchemaT = z.infer<typeof updateStoreSchema>;
 
 export const newsSchema = z.object({
-  description: z.string().min(10).max(1150),
+  description: z.string().min(10).max(1150).trim(),
   medias: mediaSchema.array().max(4).default([]),
 });
 

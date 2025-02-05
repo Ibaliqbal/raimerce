@@ -1,12 +1,14 @@
+import { LoadingScreenProvider } from "@/context/loading-screen-context";
 import StoreOwnerLayout from "@/layouts/store-owner-layout";
 import StoreProductsDetail from "@/views/my/store/products/store-products-detail-view";
-import React from "react";
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
-      <StoreProductsDetail />
-    </StoreOwnerLayout>
+    <LoadingScreenProvider>
+      <StoreOwnerLayout>
+        <StoreProductsDetail />
+      </StoreOwnerLayout>
+    </LoadingScreenProvider>
   );
 };
 

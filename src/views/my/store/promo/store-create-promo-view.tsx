@@ -2,20 +2,23 @@ import FormPromo from "@/layouts/form/form-promo";
 import instance from "@/lib/axios/instance";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const StoreCreatePromoView = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["products", "owner"],
     queryFn: async () => {
       // Simulate API call to create a new promo
-      const res = (await instance.get("/users/login/store/products")).data.data;
+      const res = (await instance.get("/users/login/store/products/allowed"))
+        .data.data;
       return res;
     },
   });
   return (
     <section className="col-span-2 flex flex-col gap-4">
-      <h1 className="text-xl self-center">Craete discount for your products</h1>
+      <h1 className="text-2xl self-center font-semibold">
+        Craete discount for your products
+      </h1>
       <FormPromo
         products={data}
         fetchLoad={isLoading}

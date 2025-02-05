@@ -1,19 +1,19 @@
 import TopLoader from "@/components/loader/toploader";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { Toaster } from "sonner";
 import "@smastrom/react-rating/style.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 import { SessionProvider } from "next-auth/react";
+import { Roboto } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 
-const poppins = Poppins({
+const roboto = Roboto({
   weight: "500",
-  style: "normal",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
+  style: ["normal"],
 });
 
 export default function App({
@@ -25,10 +25,10 @@ export default function App({
     <ThemeProvider defaultTheme="system" attribute="class" enableSystem>
       <QueryClientProvider client={client}>
         <SessionProvider session={session}>
-          <main className={poppins.className}>
+          <main className={roboto.className}>
             <TopLoader />
             <Component {...pageProps} />
-            <Toaster richColors position="bottom-center" closeButton />
+            <Toaster position="bottom-center" />
           </main>
           <ReactQueryDevtools />
         </SessionProvider>

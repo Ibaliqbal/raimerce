@@ -24,7 +24,7 @@ import SubmitButton from "./submit-button";
 import { SelectGroup } from "@radix-ui/react-select";
 import { useRouter } from "next/router";
 import instance from "@/lib/axios/instance";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { fetchCities, fetchDistricts, fetchProvincies } from "@/utils/api";
 
 type OptionGeographics = {
@@ -57,6 +57,7 @@ const FormAddLocation = () => {
         const result = await fetchProvincies();
         setGeographic((prev) => ({ ...prev, provincies: result }));
       } catch (err) {
+        console.log(err);
         toast.error("Failed to load provinces");
       }
     };
@@ -70,6 +71,7 @@ const FormAddLocation = () => {
           const result = await fetchCities(province);
           setGeographic((prev) => ({ ...prev, cities: result }));
         } catch (err) {
+          console.log(err);
           toast.error("Failed to load cities");
         }
       };
@@ -84,6 +86,7 @@ const FormAddLocation = () => {
           const result = await fetchDistricts(city);
           setGeographic((prev) => ({ ...prev, district: result }));
         } catch (err) {
+          console.log(err);
           toast.error("Failed to load districts");
         }
       };
@@ -105,6 +108,7 @@ const FormAddLocation = () => {
       if (res.data.statusCode !== 200) throw new Error(res.data.message);
       router.reload();
     } catch (error) {
+      console.log(error);
       toast.error("Failed to update address");
     }
   };

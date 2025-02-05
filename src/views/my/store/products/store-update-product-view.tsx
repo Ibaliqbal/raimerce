@@ -6,7 +6,7 @@ import { VariantSchemaT } from "@/types/product";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { FaArrowLeft } from "react-icons/fa";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 type Props = {
   data: Pick<TProducts, "category" | "description" | "id" | "name" | "variant">;

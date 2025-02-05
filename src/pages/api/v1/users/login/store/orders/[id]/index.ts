@@ -8,7 +8,7 @@ import {
 } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { verify } from "@/utils/helper";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 
@@ -21,7 +21,7 @@ type Data = ApiResponse & {
   };
 };
 
-const acceptMethod = ["GET"];
+const acceptMethod = ["GET", "PUT"];
 
 export default function handler(
   req: NextApiRequest,
@@ -51,6 +51,52 @@ export default function handler(
           id: true,
         },
       });
+
+      if (req.method === "PUT") {
+        const _type = req.query.type as string;
+
+        if (_type == "confirm_order") {
+          try {
+            const lastData = await db.query.OrdersTable.findFirst({
+              where: eq(OrdersTable.id, _id),
+              columns: {
+                products: true,
+              },
+            });
+
+            await db
+              .update(OrdersTable)
+              .set({
+                updatedAt: sql`NOW()`,
+                products: lastData?.products?.map((order) => {
+                  const isOwned = productsStore.some(
+                    (product) => product.id === order.productID
+                  );
+                  if (isOwned) {
+                    return {
+                      ...order,
+                      status: "confirmed",
+                    };
+                  } else {
+                    return order;
+                  }
+                }),
+              })
+              .where(eq(OrdersTable.id, _id));
+
+            return res.status(200).json({
+              message: "Order confirmed",
+              statusCode: 200,
+            });
+          } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+              message: "Failed to confirm order",
+              statusCode: 500,
+            });
+          }
+        }
+      }
 
       const data = await db.query.OrdersTable.findFirst({
         where: eq(OrdersTable.id, _id),

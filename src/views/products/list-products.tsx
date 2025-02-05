@@ -1,22 +1,16 @@
 import CardProduct from "@/components/card/card-product";
 import instance from "@/lib/axios/instance";
 import { TProducts } from "@/lib/db/schema";
-import { ApiResponse } from "@/utils/api";
-import { pageSize } from "@/utils/constant";
+import { pageSizeProduct } from "@/utils/constant";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import React from "react";
 
 const ListProducts: React.FunctionComponent = () => {
   const { query } = useRouter();
 
   const { data, isLoading } = useQuery<
-    ApiResponse & {
-      data: Array<
-        Pick<TProducts, "rating" | "description" | "id" | "name" | "variant">
-      >;
-    }
+    Array<Pick<TProducts, "rating" | "description" | "id" | "name" | "variant">>
   >({
     queryKey: [
       "all-products",
@@ -33,11 +27,11 @@ const ListProducts: React.FunctionComponent = () => {
       const endpoint = query.q
         ? `/products/search?q=${
             query.q
-          }${categoryQuery}${ratingQuery}&page=${page}&limit=${[pageSize]}`
-        : `/products?_type=all${categoryQuery}${ratingQuery}&page=${page}&limit=${pageSize}`;
+          }${categoryQuery}${ratingQuery}&page=${page}&limit=${[pageSizeProduct]}`
+        : `/products?_type=all${categoryQuery}${ratingQuery}&page=${page}&limit=${pageSizeProduct}`;
 
       const res = await instance.get(endpoint);
-      return res.data;
+      return res.data.data;
     },
     enabled: !!query,
   });
@@ -48,9 +42,9 @@ const ListProducts: React.FunctionComponent = () => {
         Array.from({ length: 4 }).map((_, i) => (
           <CardProduct.Skeleton key={i} />
         ))
-      ) : data?.data.length ?? 0 > 0 ? (
+      ) : data?.length ?? 0 > 0 ? (
         <AnimatePresence mode="popLayout">
-          {data?.data.map((product, i) => (
+          {data?.map((product, i) => (
             <motion.div layout className="relative" key={i}>
               <CardProduct {...product} />
             </motion.div>

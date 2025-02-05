@@ -13,6 +13,7 @@ type Data = ApiResponse & {
       "id" | "products" | "transactionCode" | "status" | "promoCodes"
     >
   >;
+  totalPage?: number;
 };
 
 const acceptMethod = ["GET"];
@@ -25,8 +26,23 @@ export default function handler(
     verify(req, res, async (decoded) => {
       const decode = decoded as JWT;
       const _status = req.query.status as "pending" | "canceled" | "success";
+      const _page = req.query.page as string;
+      const _limit = req.query.limit as string;
+
+      if (isNaN(Number(_page)) || isNaN(Number(_limit)))
+        return res.status(400).json({
+          message: "Invalid page or limit",
+          statusCode: 400,
+        });
 
       if (_status) {
+        const totalOrder = await db.$count(
+          OrdersTable,
+          and(
+            eq(OrdersTable.userId, decode.id),
+            eq(OrdersTable.status, _status)
+          )
+        );
         const data = await db.query.OrdersTable.findMany({
           where: and(
             eq(OrdersTable.userId, decode.id),
@@ -40,14 +56,22 @@ export default function handler(
             promoCodes: true,
           },
           orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+          limit: Number(_limit),
+          offset: (Number(_page) - 1) * Number(_limit),
         });
 
         return res.status(200).json({
           message: "Success",
           statusCode: 200,
           data,
+          totalPage: Math.ceil(totalOrder / Number(_limit)),
         });
       }
+
+      const totalOrder = await db.$count(
+        OrdersTable,
+        eq(OrdersTable.userId, decode.id)
+      );
 
       const data = await db.query.OrdersTable.findMany({
         where: eq(OrdersTable.userId, decode.id),
@@ -58,6 +82,8 @@ export default function handler(
           status: true,
           promoCodes: true,
         },
+        limit: Number(_limit),
+        offset: (Number(_page) - 1) * Number(_limit),
         orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       });
 
@@ -65,6 +91,7 @@ export default function handler(
         message: "Welcome to the API",
         statusCode: 200,
         data,
+        totalPage: Math.ceil(totalOrder / Number(_limit)),
       });
     });
   });

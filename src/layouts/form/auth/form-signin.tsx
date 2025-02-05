@@ -9,10 +9,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { signinSchema, SigninSchemaT } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
 import { useForm } from "react-hook-form";
 import SubmitButton from "../submit-button";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useLoadingScreen } from "@/context/loading-screen-context";

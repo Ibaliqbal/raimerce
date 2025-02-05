@@ -1,18 +1,22 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { ComponentPropsWithoutRef, ReactElement } from "react";
+import React, {
+  ComponentPropsWithoutRef,
+  ReactElement,
+  ReactNode,
+} from "react";
 
 type Props = {
   iconActive: ReactElement;
   iconNonActive: ReactElement;
-  text: string;
+  children: ReactNode;
 } & ComponentPropsWithoutRef<"a">;
 
 const SideLink = ({
   iconActive,
   iconNonActive,
-  text,
+  children,
   className,
   href,
   ...rest
@@ -30,7 +34,7 @@ const SideLink = ({
       {...rest}
     >
       {router.pathname === href ? iconActive : iconNonActive}
-      {text}
+      {children}
     </Link>
   );
 };

@@ -26,7 +26,8 @@ export const productSchema = z.object({
   description: z
     .string()
     .min(15, { message: "Description must be at least 15 characters" })
-    .max(1500, { message: "Description must not exceed 1500 characters" }),
+    .max(1500, { message: "Description must not exceed 1500 characters" })
+    .trim(),
   variant: variantSchema.array(),
   category: z.string().min(1, { message: "Category is required" }),
 });
@@ -62,8 +63,8 @@ export const mediaSchema = z.object({
 
 export type PromoSchemaT = z.infer<typeof promoSchema>;
 
-export type VariantSchemaT = z.infer<typeof variantSchema>;
-
 export type ProductSchemaT = z.infer<typeof productSchema>;
+
+export type VariantSchemaT = z.infer<typeof variantSchema>;
 
 export type TMedia = z.infer<typeof mediaSchema>;

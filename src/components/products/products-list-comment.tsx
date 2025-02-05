@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import ProductsComments from "./products-comment";
 import { TComment, TUser } from "@/lib/db/schema";
 

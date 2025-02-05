@@ -5,9 +5,13 @@ import instance from "@/lib/axios/instance";
 import Loader from "@/components/ui/loader";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useState } from "react";
+import useInterval from "@/hooks/useInterval";
+import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
 
 const VerificationPaymentView = () => {
   const { query, reload } = useRouter();
+  const [timeLeft, setTimeLeft] = useState(60);
   const { isLoading, data } = useQuery({
     queryKey: ["payment-verification", query.orderId],
     queryFn: async () => {
@@ -20,6 +24,16 @@ const VerificationPaymentView = () => {
     refetchInterval: 60 * 1000,
     retry: false,
   });
+
+  useInterval((timer) => {
+    setTimeLeft((prevTime) => {
+      if (prevTime <= 1) {
+        clearInterval(timer);
+        return 0;
+      }
+      return prevTime - 1;
+    });
+  }, 1000);
 
   if (isLoading)
     return (
@@ -48,6 +62,25 @@ const VerificationPaymentView = () => {
           height={300}
         />
       </div>
+      <div className="flex flex-col items-center">
+        <h2>Time left</h2>
+        <NumberFlowGroup>
+          <div className="~text-3xl/4xl flex items-baseline font-semibold">
+            <NumberFlow
+              trend={-1}
+              value={Math.floor((timeLeft % 3600) / 60)}
+              format={{ minimumIntegerDigits: 2 }}
+            />
+            <NumberFlow
+              trend={-1}
+              prefix=":"
+              value={timeLeft % 60}
+              digits={{ 1: { max: 5 } }}
+              format={{ minimumIntegerDigits: 2 }}
+            />
+          </div>
+        </NumberFlowGroup>
+      </div>
       <div className="flex flex-col justify-center gap-4 w-full">
         <div className="shadow-md bg-primary-light/5 rounded-md p-4">
           <h1>Payment Method</h1>
@@ -61,7 +94,7 @@ const VerificationPaymentView = () => {
           Refresh
         </Button>
         <Button variant="link" size="sm" asChild>
-          <Link href={"/"}>Back to home</Link>
+          <Link href={"/products?page=1"}>Back to shopping</Link>
         </Button>
       </div>
     </section>
