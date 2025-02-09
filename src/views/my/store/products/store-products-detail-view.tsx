@@ -44,9 +44,9 @@ const StoreProductsDetail = () => {
     );
 
   return (
-    <section className="col-span-2 flex flex-col gap-8 pb-10">
+    <section className="lg:col-span-2 flex flex-col gap-8 pb-10">
       <ButtonDeleteProduct medias={data?.medias ?? []} id={data?.id ?? ""} />
-      <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-lg">
+      <div className="w-full md:h-[600px] h-[400px] rounded-xl overflow-hidden shadow-lg">
         <Carousel effect="fade" autoPlay={false}>
           {data?.medias?.map((media) =>
             media.type === "image" ? (
@@ -74,44 +74,38 @@ const StoreProductsDetail = () => {
         </Carousel>
       </div>
       <h1 className="text-3xl font-bold">{data?.name}</h1>
-      <div className="rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4">Variants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {data?.variant.map((v, i) => (
-            <CardProductVariant
-              key={v.name_variant}
-              {...v}
-              i={i}
-              handleRemove={() => {}}
-            />
-          ))}
-        </div>
+      <h2 className="text-2xl font-semibold mb-4">Variants</h2>
+      <div className="grid grid-cols-2 gap-4">
+        {data?.variant.map((v, i) => (
+          <CardProductVariant
+            key={v.name_variant}
+            {...v}
+            i={i}
+            handleRemove={() => {}}
+          />
+        ))}
       </div>
-      <div className="rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4">Description</h2>
-        <p className="text-lg leading-relaxed">{data?.description}</p>
+      <h2 className="text-2xl font-semibold mb-4">Description</h2>
+      <p className="text-lg leading-relaxed text-justify">
+        {data?.description}
+      </p>
+      <h2 className="text-2xl font-semibold mb-4">Available Promo Codes</h2>
+      <div className="flex mt-4 flex-wrap gap-3">
+        {data?.promos.map((promo) => (
+          <Badge
+            key={promo.id}
+            variant="secondary"
+            className="text-sm py-1 px-3"
+          >
+            {promo.code}
+          </Badge>
+        ))}
       </div>
-      <div className="rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4">Available Promo Codes</h2>
-        <div className="flex mt-4 flex-wrap gap-3">
-          {data?.promos.map((promo) => (
-            <Badge
-              key={promo.id}
-              variant="secondary"
-              className="text-sm py-1 px-3"
-            >
-              {promo.code}
-            </Badge>
-          ))}
-        </div>
-      </div>
-      <div className="rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
-        <div className="flex mt-4 flex-col gap-3">
-          {data?.comments.length ?? 0 > 0 ? null : (
-            <p className="self-center italic text-lg">Comments not available</p>
-          )}
-        </div>
+      <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+      <div className="flex mt-4 flex-col gap-3">
+        {data?.comments.length ?? 0 > 0 ? null : (
+          <p className="self-center italic text-lg">Comments not available</p>
+        )}
       </div>
     </section>
   );

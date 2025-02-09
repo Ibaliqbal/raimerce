@@ -9,9 +9,9 @@ interface ErrorResponse {
 }
 
 export type ApiResponse = {
-  message: string,
-  statusCode: number
-}
+  message: string;
+  statusCode: number;
+};
 
 async function fetchProvincies() {
   const res = await axios.get(`${API_LOCATION}/provinces.json`);
@@ -44,7 +44,14 @@ async function fetchDistricts(city: string) {
   return result;
 }
 
-function secureMethods<T extends ErrorResponse>(
+function secureMethods<
+  T extends
+    | ErrorResponse
+    | {
+        status: boolean;
+        message: string;
+      }
+>(
   acceptMethods: string[],
   req: NextApiRequest,
   res: NextApiResponse<T>,

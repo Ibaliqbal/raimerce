@@ -59,7 +59,7 @@ textarea::-webkit-scrollbar-thumb:hover,
 }
 
 .style-base-modal {
-  @apply dark:bg-black bg-white dark:bg-opacity-80 fixed m-auto inset-0 z-[70] rounded-md;
+  @apply dark:bg-black bg-white dark:bg-opacity-80 bg-opacity-90 fixed m-auto inset-0 z-[70] rounded-md;
 }
 
 /* HTML: <div class="loader"></div> */

@@ -6,7 +6,7 @@ const ProductCategories = () => {
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Categories</h1>
-      <div className="flex gap-4 flex-wrap">
+      <div className="lg:flex gap-4 grid md:grid-cols-4 grid-cols-3">
         {categories.map((category, i) => (
           <Link
             href={`/products?page=1&c=${category.name.toLowerCase()}`}
@@ -14,11 +14,12 @@ const ProductCategories = () => {
             key={i}
           >
             <Image
-              figureClassName=""
+              figureClassName="md:w-[80px] md:h-[80px] w-[50px] h-[50px]"
               width={80}
               height={80}
               src={category.image}
               alt="Icon"
+              className="w-full h-full"
             />
             <p>{category.name}</p>
           </Link>

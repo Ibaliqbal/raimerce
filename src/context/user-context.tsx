@@ -18,7 +18,9 @@ type UserContextType = {
         TUser,
         "address" | "avatar" | "email" | "name" | "typeLogin" | "phone"
       > & {
-        store: Pick<TStore, "id">;
+        store: Pick<TStore, "id"> & {
+          ordersCount: number;
+        };
         cartsCount: number;
         pendingOrdersCount: number;
       })

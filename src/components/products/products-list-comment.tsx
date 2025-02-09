@@ -21,7 +21,7 @@ const ProductsListComment = ({ datas }: Props) => {
     <div className="flex flex-col gap-4">
       <h3 className="text-xl">Comments</h3>
       <div className="flex flex-col gap-4 divide-y-2 divide-gray-500">
-        {Array.from({ length: 3 }).map((_, i) => (
+        {datas.map((comment, i) => (
           <ProductsComments key={i} />
         ))}
       </div>

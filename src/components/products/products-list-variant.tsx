@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { VariantSchemaT } from "@/types/product";
 import Image from "../ui/image";
-import Video from "../ui/video";
 import { motion } from "framer-motion";
 import ProductsVariant from "./products-variant";
 
@@ -21,7 +20,7 @@ const ProductsListVariant = ({
   const { push } = useRouter();
 
   return (
-    <div className="flex flex-col gap-6 rounded-lg shadow-lg">
+    <div className="flex flex-col gap-6 rounded-lg">
       <motion.div
         className="flex gap-3 flex-wrap"
         initial={{ opacity: 0, y: 20 }}
@@ -60,7 +59,7 @@ const ProductsListVariant = ({
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="grid md:grid-cols-3 grid-cols-2 gap-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -68,27 +67,18 @@ const ProductsListVariant = ({
         {defaultVariant.medias.map((media, index) => (
           <motion.div
             key={media.keyFile}
-            className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+            className="relative overflow-hidden rounded-lg"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           >
-            {media.type === "image" ? (
-              <Image
-                src={media.url}
-                alt={`Product Image ${index + 1}`}
-                width={400}
-                height={400}
-                figureClassName="w-full h-[250px] relative rounded-lg overflow-hidden"
-                className="w-full h-full absolute inset-0 object-cover object-center transition-transform duration-300 ease-in-out"
-              />
-            ) : (
-              <Video
-                className="w-full h-[250px] object-cover rounded-lg"
-                src={media.url}
-                controls
-                muted
-              />
-            )}
+            <Image
+              src={media.url}
+              alt={`Product Image ${index + 1}`}
+              width={400}
+              height={400}
+              figureClassName="w-full md:h-[250px] h-[150px] relative rounded-lg overflow-hidden"
+              className="w-full h-full absolute inset-0 object-cover object-center transition-transform duration-300 ease-in-out"
+            />
           </motion.div>
         ))}
       </motion.div>

@@ -13,7 +13,7 @@ import {
   updateProfileSchema,
 } from "@/types/user";
 import { verify } from "@/utils/helper";
-import { and, eq, sql } from "drizzle-orm";
+import { and, arrayContains, eq, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 import bcrypt from "bcrypt";
@@ -28,7 +28,9 @@ type Data = ApiResponse & {
         TUser,
         "address" | "avatar" | "email" | "name" | "typeLogin" | "phone"
       > & {
-        store: Pick<TStore, "id">;
+        store: Pick<TStore, "id"> & {
+          ordersCount: number;
+        };
         cartsCount: number;
         pendingOrdersCount: number;
       })
@@ -123,7 +125,11 @@ export default async function handler(
             },
           });
 
-          if (checkHasAvatar && checkHasAvatar.avatar) {
+          if (
+            checkHasAvatar &&
+            checkHasAvatar.avatar &&
+            Boolean(checkHasAvatar.avatar.keyFile)
+          ) {
             await instance.delete(`/files/${checkHasAvatar.avatar.keyFile}`);
           }
 
@@ -206,6 +212,8 @@ export default async function handler(
           .json({ message: "Success create store", statusCode: 201 });
       }
 
+      let ordersStoreCount = 0;
+
       const data = await db.query.UsersTable.findFirst({
         where: eq(UsersTable.id, decoded.id),
         columns: {
@@ -243,11 +251,25 @@ export default async function handler(
           .status(404)
           .json({ message: "User not found", statusCode: 404, data: null });
 
+      if (data.store?.id) {
+        ordersStoreCount = await db.$count(
+          OrdersTable,
+          and(
+            arrayContains(OrdersTable.storeIds, [data.store.id]),
+            eq(OrdersTable.status, "success")
+          )
+        );
+      }
+
       return res.status(200).json({
         message: "Success get data user login",
         statusCode: 200,
         data: {
           ...data,
+          store: {
+            id: data.store?.id,
+            ordersCount: ordersStoreCount,
+          },
           cartsCount,
           pendingOrdersCount,
         },

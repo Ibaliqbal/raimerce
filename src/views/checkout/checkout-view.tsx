@@ -25,7 +25,6 @@ import { toast } from "react-hot-toast";
 import { DiscountSchemaT } from "@/types/promo";
 import { useRouter } from "next/router";
 import { useLoadingScreen } from "@/context/loading-screen-context";
-import Video from "@/components/ui/video";
 
 const CheckoutView = () => {
   const { push } = useRouter();
@@ -86,7 +85,16 @@ const CheckoutView = () => {
             !discount.some((cart) => cart.appliedTo === product)
         );
 
-      if (filteredCoupon.length < 0) {
+      console.log(filteredCoupon);
+
+      if (filteredCoupon.length <= 0) {
+        setStatus({
+          type: "promo",
+          status: "success",
+        });
+
+        form.reset();
+
         return toast.error(
           "Coupon is not applicable to any of your selected products"
         );
@@ -133,16 +141,14 @@ const CheckoutView = () => {
 
       toast.success(res.data.message);
 
-      // push(`/verification_payment?orderId=${res.data.data.orderID}`);
+      push(`/verification_payment?orderId=${res.data.data.orderID}`);
 
       setStatus({
         type: "checkout",
         status: "success",
       });
 
-      // setOpen(true);
-
-      // setDiscount([]);
+      setOpen(true);
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
@@ -157,32 +163,26 @@ const CheckoutView = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <main className="flex flex-col gap-8 wrapper-page max-w-4xl mx-auto py-8">
-      <section className="p-4">
+    <main className="flex flex-col gap-8 wrapper-page max-w-4xl mx-auto py-8 px-4">
+      <section className="py-4">
         <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
         <CardAddress />
       </section>
 
-      <section className="p-4 rounded-lg shadow">
+      <section className="py-4 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
         {data?.map((product) => (
-          <div key={product.id} className="flex items-center mb-4">
-            {product.product.variant?.medias[0].type === "image" ? (
-              <Image
-                src={product.product.variant?.medias[0].url as string}
-                alt={product.product.name}
-                width={200}
-                height={200}
-                className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
-              />
-            ) : (
-              <Video
-                src={product.product.variant?.medias[0].url as string}
-                width={200}
-                height={200}
-                className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
-              />
-            )}
+          <div
+            key={product.id}
+            className="flex md:items-center mb-4 gap-4 md:flex-row flex-col"
+          >
+            <Image
+              src={product.product.variant?.medias[0].url as string}
+              alt={product.product.name}
+              width={200}
+              height={200}
+              className="rounded-md mr-4 w-[200px] h-[200px] object-cover object-center"
+            />
             <div className="flex-grow">
               <h3 className="font-semibold">{product.product.name}</h3>
               <p className="text-sm text-gray-600">
@@ -221,7 +221,7 @@ const CheckoutView = () => {
         </div>
       </section>
 
-      <section className="p-4 rounded-lg shadow">
+      <section className="py-4 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-4">Payment Method</h2>
         <RadioGroup
           defaultValue={selectedPayment}
@@ -236,7 +236,7 @@ const CheckoutView = () => {
         </RadioGroup>
       </section>
 
-      <section className="p-4 rounded-lg shadow">
+      <section className="py-4 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-4">Coupon</h2>
         <form className="flex gap-2" onSubmit={handleApply}>
           <Input
@@ -288,7 +288,7 @@ const CheckoutView = () => {
         ) : null}
       </section>
 
-      <section className="p-4 rounded-lg shadow">
+      <section className="py-4 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-4">Order Total</h2>
         <div className="space-y-2">
           <div className="flex justify-between">
@@ -296,7 +296,7 @@ const CheckoutView = () => {
             <p>{convertPrice(calculateOrderSubtotal(data ?? [], discount))}</p>
           </div>
           <div className="flex justify-between">
-            <p>Shipping</p>
+            <p>Tax</p>
             <p>{convertPrice(fee)}</p>
           </div>
           <Separator className="my-2" />

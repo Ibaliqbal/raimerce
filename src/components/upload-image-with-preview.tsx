@@ -4,15 +4,11 @@ import { UploadButton } from "@/utils/uploadthing";
 
 interface UploadImageProps {
   url?: string;
-  endpoint:
-    | "imageUploader"
-    | "mediaPost"
-    | "uploadHeaderPhotoStore"
-    | "uploadMediaNews";
+  endpoint: "imageUploader" | "uploadHeaderPhotoStore" | "uploadMediaNews";
   onUploadComplete: (media: TMedia) => void;
   isLoading?: boolean;
   alt?: string;
-  customHeight?: number;
+  customHeight?: string;
 }
 
 const UploadImageWithPreview = ({
@@ -24,7 +20,7 @@ const UploadImageWithPreview = ({
   customHeight,
 }: UploadImageProps) => {
   return (
-    <div className={`relative w-full h-[${customHeight}px] group`}>
+    <div className={`relative w-full ${customHeight} group`}>
       {url ? (
         <Image
           alt={alt}

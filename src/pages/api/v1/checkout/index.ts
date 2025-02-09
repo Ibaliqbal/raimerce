@@ -1,6 +1,8 @@
 import { ApiResponse, secureMethods } from "@/utils/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
+  calcuateGrossAmount,
+  convertDiscAmount,
   groupCheckoutByProduct,
   groupDiscountsByCode,
   verify,
@@ -19,6 +21,7 @@ import { eq, inArray, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { VariantSchemaT } from "@/types/product";
 import axios from "axios";
+import { fee } from "@/utils/constant";
 
 type Data = ApiResponse & {
   data?: {
@@ -43,6 +46,7 @@ export default function handler(
       ).toString("base64");
       const basicAuth = `Basic ${encodedSecretKeyMidtrans}`;
       const codeTransaction = `TRX-${nanoid(10)}-${nanoid(10)}`;
+      let vaNumber = "";
 
       if (!success)
         return res.status(400).json({
@@ -50,41 +54,13 @@ export default function handler(
           statusCode: 400,
         });
 
-      // const parameter = {
-      //   payment_type: "bank_transfer",
-      //   transaction_details: {
-      //     order_id: codeTransaction,
-      //     gross_amount: 40000,
-      //   },
-      //   bank_transfer: {
-      //     bank: data.paymentMethod.toLowerCase(),
-      //   },
-      // };
-
-      // const responseMidtrans = await axios.post(
-      //   "https://api.sandbox.midtrans.com/v2/charge",
-      //   parameter,
-      //   {
-      //     headers: {
-      //       Accept: "application/json",
-      //       "Content-Type": "application/json",
-      //       Authorization: basicAuth,
-      //     },
-      //   }
-      // );
-
-      // console.log(responseMidtrans.data);
-
-      // return res.status(201).json({
-      //   message: "Checkout success",
-      //   statusCode: 201,
-      // });
-
       const detailUser = await db.query.UsersTable.findFirst({
         where: eq(UsersTable.id, decoded.id),
         columns: {
           address: true,
           phone: true,
+          email: true,
+          name: true,
         },
       });
 
@@ -113,6 +89,105 @@ export default function handler(
           },
         },
       });
+
+      const parameter = {
+        payment_type: "bank_transfer",
+        transaction_details: {
+          order_id: codeTransaction,
+          gross_amount:
+            calcuateGrossAmount(carts, {
+              discounts: data.discounts,
+            }) + fee,
+        },
+        bank_transfer: {
+          bank: data.paymentMethod.toLowerCase(),
+        },
+        custom_expiry: {
+          unit: "day",
+          expiry_duration: 1,
+        },
+        customer_details: {
+          first_name: detailUser.name,
+          phone: detailUser.phone,
+          email: detailUser.email,
+          city: detailUser.address.city,
+          address: detailUser.address.spesific,
+          shipping_address: {
+            first_name: detailUser.name,
+            phone: detailUser.phone,
+            email: detailUser.email,
+            city: detailUser.address.city,
+            address: detailUser.address.spesific,
+          },
+        },
+        item_details: [
+          ...carts.map((cart) => ({
+            id: cart.id,
+            name: `${cart.product.name} - ${cart.variant}`,
+            quantity: cart.quantity,
+            price:
+              cart.product.variant.find(
+                (variant) => variant.name_variant === cart.variant
+              )?.price ?? 0,
+          })),
+          {
+            id: "T01",
+            name: "Tax",
+            price: fee,
+            quantity: 1,
+          },
+          {
+            id: "P01",
+            name: "Total Promo",
+            price:
+              data.discounts
+                .map((disc) => {
+                  const findItProduct = carts.find(
+                    (cart) => cart.product.id === disc.appliedTo
+                  );
+
+                  if (!findItProduct) {
+                    console.log(
+                      `Product not found for discount applied to: ${disc.appliedTo}`
+                    );
+                    return 0;
+                  }
+
+                  return convertDiscAmount(
+                    findItProduct.quantity *
+                      (findItProduct.product.variant.find(
+                        (p) => p.name_variant === findItProduct.variant
+                      )?.price ?? 0),
+                    disc.amount
+                  );
+                })
+                .reduce((acc, curr) => acc + curr, 0) * -1,
+            quantity: 1,
+          },
+        ],
+      };
+
+      try {
+        const responseMidtrans = await axios.post(
+          "https://api.sandbox.midtrans.com/v2/charge",
+          parameter,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: basicAuth,
+            },
+          }
+        );
+
+        vaNumber = responseMidtrans.data.va_numbers[0].va_number;
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Failed to checkout",
+          statusCode: 500,
+        });
+      }
 
       const updateProducts = async () => {
         for (const product of groupCheckoutByProduct(carts)) {
@@ -199,7 +274,7 @@ export default function handler(
             storeIds: data.storeIDs,
             transactionCode: codeTransaction,
             paymentMethod: data.paymentMethod,
-            vaNumber: `${Math.floor(Math.random() * 1000000) + 100000}`,
+            vaNumber,
             products: filteredVariantProduct,
             promoCodes: data.discounts,
           })

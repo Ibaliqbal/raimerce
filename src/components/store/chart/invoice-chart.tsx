@@ -16,7 +16,7 @@ const InvoiceChart = () => {
       {isLoading ? (
         <Skeleton className="w-full h-10" />
       ) : (
-        <p className="text-3xl">{convertPrice(data.total)}</p>
+        <p className="md:text-3xl text-xl">{convertPrice(data.total)}</p>
       )}
       {isLoading ? (
         <Skeleton className="w-full h-[350px]" />

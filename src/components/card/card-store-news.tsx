@@ -21,13 +21,13 @@ const CardStoreNews = ({
 }: Props) => {
   return (
     <Card id={id.split("-")[0]} key={id.split("-")[0]}>
-      <section className="h-[400px] grid grid-cols-2 gap-3">
+      <section className="h-[400px] grid md:grid-cols-2 gap-3">
         {medias?.length === 3 ? (
           <>
-            <Card.Image src="/Banner4.png" className="h-full group" />
+            <Card.Image src={medias[0].url} className="h-full group" />
             <div className="flex flex-col gap-4">
-              <Card.Image src="/Banner4.png" className="h-full group" />
-              <Card.Image src="/Banner4.png" className="h-full group" />
+              <Card.Image src={medias[1].url} className="h-full group" />
+              <Card.Image src={medias[2].url} className="h-full group" />
             </div>
           </>
         ) : (
@@ -45,11 +45,13 @@ const CardStoreNews = ({
         className="pb-4 border-b border-gray-500 flex flex-col gap-3"
       >
         {content?.split("\n\n").map((paragraph, index) => (
-          <p key={index}>{paragraph.trim()}</p>
+          <p key={index} className="text-justify">
+            {paragraph.trim()}
+          </p>
         ))}
         <p>{format(new Date(createdAt as Date), "dd MMMM, yyyy")}</p>
       </Card.Description>
-      <Card.Footer>
+      <Card.Footer className="items-center">
         {isOwner && (
           <ButtonDeleteNews
             id={id}
@@ -65,7 +67,7 @@ const CardStoreNews = ({
 const CardStoreNewsSkeleton = () => {
   return (
     <Card className="rounded-md border border-gray-500">
-      <section className="h-[400px] grid grid-cols-2 gap-3">
+      <section className="md:h-[400px] h-[200px] grid md:grid-cols-2 gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton className="h-full w-full" key={i} />
         ))}

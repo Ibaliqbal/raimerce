@@ -39,8 +39,10 @@ const StoreDashboardView = () => {
   if (data?.loading) return <Loader className="col-span-2" />;
 
   return (
-    <section className="col-span-2 flex flex-col gap-4 pb-16">
-      <h1 className="text-3xl">👋 Welcome back {data?.store?.owner?.name}</h1>
+    <section className="lg:col-span-2 flex flex-col gap-4 pb-8">
+      <h1 className="md:text-3xl text-xl">
+        👋 Welcome back {data?.store?.owner?.name}
+      </h1>
       <InvoiceChart />
       <PopularProductsChart />
       <FollowersChart />

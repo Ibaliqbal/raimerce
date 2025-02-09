@@ -1,6 +1,5 @@
 import { ComponentPropsWithoutRef, useState } from "react";
 import { Button } from "./ui/button";
-import Video from "./ui/video";
 import { MdClose } from "react-icons/md";
 import { RiLoader5Line } from "react-icons/ri";
 import Image from "./ui/image";
@@ -11,7 +10,6 @@ import instance from "@/lib/axios/instance";
 import { ApiResponse } from "@/utils/api";
 
 type Props = {
-  type: "image" | "video";
   src: string;
   alt?: string;
   keyFile: string;
@@ -20,7 +18,6 @@ type Props = {
 } & ComponentPropsWithoutRef<"div">;
 
 const MediaPreview = ({
-  type,
   src,
   alt,
   className,
@@ -33,30 +30,21 @@ const MediaPreview = ({
     "success"
   );
   return (
-    <div className={cn("relative h-[350px] group", className)} {...rest}>
-      {type === "image" ? (
-        <Image
-          src={src}
-          alt={alt ?? "Product"}
-          width={250}
-          height={450}
-          className="rounded-md absolute w-full h-full object-cover object-center"
-          figureClassName="w-full h-full relative rounded-md"
-        />
-      ) : (
-        <Video
-          src={src}
-          aria-label={alt}
-          autoPlay
-          muted
-          loop
-          className="rounded-md absolute w-full h-full object-contain object-center"
-        />
-      )}
-
+    <div
+      className={cn("relative md:h-[350px] h-[200px] group", className)}
+      {...rest}
+    >
+      <Image
+        src={src}
+        alt={alt ?? "Product"}
+        width={250}
+        height={450}
+        className="rounded-md absolute w-full h-full object-cover object-center"
+        figureClassName="w-full h-full relative rounded-md"
+      />
       <div
         className={cn(
-          "bg-white/55 dark:bg-[#121212]/55 backdrop-blur-md flex items-center justify-center py-2 absolute w-full top-0 left-0 h-full rounded-md transition-opacity duration-300 ease-in group-hover:opacity-100 opacity-0 z-10",
+          "bg-white/55 dark:bg-[#121212]/55 lg:backdrop-blur-md backdrop-blur-sm flex items-center justify-center py-2 absolute w-full top-0 left-0 h-full rounded-md transition-opacity duration-300 ease-in lg:group-hover:opacity-100 lg:opacity-0 opacity-100 z-10",
           status === "submitting" && "opacity-100"
         )}
       >
@@ -83,9 +71,9 @@ const MediaPreview = ({
           }}
         >
           {status === "submitting" ? (
-            <RiLoader5Line className="text-3xl animate-spin" />
+            <RiLoader5Line className="md:text-3xl text-xl animate-spin" />
           ) : (
-            <MdClose className="text-3xl" />
+            <MdClose className="md:text-3xl text-xl" />
           )}
         </Button>
       </div>

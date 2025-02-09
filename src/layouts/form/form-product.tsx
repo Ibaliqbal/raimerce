@@ -46,7 +46,7 @@ const FormProduct = ({
 
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-center">{title}</h1>
+      <h1 className="md:text-2xl text-xl font-bold text-center">{title}</h1>
       <Form {...form}>
         <form
           className="flex flex-col gap-4"
@@ -60,13 +60,13 @@ const FormProduct = ({
             }
           })}
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="md:grid md:grid-cols-2 flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg">Name</FormLabel>
+                  <FormLabel className="md:text-lg text-base">Name</FormLabel>
                   <FormControl>
                     <Input
                       className="text-base py-7 border border-slate-700"
@@ -87,7 +87,9 @@ const FormProduct = ({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg">Category</FormLabel>
+                  <FormLabel className="md:text-lg text-base">
+                    Category
+                  </FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -123,11 +125,11 @@ const FormProduct = ({
             name="variant"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-3">
-                <h3 className="text-lg">Variants</h3>
+                <h3 className="md:text-lg text-base">Variants</h3>
                 <FormControl>
                   <div className="flex flex-col gap-4">
                     {field.value.length > 0 ? (
-                      <div className="grid grid-cols-4 gap-4">
+                      <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4">
                         {field.value.map((data, i) => (
                           <CardProductVariant
                             i={i}
@@ -161,7 +163,9 @@ const FormProduct = ({
             render={({ field }) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                  <FormLabel className="text-lg">Description</FormLabel>
+                  <FormLabel className="md:text-lg text-base">
+                    Description
+                  </FormLabel>
                   <p>{field.value?.replace(/\s/g, "").length ?? 0}/1500</p>
                 </div>
                 <FormControl>

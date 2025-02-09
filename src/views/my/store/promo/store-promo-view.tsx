@@ -7,7 +7,6 @@ import InfiniteScrollLayout from "@/layouts/infinite-scroll-layout";
 import { TPromo } from "@/lib/db/schema";
 
 const StorePromoView = () => {
-
   const {
     isLoading,
     isFetchingNextPage,
@@ -30,7 +29,7 @@ const StorePromoView = () => {
 
   return (
     <InfiniteScrollLayout
-      className="col-span-2"
+      className="lg:col-span-2 pb-8"
       callback={() => hasNextPage && !isFetching && fetchNextPage()}
       isFetching={isFetchingNextPage}
     >
@@ -41,7 +40,7 @@ const StorePromoView = () => {
             <Link href={"/my/store/promo/new"}>Create new promo</Link>
           </Button>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 grid-cols-2 gap-4">
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => (
                 <CardPromo.Skeleton key={i} />

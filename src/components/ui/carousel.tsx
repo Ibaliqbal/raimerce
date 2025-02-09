@@ -58,7 +58,7 @@ const Carousel = ({
   return (
     <section
       className={cn(
-        "w-full h-full rounded-xl group relative overflow-hidden",
+        "w-full h-full md:rounded-xl rounded-md group relative overflow-hidden",
         className
       )}
       {...rest}

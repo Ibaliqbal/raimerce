@@ -8,3 +8,5 @@ export const chekcoutBody = z.object({
   discounts: z.array(discountSchema),
   storeIDs: z.array(z.string()),
 });
+
+export type CheckoutBodyT = z.infer<typeof chekcoutBody>

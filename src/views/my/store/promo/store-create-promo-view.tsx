@@ -1,10 +1,14 @@
+import { Button } from "@/components/ui/button";
 import FormPromo from "@/layouts/form/form-promo";
 import instance from "@/lib/axios/instance";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import { FaArrowLeft } from "react-icons/fa";
 
 const StoreCreatePromoView = () => {
+  const router = useRouter()
   const { data, isLoading } = useQuery({
     queryKey: ["products", "owner"],
     queryFn: async () => {
@@ -16,7 +20,15 @@ const StoreCreatePromoView = () => {
   });
   return (
     <section className="col-span-2 flex flex-col gap-4">
-      <h1 className="text-2xl self-center font-semibold">
+      <Button
+        className="flex items-center gap-3 w-fit"
+        variant="icon"
+        onClick={() => router.back()}
+      >
+        <FaArrowLeft />
+        Back
+      </Button>
+      <h1 className="md:text-2xl text-xl self-center font-semibold">
         Craete discount for your products
       </h1>
       <FormPromo

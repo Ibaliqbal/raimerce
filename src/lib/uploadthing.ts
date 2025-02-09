@@ -9,7 +9,7 @@ const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
 const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({ image: { maxFileSize: "2MB" } })
+  imageUploader: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
     // Set permissions and file types for this FileRoute
     .onUploadComplete(async ({ file }) => {
       const media: TMedia = {
@@ -21,10 +21,6 @@ const ourFileRouter = {
 
       return { media };
     }),
-  mediaPost: f({
-    image: { maxFileSize: "2MB", maxFileCount: 4 },
-    video: { maxFileSize: "4MB", maxFileCount: 1 },
-  }).onUploadComplete(() => {}),
   uploadHeaderPhotoStore: f({
     image: { maxFileSize: "2MB", maxFileCount: 1 },
   })
@@ -47,7 +43,7 @@ const ourFileRouter = {
       return { media };
     }),
   uploadMediaNews: f({
-    image: { maxFileSize: "2MB", maxFileCount: 4 },
+    image: { maxFileSize: "2MB", maxFileCount: 1 },
   }).onUploadComplete(async (data) => {
     const media: TMedia = {
       keyFile: data.file.key,

@@ -227,7 +227,7 @@ export const OrdersTable = pgTable(
       .array()
       .default(sql`ARRAY[]::jsonb[]`)
       .$type<Array<string>>(),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
     paymentMethod: varchar("payment_method", { length: 255 }).notNull(),
     productsID: jsonb("products_id")

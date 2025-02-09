@@ -30,7 +30,7 @@ const CartView = () => {
 
   return (
     <InfiniteScrollLayout
-      className="col-span-2"
+      className="lg:col-span-2 pn-8"
       callback={() => hasNextPage && !isFetching && fetchNextPage()}
       isFetching={isFetchingNextPage}
     >

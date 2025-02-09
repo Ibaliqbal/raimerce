@@ -20,8 +20,10 @@ import { toast } from "react-hot-toast";
 import instance from "@/lib/axios/instance";
 import { useRouter } from "next/router";
 import UploadImageWithPreview from "@/components/upload-image-with-preview";
+import { useLoadingScreen } from "@/context/loading-screen-context";
 
 const FormGettingStartedStore = () => {
+  const { setOpen } = useLoadingScreen();
   const router = useRouter();
   const data = useGetUserLogin();
   const form = useForm<GettingStartedSchemaT>({
@@ -45,6 +47,7 @@ const FormGettingStartedStore = () => {
       const res = await instance.post("/stores", data);
       toast.success(res.data.message);
       form.reset();
+      setOpen(true);
       router.push("/my/store");
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -68,7 +71,7 @@ const FormGettingStartedStore = () => {
                 <UploadImageWithPreview
                   endpoint="uploadHeaderPhotoStore"
                   url={field.value.url}
-                  customHeight={300}
+                  customHeight={"md:h-[300px] h-[200px]"}
                   onUploadComplete={async (media) => {
                     if (!!field.value.keyFile) {
                       await instance.delete(`/files/${field.value.keyFile}`);

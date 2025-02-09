@@ -1,16 +1,7 @@
 import Card from "@/components/ui/card";
 import { Skeleton } from "../ui/skeleton";
 import { TPromo } from "@/lib/db/schema";
-import { HiOutlineDotsVertical } from "react-icons/hi";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+import DropdownPromo from "../dropdown/dropdown-promo";
 
 type Props = Pick<
   TPromo,
@@ -26,28 +17,12 @@ const CardPromo = ({ code, uses, expiredAt, id }: Props) => {
           : "border-gray-500"
       } rounded-xl`}
     >
-      <div className="self-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <HiOutlineDotsVertical className="text-xl" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link
-                href={`/my/store/promo/${encodeURIComponent(id)}/update`}
-                className="cursor-pointer"
-              >
-                Update
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <Card.Icon src="/icon/discount-voucher-icon.png" className="h-[150px]" />
-      <Card.Description asLink={false}>
+      <DropdownPromo id={id} />
+      <Card.Icon
+        src="/icon/discount-voucher-icon.png"
+        className="md:h-[150px] h-[100px]"
+      />
+      <Card.Description asLink={false} className="md:text-base text-sm">
         <h2>
           <strong>Code Promo</strong> : {code}
         </h2>
@@ -65,7 +40,7 @@ const CardPromo = ({ code, uses, expiredAt, id }: Props) => {
 const CardPromoSkeleton = () => {
   return (
     <Card className="border border-gray-500 rounded-xl">
-      <Skeleton className="w-full h-[200px]" />
+      <Skeleton className="w-full md:h-[200px] h-[100px]" />
       <Card.Description asLink={false}>
         <Skeleton className="w-full h-[20px]" />
         <Skeleton className="w-full h-[20px]" />

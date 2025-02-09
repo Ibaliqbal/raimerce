@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
 import FormPromo from "@/layouts/form/form-promo";
 import instance from "@/lib/axios/instance";
@@ -6,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import { FaArrowLeft } from "react-icons/fa";
 
 const StoreUpdatePromoView = () => {
   const router = useRouter();
@@ -30,6 +32,14 @@ const StoreUpdatePromoView = () => {
 
   return (
     <section className="col-span-2 flex flex-col gap-4">
+      <Button
+        className="flex items-center gap-3 w-fit"
+        variant="icon"
+        onClick={() => router.back()}
+      >
+        <FaArrowLeft />
+        Back
+      </Button>
       <h1 className="text-xl self-center">Update discount for your products</h1>
       <FormPromo
         products={products}

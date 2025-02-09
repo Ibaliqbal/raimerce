@@ -9,7 +9,7 @@ import ListProducts from "./list-products";
 const HomeView = () => {
   return (
     <main className="flex flex-col gap-4 wrapper-page pb-10">
-      <div className="h-[500px]">
+      <div className="md:h-[500px] h-[200px]">
         <Carousel thumb={false} effect="slideAndOpacity">
           {myBanners.map((banner) => (
             <Image

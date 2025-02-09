@@ -12,11 +12,8 @@ import { toast } from "react-hot-toast";
 import instance from "@/lib/axios/instance";
 import { useLoadingScreen } from "@/context/loading-screen-context";
 import { TOrder } from "@/lib/db/schema";
-import Modal from "../ui/modal";
-import { motion } from "framer-motion";
-import { Button } from "../ui/button";
-import { RiLoader5Line } from "react-icons/ri";
 import { useState } from "react";
+import ModalAlertDelete from "../modal/modal-alert-delete";
 
 type Props = {
   id: string;
@@ -92,73 +89,33 @@ const DropdownOrder = ({ id, status, isOwner, products }: Props) => {
             )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Modal open={openModal} setOpen={() => {}}>
-        <motion.section
-          initial={{ opacity: 0.2, scale: 0.2 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          exit={{
-            opacity: 0.2,
-            scale: 0.2,
-          }}
-          transition={{
-            duration: 0.4,
-          }}
-          className="md:w-[700px] w-[320px] h-fit flex flex-col items-center justify-center overflow-auto style-base-modal p-3 py-10"
-        >
-          <div className="flex flex-col gap-5 w-full px-10">
-            <h1 className="font-bold text-2xl">Canceled order</h1>
-            <p className="text-lg text-gray-400">
-              Are you sure you want to cancel this order?
-            </p>
-            <div className="flex gap-4 justify-end">
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={() => {
-                  setOpenModal(false);
-                }}
-              >
-                No
-              </Button>
-              <Button
-                variant="destructive"
-                size="lg"
-                className="flex items-center gap-2"
-                disabled={statusSubmit === "submitting"}
-                onClick={async () => {
-                  setStatus("submitting");
-                  toast.promise(
-                    async () =>
-                      await instance.put(`/orders/${id}?type=cancel_order`),
-                    {
-                      loading: "Loading...",
-                      success: (res) => {
-                        setOpenModal(false);
-                        setStatus("success");
-                        setOpen(true);
-                        location.reload();
-                        return res.data.message;
-                      },
-                      error: () => {
-                        setStatus("error");
-                        return "Internal server error";
-                      },
-                    }
-                  );
-                }}
-              >
-                {statusSubmit === "submitting" && (
-                  <RiLoader5Line className="animate-spin" />
-                )}
-                Yes
-              </Button>
-            </div>
-          </div>
-        </motion.section>
-      </Modal>
+      <ModalAlertDelete
+        open={openModal}
+        setOpen={setOpenModal}
+        title="Delete order"
+        description="Are you sure you want to delete this order?"
+        status={statusSubmit}
+        handleYes={() => {
+          setStatus("submitting");
+          toast.promise(
+            async () => await instance.put(`/orders/${id}?type=cancel_order`),
+            {
+              loading: "Loading...",
+              success: (res) => {
+                setOpenModal(false);
+                setStatus("success");
+                setOpen(true);
+                location.reload();
+                return res.data.message;
+              },
+              error: () => {
+                setStatus("error");
+                return "Internal server error";
+              },
+            }
+          );
+        }}
+      />
     </>
   );
 };

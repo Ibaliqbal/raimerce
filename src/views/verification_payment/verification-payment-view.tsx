@@ -5,25 +5,26 @@ import instance from "@/lib/axios/instance";
 import Loader from "@/components/ui/loader";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useInterval from "@/hooks/useInterval";
 import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
+import { FaRegCopy } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const VerificationPaymentView = () => {
   const { query, reload } = useRouter();
-  const [timeLeft, setTimeLeft] = useState(60);
+
   const { isLoading, data } = useQuery({
     queryKey: ["payment-verification", query.orderId],
     queryFn: async () => {
-      const { data } = await instance.get(
-        `/payment/verification/${query.orderId}`
-      );
-      return data.data;
+      if (!query.orderId) return null;
+      return (await instance.get(`/payment/verification/${query.orderId}`)).data
+        .data;
     },
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
-    retry: false,
+    staleTime: Infinity,
   });
+
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useInterval((timer) => {
     setTimeLeft((prevTime) => {
@@ -35,6 +36,12 @@ const VerificationPaymentView = () => {
     });
   }, 1000);
 
+  useEffect(() => {
+    if (data?.timeLeft) {
+      setTimeLeft(data.timeLeft);
+    }
+  }, [data]);
+
   if (isLoading)
     return (
       <div className="w-full h-dvh flex items-center justify-center">
@@ -43,52 +50,88 @@ const VerificationPaymentView = () => {
     );
 
   return (
-    <section className="wrapper-page flex flex-col items-center justify-center gap-4 w-[500px] py-4">
+    <section className="wrapper-page flex flex-col items-center justify-center gap-4 md:w-[500px] w-full py-4">
       <div>
         <h1 className="text-xl">Payment Verification</h1>
       </div>
       <div className="shadow-md bg-primary-light/5 rounded-md p-4 w-full flex flex-col items-center justify-center">
         <h2>Code Transaction</h2>
-        <p>{data.transactionCode}</p>
+        <p>{data?.transactionCode}</p>
       </div>
       <div className="grow">
-        <DotLottieReact
-          loop
-          autoplay
-          src={`/animation/${
-            data.status === "success" ? "success-two" : data.status
-          }-animation.json`}
-          width={300}
-          height={300}
-        />
+        {data?.status && (
+          <DotLottieReact
+            loop
+            autoplay
+            src={`/animation/${
+              data?.status === "success" ? "success-two" : data?.status
+            }-animation.json`}
+            width={300}
+            height={300}
+          />
+        )}
       </div>
-      <div className="flex flex-col items-center">
-        <h2>Time left</h2>
-        <NumberFlowGroup>
-          <div className="~text-3xl/4xl flex items-baseline font-semibold">
-            <NumberFlow
-              trend={-1}
-              value={Math.floor((timeLeft % 3600) / 60)}
-              format={{ minimumIntegerDigits: 2 }}
-            />
-            <NumberFlow
-              trend={-1}
-              prefix=":"
-              value={timeLeft % 60}
-              digits={{ 1: { max: 5 } }}
-              format={{ minimumIntegerDigits: 2 }}
-            />
-          </div>
-        </NumberFlowGroup>
+      {data?.status === "pending" && (
+        <div className="flex flex-col items-center">
+          <h2>Time left</h2>
+          <NumberFlowGroup>
+            <div className="~text-3xl/4xl flex items-baseline font-semibold">
+              <NumberFlow
+                trend={-1}
+                value={Math.floor(timeLeft / 3600)}
+                format={{ minimumIntegerDigits: 2 }}
+              />
+              <NumberFlow
+                trend={-1}
+                digits={{ 1: { max: 5 } }}
+                prefix=":"
+                value={Math.floor((timeLeft % 3600) / 60)}
+                format={{ minimumIntegerDigits: 2 }}
+              />
+              <NumberFlow
+                trend={-1}
+                prefix=":"
+                value={timeLeft % 60}
+                digits={{ 1: { max: 5 } }}
+                format={{ minimumIntegerDigits: 2 }}
+              />
+            </div>
+          </NumberFlowGroup>
+        </div>
+      )}
+      <div className="italic flex flex-col gap-4">
+        <h1>Note : </h1>
+        <p>
+          Check your email inbox for full information about this transaction
+        </p>
       </div>
       <div className="flex flex-col justify-center gap-4 w-full">
         <div className="shadow-md bg-primary-light/5 rounded-md p-4">
           <h1>Payment Method</h1>
-          <p className="mt-3">{data.paymentMethod}</p>
+          <p className="mt-3">{data?.paymentMethod}</p>
         </div>
         <div className="shadow-md bg-primary-light/5 rounded-md p-4">
           <h1>VA Number</h1>
-          <p className="mt-3">{data.vaNumber}</p>
+          <div className="flex items-center justify-between">
+            <p className="mt-3">{data?.vaNumber}</p>
+            <Button
+              size="icon"
+              variant="icon"
+              onClick={() =>
+                toast.promise(
+                  async () =>
+                    await navigator.clipboard.writeText(data?.vaNumber),
+                  {
+                    loading: "Loading...",
+                    success: "Copied to clipboard",
+                    error: "Failed to copy",
+                  }
+                )
+              }
+            >
+              <FaRegCopy className="text-lg" />
+            </Button>
+          </div>
         </div>
         <Button variant="primary" size="xl" onClick={() => reload()}>
           Refresh

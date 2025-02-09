@@ -123,7 +123,6 @@ const FormNews = () => {
                       {field.value.map((media) => (
                         <MediaPreview
                           key={media.keyFile}
-                          type={media.type as "image" | "video"}
                           src={media.url}
                           alt={media.name}
                           keyFile={media.keyFile}

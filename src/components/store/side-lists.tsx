@@ -17,8 +17,13 @@ import { useRouter } from "next/router";
 import { IoStorefront, IoStorefrontOutline } from "react-icons/io5";
 import { RiCoupon3Line, RiCoupon3Fill } from "react-icons/ri";
 import SideLink from "../side-link";
+import { TStore } from "@/lib/db/schema";
 
-const SideListsStore = () => {
+type Props = Pick<TStore, "id"> & {
+  ordersCount: number;
+};
+
+const SideListsStore = ({ ordersCount }: Props) => {
   const { pathname } = useRouter();
   return (
     <Accordion type="single" collapsible>
@@ -29,7 +34,7 @@ const SideListsStore = () => {
               <IoStorefront />
             ) : (
               <IoStorefrontOutline />
-            )}{" "}
+            )}
             Store
           </h3>
         </AccordionTrigger>
@@ -64,7 +69,14 @@ const SideListsStore = () => {
             iconNonActive={<BsBag />}
             className="text-xl"
           >
-            Orders
+            <p className="relative">
+              Order
+              {ordersCount > 0 && (
+                <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
+                  {ordersCount}
+                </span>
+              )}
+            </p>
           </SideLink>
           <SideLink
             href="/my/store/settings"

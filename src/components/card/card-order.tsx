@@ -23,7 +23,9 @@ const CardOrder = ({
     <Card className="border border-gray-500 rounded-md">
       <Card.Description asLink={false}>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl">Code Transaction : {transactionCode}</h1>
+          <h1 className="md:text-xl text-lg flex md:flex-row flex-col">
+            <span>Code Transaction :</span> <span>{transactionCode}</span>
+          </h1>
           <DropdownOrder
             id={id}
             isOwner={isOwner}
@@ -33,46 +35,32 @@ const CardOrder = ({
         </div>
       </Card.Description>
       <Separator className="my-2" />
-      <div className="grid grid-cols-2 gap-3">
-        {products?.map((product) => (
-          <Card
-            className="border border-gray-500 rounded-md"
-            key={product.productID}
-          >
-            {product.productVariant?.medias[0].type === "image" ? (
+      <div className="flex flex-col gap-3">
+        {products?.map((product, i) => (
+          <Card className="border border-gray-500 rounded-md" key={i}>
+            <div className="flex md:flex-row flex-col gap-4">
               <Card.Image
-                src={product.productVariant.medias[0].url}
-                className="h-[300px]"
+                src={product.productVariant?.medias[0].url as string}
+                className="md:h-[200px] md:w-[200px] w-full aspect-square"
               />
-            ) : (
-              <Card.Video
-                videoProps={{
-                  src: product.productVariant?.medias[0].url,
-                }}
-                className="h-[300px]"
-              />
-            )}
-            <Card.Description asLink={false}>
-              <h1 className="font-semibold">{product.productName}</h1>
-              <p>
-                <strong>Price</strong> :{" "}
-                {convertPrice(
-                  product.quantity * (product.productVariant?.price ?? 0)
-                )}
-              </p>
-              <p>
-                <strong>Quantity</strong> : {product.quantity}
-              </p>
-              <p>
-                <strong>Variant</strong> :{" "}
-                {product.productVariant?.name_variant}
-              </p>
-            </Card.Description>
-            <Card.Footer>
               <div>
-                <div className="flex items-center gap-1">
-                  <strong>Status</strong> :{" "}
+                <Card.Description asLink={false}>
+                  <h1 className="font-semibold">{product.productName}</h1>
+                  <p>
+                    <strong>Price</strong> :{" "}
+                    {convertPrice(
+                      product.quantity * (product.productVariant?.price ?? 0)
+                    )}
+                  </p>
+                  <p>
+                    <strong>Quantity</strong> : {product.quantity}
+                  </p>
+                  <p>
+                    <strong>Variant</strong> :{" "}
+                    {product.productVariant?.name_variant}
+                  </p>
                   <Badge
+                    className="w-fit"
                     size="md"
                     variant={
                       product.status === "not-confirmed"
@@ -85,15 +73,15 @@ const CardOrder = ({
                     {product.status.charAt(0).toUpperCase() +
                       product.status.slice(1).split("-").join(" ")}
                   </Badge>
-                </div>
+                </Card.Description>
               </div>
-            </Card.Footer>
+            </div>
           </Card>
         ))}
       </div>
       <Separator className="my-2" />
-      <Card.Footer>
-        <div className="flex items-center justify-center gap-2 py-2">
+      <Card.Footer className="md:flex-row flex-col gap-3">
+        <div className="flex items-center md:justify-center gap-2 py-2">
           <p>Payment Status</p>
           <p>:</p>
           <Badge size="md" variant={status}>

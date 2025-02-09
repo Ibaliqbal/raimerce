@@ -45,7 +45,7 @@ const StoreProductsView = () => {
 
   return (
     <InfiniteScrollLayout
-      className="col-span-2"
+      className="lg:col-span-2 pb-8"
       callback={() => hasNextPage && !isFetching && fetchNextPage()}
       isFetching={isFetchingNextPage}
     >
@@ -65,7 +65,7 @@ const StoreProductsView = () => {
             </Link>
           </Button>
         </div>
-        <div className="w-full grid grid-cols-3 gap-4">
+        <div className="w-full grid lg:grid-cols-3 grid-cols-2 gap-4">
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => (
                 <CardProduct.Skeleton key={i} />

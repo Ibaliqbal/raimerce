@@ -1,4 +1,5 @@
 import { TCart, TOrder, TProducts } from "@/lib/db/schema";
+import { CheckoutBodyT } from "@/types/checkout";
 import { VariantSchemaT } from "@/types/product";
 import { DiscountSchemaT } from "@/types/promo";
 import jwt from "jsonwebtoken";
@@ -205,4 +206,104 @@ export const groupCheckoutByProduct = (
   );
 
   return grouped;
+};
+
+export const groupOrderByProduct = (
+  products: Pick<TOrder, "products">
+): Array<{
+  productID: string;
+  sumSoldout: number;
+  variant: Array<{
+    name_variant: string;
+    quantity: number;
+  }>;
+}> => {
+  const grouped = products.products?.reduce(
+    (
+      acc: Array<{
+        productID: string;
+        sumSoldout: number;
+        variant: Array<{
+          name_variant: string;
+          quantity: number;
+        }>;
+      }>,
+      curr
+    ) => {
+      const existing = acc.find((item) => item.productID === curr.productID);
+
+      if (existing) {
+        existing.sumSoldout += curr.quantity;
+        existing.variant.push({
+          name_variant: curr.variant,
+          quantity: curr.quantity,
+        });
+      } else {
+        acc.push({
+          productID: curr.productID || "",
+          sumSoldout: curr.quantity,
+          variant: [{ name_variant: curr.variant, quantity: curr.quantity }],
+        });
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  return grouped || [];
+};
+
+export const calcuateGrossAmount = (
+  carts: Array<
+    Pick<TCart, "id" | "quantity" | "variant" | "category"> & {
+      product: Pick<TProducts, "variant" | "id" | "name" | "soldout">;
+    }
+  >,
+  promoCode: Pick<CheckoutBodyT, "discounts">
+): number => {
+  if (promoCode.discounts.length > 0) {
+    const cartsAfterDisc = carts.map((cart) => {
+      const findPromoByIdProduct = promoCode.discounts.find(
+        (disc) => disc.appliedTo === cart.product.id
+      );
+
+      if (findPromoByIdProduct) {
+        return {
+          ...cart,
+          product: {
+            ...cart.product,
+            variant: cart.product.variant.map((variant) => ({
+              ...variant,
+              price: calculateAfterDisc(
+                variant.price,
+                findPromoByIdProduct.amount
+              ),
+            })),
+          },
+        };
+      }
+
+      return cart;
+    });
+    return cartsAfterDisc.reduce(
+      (acc, curr) =>
+        acc +
+        curr.quantity *
+          (curr.product.variant.find(
+            (variant) => variant.name_variant === curr.variant
+          )?.price ?? 0),
+      0
+    );
+  }
+
+  return carts.reduce(
+    (acc, curr) =>
+      acc +
+      curr.quantity *
+        (curr.product.variant.find(
+          (variant) => variant.name_variant === curr.variant
+        )?.price ?? 0),
+    0
+  );
 };

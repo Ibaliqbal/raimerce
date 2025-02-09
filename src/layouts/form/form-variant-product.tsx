@@ -66,7 +66,7 @@ const FormVariantProduct = ({ handleAdd, disabledUploadBtn }: Props) => {
         />
         <ErrorMessage error={errors.name_variant} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="md:grid md:grid-cols-2 flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <Label className="text-base" htmlFor="price">
             Price
@@ -137,7 +137,7 @@ const FormVariantProduct = ({ handleAdd, disabledUploadBtn }: Props) => {
       <div className="flex flex-col gap-4">
         <h3 className="text-base">Upload your products photo</h3>
         <UploadButton
-          endpoint="mediaPost"
+          endpoint="imageUploader"
           className="self-start"
           disabled={disabledUploadBtn}
           onClientUploadComplete={(res) => {
@@ -146,31 +146,13 @@ const FormVariantProduct = ({ handleAdd, disabledUploadBtn }: Props) => {
                 ...prev,
                 medias: [
                   ...prev.medias,
-                  ...res.map((data) => ({
-                    keyFile: data.key,
-                    name: data.name,
-                    url: data.url,
-                    type:
-                      data.type.split("/")[0] === "image"
-                        ? "image"
-                        : data.key.split(".")[1],
-                  })),
+                  ...res.map((data) => data.serverData.media),
                 ],
               }));
             } else {
               setVariants((prev) => ({
                 ...prev,
-                medias: [
-                  ...res.map((data) => ({
-                    keyFile: data.key,
-                    name: data.name,
-                    url: data.url,
-                    type:
-                      data.type.split("/")[0] === "image"
-                        ? "image"
-                        : data.key.split(".")[1],
-                  })),
-                ],
+                medias: [...res.map((data) => data.serverData.media)],
               }));
             }
           }}
@@ -183,11 +165,10 @@ const FormVariantProduct = ({ handleAdd, disabledUploadBtn }: Props) => {
           }}
         />
         {variants.medias.length > 0 ? (
-          <div className="grid grid-cols-4 gap-4 mb-10">
+          <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 mb-10">
             {variants.medias.map((media) => (
               <MediaPreview
                 key={media.keyFile}
-                type={media.type as "image" | "video"}
                 src={media.url}
                 alt={media.name}
                 keyFile={media.keyFile}

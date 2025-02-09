@@ -11,14 +11,15 @@ import FormAddLocation from "@/layouts/form/form-add-location";
 import Link from "next/link";
 import { MdLocationOn } from "react-icons/md";
 import { UploadButton } from "@/utils/uploadthing";
+import { Separator } from "@/components/ui/separator";
 
 const SettingProfileUserView = () => {
   const { setTheme, theme } = useTheme();
   const data = useGetUserLogin();
   const session = useSession();
   return (
-    <section className="col-span-2 flex flex-col gap-5">
-      <div className="border border-gray-500 rounded-lg p-3 flex flex-col gap-4">
+    <section className="lg:col-span-2 flex flex-col gap-5 pb-8">
+      <div className="lg:border lg:border-gray-500 lg:rounded-lg lg:p-3 flex flex-col gap-4">
         <h1 className="text-2xl">Profile</h1>
         <div className="flex flex-col gap-3 w-fit items-center">
           <Avatar className="w-24 h-24">
@@ -59,7 +60,7 @@ const SettingProfileUserView = () => {
               <MdLocationOn className="w-5 h-5 text-gray-500 mt-0.5" />
               <div>
                 <p className="text-sm text-gray-500">Address</p>
-                <p className="font-medium">
+                <p className="font-medium lg:text-base text-sm">
                   {data?.user?.address
                     ? `${data.user.address.spesific}, ${data.user.address.district}, ${data.user.address.city},
               Indonesia`
@@ -72,7 +73,8 @@ const SettingProfileUserView = () => {
           <FormAddLocation />
         )}
       </div>
-      <div className="border border-gray-500 rounded-lg p-3 flex flex-col gap-4">
+      <Separator className="lg:hidden block my-3" />
+      <div className="lg:border lg:border-gray-500 lg:rounded-lg lg:p-3 flex flex-col gap-4">
         <h1 className="text-2xl">General Settings</h1>
         <div className="mt-2 flex flex-col gap-3">
           <h3>Theme</h3>

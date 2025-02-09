@@ -102,7 +102,7 @@ const FormPromo = ({
             </FormItem>
           )}
         />
-        <section className="grid grid-cols-2 gap-4 items-center">
+        <section className="md:grid md:grid-cols-2 flex flex-col gap-4 md:items-center">
           <FormField
             control={form.control}
             name="amount"
@@ -232,7 +232,7 @@ const FormPromo = ({
                 </div>
               </div>
               <FormControl>
-                <div className="max-h-[600px] overflow-auto custom-vertical-scroll w-full grid grid-cols-3 pb-10 gap-4 px-3">
+                <div className="max-h-[600px] overflow-auto custom-vertical-scroll w-full grid md:grid-cols-3 grid-cols-2 pb-10 gap-4 md:px-3">
                   {fetchLoad
                     ? Array.from({ length: 3 }).map((_, i) => (
                         <CardProduct.Skeleton key={i} />
@@ -256,7 +256,11 @@ const FormPromo = ({
                           }}
                           className="relative"
                         >
-                          <CardProduct {...product} disabledLicnk={false} />
+                          <CardProduct
+                            {...product}
+                            disabledLicnk={false}
+                            withoutAction
+                          />
                           <div
                             className={cn(
                               "bg-black bg-opacity-50 rounded-md absolute w-full h-full top-0 left-0 transition-opacity duration-300 ease-in-out cursor-pointer flex items-center justify-center",
@@ -265,7 +269,7 @@ const FormPromo = ({
                                 : "opacity-0"
                             )}
                           >
-                            <FaCheck className="text-5xl text-white" />
+                            <FaCheck className="md:text-5xl text-3xl text-white" />
                           </div>
                         </div>
                       ))}

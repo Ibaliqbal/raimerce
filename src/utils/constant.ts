@@ -206,7 +206,7 @@ const pageSizeOrders = 2;
 
 const pageSizeCarts = 2;
 
-const fee = 20000;
+const fee = 2000;
 
 const months = [
   "January",

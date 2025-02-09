@@ -59,8 +59,7 @@ const FormUpdateUser = ({ name, email, phone }: Props) => {
         className="flex flex-col gap-3"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <section className="grid grid-cols-2 gap-x-4 gap-y-2">
-          {" "}
+        <section className="lg:grid lg:grid-cols-2 lg:gap-x-4 lg:gap-y-2">
           <FormField
             control={form.control}
             name="name"

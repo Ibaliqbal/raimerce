@@ -35,7 +35,7 @@ const StoreOrdersView = () => {
 
   return (
     <InfiniteScrollLayout
-      className="col-span-2 pb-8"
+      className="lg:col-span-2 pb-8"
       callback={() => hasNextPage && !isFetching && fetchNextPage()}
       isFetching={isFetchingNextPage}
     >

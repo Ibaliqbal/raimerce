@@ -8,7 +8,7 @@ type Props = {
 
 const ProductsDetailImage = ({ medias }: Props) => {
   return (
-    <div className="sticky top-3 w-[40%] h-[600px]">
+    <div className="lg:sticky lg:top-3 lg:w-[40%] w-full lg:h-[600px] h-[400px]">
       <Carousel thumb={false} effect="fade">
         {medias.map((media) => (
           <Image

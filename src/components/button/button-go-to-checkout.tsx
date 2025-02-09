@@ -17,23 +17,21 @@ const ButtonGoToCheckout = () => {
   const { open, setOpen } = useLoadingScreen();
 
   return (
-    <>
-      <Button
-        className="self-end"
-        variant="checkout"
-        onClick={() => {
-          router.push("/checkout");
-          setOpen(true);
-        }}
-        disabled={
-          (data ?? []).filter((cart) => cart.isCheckout === true).length <= 0 ||
-          open
-        }
-      >
-        Go to checkout (
-        {data?.filter((cart) => cart.isCheckout === true).length ?? 0})
-      </Button>
-    </>
+    <Button
+      className="self-end"
+      variant="checkout"
+      onClick={() => {
+        router.push("/checkout");
+        setOpen(true);
+      }}
+      disabled={
+        (data ?? []).filter((cart) => cart.isCheckout === true).length <= 0 ||
+        open
+      }
+    >
+      Go to checkout (
+      {data?.filter((cart) => cart.isCheckout === true).length ?? 0})
+    </Button>
   );
 };
 

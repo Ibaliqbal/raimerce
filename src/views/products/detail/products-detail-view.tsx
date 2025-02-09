@@ -9,8 +9,7 @@ import { toast } from "react-hot-toast";
 import ProductsDetailImage from "@/components/products/products-detail-image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Rating } from "@smastrom/react-rating";
-import { styleReactRating } from "@/utils/constant";
+import Rating from "@/components/ui/rating";
 import Link from "next/link";
 import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
 import { RiLoader5Line } from "react-icons/ri";
@@ -65,13 +64,13 @@ const ProductsDetailView = ({
   });
 
   return (
-    <section className="w-full flex gap-4 relative">
+    <section className="w-full flex lg:flex-row flex-col gap-4 relative">
       <ProductsDetailImage
         medias={variant
           .flatMap((vari) => vari.medias)
           .filter((vari) => vari.type === "image")}
       />
-      <section className="w-[60%] flex flex-col gap-5">
+      <section className="lg:w-[60%] w-full flex flex-col gap-5">
         <h1 className="text-4xl font-semibold">{name}</h1>
         <div className="flex items-end">
           <div className="text-3xl font-bold ">
@@ -79,16 +78,7 @@ const ProductsDetailView = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Rating
-            readOnly
-            value={Number(rating)}
-            style={{
-              maxWidth: 120,
-              marginBottom: ".5rem",
-              marginTop: ".5rem",
-            }}
-            itemStyles={styleReactRating}
-          />
+          <Rating readOnly value={Number(rating)} />
           <p className="text-lg">{Number(rating).toFixed(2)}</p>
         </div>
         <div className="flex flex-col gap-4">
@@ -199,7 +189,7 @@ const ProductsDetailView = ({
           <div className="flex flex-col gap-2">
             <p
               className={cn(
-                "transition-all duration-300 ease-linear",
+                "transition-all duration-300 ease-linear text-justify",
                 readMore ? "" : "line-clamp-4"
               )}
             >

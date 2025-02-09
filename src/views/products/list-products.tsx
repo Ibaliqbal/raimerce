@@ -27,7 +27,9 @@ const ListProducts: React.FunctionComponent = () => {
       const endpoint = query.q
         ? `/products/search?q=${
             query.q
-          }${categoryQuery}${ratingQuery}&page=${page}&limit=${[pageSizeProduct]}`
+          }${categoryQuery}${ratingQuery}&page=${page}&limit=${[
+            pageSizeProduct,
+          ]}`
         : `/products?_type=all${categoryQuery}${ratingQuery}&page=${page}&limit=${pageSizeProduct}`;
 
       const res = await instance.get(endpoint);
@@ -37,7 +39,7 @@ const ListProducts: React.FunctionComponent = () => {
   });
 
   return (
-    <div className="w-full grid grid-cols-4 gap-4">
+    <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4">
       {isLoading ? (
         Array.from({ length: 4 }).map((_, i) => (
           <CardProduct.Skeleton key={i} />

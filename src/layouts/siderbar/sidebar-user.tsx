@@ -18,7 +18,7 @@ const SidebarUser = () => {
 
   if (data?.loading)
     return (
-      <aside className="col-span-1 flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
+      <aside className="col-span-1 hidden lg:flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
         <Skeleton className="w-full h-12" />
         <Skeleton className="w-full h-12" />
         <Skeleton className="w-full h-12" />
@@ -26,7 +26,7 @@ const SidebarUser = () => {
     );
 
   return (
-    <aside className="col-span-1 flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
+    <aside className="col-span-1 hidden lg:flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
       <SideLink
         href="/settings"
         iconActive={<BsGearFill />}
@@ -42,7 +42,7 @@ const SidebarUser = () => {
         <p className="relative">
           Order
           {(data?.user?.pendingOrdersCount ?? 0) > 0 && (
-            <span className="bg-red-500 text-sm w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1">
+            <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
               {data?.user?.pendingOrdersCount}
             </span>
           )}
@@ -56,7 +56,7 @@ const SidebarUser = () => {
         <p className="relative">
           Cart
           {(data?.user?.cartsCount ?? 0) > 0 && (
-            <span className="bg-red-500 text-sm w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1">
+            <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
               {data?.user?.cartsCount}
             </span>
           )}
@@ -69,7 +69,7 @@ const SidebarUser = () => {
       >
         Notifications
       </SideLink>
-      {data?.user?.store?.id ? <SideListsStore /> : null}
+      {data?.user?.store?.id ? <SideListsStore {...data.user.store} /> : null}
     </aside>
   );
 };

@@ -15,6 +15,7 @@ const config: Config = withUt({
     extend: {
       container: {
         center: true,
+        padding: "1rem",
       },
       colors: {
         background: "var(--background)",

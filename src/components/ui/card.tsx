@@ -1,13 +1,8 @@
-import React, {
-  ComponentPropsWithoutRef,
-  ComponentPropsWithRef,
-  ReactNode,
-} from "react";
+import React, { ComponentPropsWithoutRef, ReactNode } from "react";
 import { motion, type MotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "../ui/image";
 import Link from "next/link";
-import Video from "./video";
 
 const Card = ({
   children,
@@ -19,7 +14,7 @@ const Card = ({
   }) => {
   return (
     <motion.article
-      className={cn(className, "p-3 flex flex-col gap-3")}
+      className={cn(className, "md:p-3 flex flex-col gap-3")}
       {...rest}
     >
       {children}
@@ -44,25 +39,6 @@ const CardImage = ({
         height={200}
         figureClassName="w-full h-full relative rounded-md overflow-hidden"
         className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
-      />
-    </motion.div>
-  );
-};
-
-const CardVideo = ({
-  className,
-  videoProps: { src, ...videoProps },
-  ...rest
-}: ComponentPropsWithoutRef<"div"> &
-  MotionProps & {
-    videoProps: ComponentPropsWithRef<"video">;
-  }) => {
-  return (
-    <motion.div className={className} {...rest}>
-      <Video
-        className="w-full h-full absolute object-contain object-center rounded-md"
-        src={src}
-        {...videoProps}
       />
     </motion.div>
   );
@@ -130,10 +106,7 @@ const CardFooter = ({
   children: ReactNode;
 }) => {
   return (
-    <footer
-      className={cn(className, "flex items-center justify-between")}
-      {...rest}
-    >
+    <footer className={cn(className, "flex justify-between")} {...rest}>
       {children}
     </footer>
   );
@@ -143,6 +116,5 @@ Card.Description = CardDescription;
 Card.Footer = CardFooter;
 Card.Image = CardImage;
 Card.Icon = CardIcon;
-Card.Video = CardVideo;
 
 export default Card;

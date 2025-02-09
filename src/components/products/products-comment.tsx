@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import CardComment from "../card/card-comments";
+import CardComment from "../card/card-comment";
 
 const ProductsComments = () => {
   return (
@@ -15,9 +15,9 @@ const ProductsComments = () => {
         reiciendis quaerat necessitatibus.
       </p>
       <div className="grid grid-cols-3 gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {/* {Array.from({ length: 4 }).map((_, i) => (
           <CardComment key={i} />
-        ))}
+        ))} */}
       </div>
     </article>
   );

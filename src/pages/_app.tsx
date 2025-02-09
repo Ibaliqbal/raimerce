@@ -9,6 +9,7 @@ import { useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { Roboto } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { LoadingScreenProvider } from "@/context/loading-screen-context";
 
 const roboto = Roboto({
   weight: "500",
@@ -25,11 +26,13 @@ export default function App({
     <ThemeProvider defaultTheme="system" attribute="class" enableSystem>
       <QueryClientProvider client={client}>
         <SessionProvider session={session}>
-          <main className={roboto.className}>
-            <TopLoader />
-            <Component {...pageProps} />
-            <Toaster position="bottom-center" />
-          </main>
+          <LoadingScreenProvider>
+            <main className={roboto.className}>
+              <TopLoader />
+              <Component {...pageProps} />
+              <Toaster position="bottom-center" />
+            </main>
+          </LoadingScreenProvider>
           <ReactQueryDevtools />
         </SessionProvider>
       </QueryClientProvider>

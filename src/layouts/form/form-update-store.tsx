@@ -88,7 +88,7 @@ const FormUpdateStore = ({ name, description, email }: Props) => {
               </div>
               <FormControl>
                 <Textarea
-                  className="border border-slate-700 resize-none h-56 text-base"
+                  className="border border-slate-700 resize-none h-56 text-base text-justify"
                   placeholder="Enter your product name..."
                   {...field}
                   disabled={form.formState.isSubmitting}

@@ -7,7 +7,7 @@ import PaginationProducts from "./pagination-products";
 const ProductsView = () => {
   return (
     <main className="flex flex-col gap-4 wrapper-page pb-10">
-      <div className="flex justify-between items-center">
+      <div className="flex md:flex-row flex-col-reverse md:justify-between gap-4 md:items-center">
         <div className="flex items-center gap-2">
           <FilterBySelect
             filterBy="category"
@@ -18,9 +18,7 @@ const ProductsView = () => {
             lists={ratings.map((rating) => rating.toString())}
           />
         </div>
-        <div>
-          <FilterBySearch />
-        </div>
+        <FilterBySearch />
       </div>
       <ListProducts />
       <PaginationProducts />

@@ -2,7 +2,7 @@ import BaseLayout from "@/layouts/base-layout";
 import instance from "@/lib/axios/instance";
 import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
 import ProductsDetailView from "@/views/products/detail/products-detail-view";
-import ProductsSimilarView from "@/views/products/products-similar-view";
+import ProductsSimilarView from "@/views/products/detail/products-similar-view";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 type Props = Pick<

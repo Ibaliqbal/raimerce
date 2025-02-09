@@ -1,4 +1,5 @@
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { BiTrash } from "react-icons/bi";
 import Card from "../ui/card";
 import { Button } from "../ui/button";
 import Modal from "../ui/modal";
@@ -8,7 +9,6 @@ import Image from "@/components/ui/image";
 import Carousel from "../ui/carousel";
 import { VariantSchemaT } from "@/types/product";
 import { convertPrice } from "@/utils/helper";
-import Video from "../ui/video";
 import instance from "@/lib/axios/instance";
 import { RiLoader5Line } from "react-icons/ri";
 
@@ -38,20 +38,11 @@ const CardProductVariant = ({
         className="rounded-md border border-gray-500 group"
         layoutId={`card-${i}`}
       >
-        {medias[0].type === "image" ? (
-          <Card.Image src={medias[0].url} className="h-[300px]" />
-        ) : (
-          <Card.Video
-            videoProps={{
-              src: medias[0].url,
-              loop: true,
-              autoPlay: true,
-              muted: true,
-            }}
-            className="h-[300px]"
-          />
-        )}
-        <Card.Footer>
+        <Card.Image
+          src={medias[0].url}
+          className="md:h-[300px] aspect-square"
+        />
+        <Card.Footer className="items-center">
           <Button
             variant="icon"
             size="icon"
@@ -59,7 +50,7 @@ const CardProductVariant = ({
             onClick={() => setOpen(true)}
             disabled={status === "submitting"}
           >
-            <FaEye className="text-xl cursor-pointer" />
+            <FaEye className="md:text-xl text-base" />
           </Button>
           {withDelete && (
             <Button
@@ -71,7 +62,7 @@ const CardProductVariant = ({
                 setStatus("submitting");
                 try {
                   const deletes = medias.map(async (media) => {
-                    await instance.delete(`/products/files/${media.keyFile}`);
+                    await instance.delete(`/files/${media.keyFile}`);
                     return;
                   });
 
@@ -88,7 +79,7 @@ const CardProductVariant = ({
               {status === "submitting" ? (
                 <RiLoader5Line className="text-xl animate-spin" />
               ) : (
-                <FaTrash className="text-red-500 text-xl" />
+                <BiTrash className="text-red-500 md:text-xl text-base" />
               )}
             </Button>
           )}
@@ -106,31 +97,18 @@ const CardProductVariant = ({
             className="w-full"
             autoPlay={false}
           >
-            {medias.map((media) =>
-              media.type === "image" ? (
-                <Image
-                  key={media.keyFile}
-                  src={media.url}
-                  alt={media.name}
-                  width={200}
-                  height={200}
-                  figureClassName="w-full h-full relative rounded-md overflow-hidden"
-                  className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
-                />
-              ) : (
-                <Video
-                  key={media.keyFile}
-                  src={media.url}
-                  aria-label={media.name}
-                  autoPlay
-                  muted
-                  loop
-                  className="rounded-md absolute w-full h-full object-contain object-center"
-                />
-              )
-            )}
+            {medias.map((media) => (
+              <Image
+                key={media.keyFile}
+                src={media.url}
+                alt={media.name}
+                width={200}
+                height={200}
+                figureClassName="w-full h-full relative rounded-md overflow-hidden"
+                className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
+              />
+            ))}
           </Carousel>
-
           <section className="w-full max-h-full h-full overflow-auto custom-vertical-scroll flex flex-col gap-2 relative pr-2">
             <p>
               <strong>Variant</strong> : {name_variant}
@@ -142,27 +120,17 @@ const CardProductVariant = ({
               <strong>Stock</strong> : {stock}
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {medias.map((media) =>
-                media.type === "image" ? (
-                  <Image
-                    key={media.keyFile}
-                    src={media.url}
-                    alt={media.name}
-                    width={200}
-                    height={200}
-                    figureClassName="w-full h-[150px] relative rounded-md overflow-hidden"
-                    className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
-                  />
-                ) : (
-                  <Video
-                    key={media.keyFile}
-                    src={media.url}
-                    aria-label={media.name}
-                    controls
-                    className="rounded-md absolute w-full h-[150px] object-contain object-center"
-                  />
-                )
-              )}
+              {medias.map((media) => (
+                <Image
+                  key={media.keyFile}
+                  src={media.url}
+                  alt={media.name}
+                  width={200}
+                  height={200}
+                  figureClassName="w-full h-[150px] relative rounded-md overflow-hidden"
+                  className="w-full h-full absolute inset-0 rounded-md object-cover object-ccnter group-hover:scale-110 transition-transform duration-300 ease-in-out"
+                />
+              ))}
             </div>
           </section>
         </motion.article>

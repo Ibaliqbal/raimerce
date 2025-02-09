@@ -83,8 +83,13 @@ const authOptions: AuthOptions = {
             .values({
               email: user.email as string,
               name: user.name as string,
-              avatar: user.image,
               typeLogin: "google",
+              avatar: {
+                url: (user.image as string) || "",
+                keyFile: "",
+                name: "",
+                type: "image",
+              },
             })
             .returning({
               id: UsersTable.id,
