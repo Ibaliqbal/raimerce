@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 import { OrdersTable, ProductsTable, TOrder, TProducts } from "@/lib/db/schema";
-import { ApiResponse, secureMethods } from "@/utils/api";
+import { ApiResponse, secureMethods, verify } from "@/utils/api";
 import { months } from "@/utils/constant";
-import { getStoreiD } from "@/utils/db";
-import { calculateAfterDisc, verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { calculateAfterDisc } from "@/utils/helper";
 import { and, arrayContains, eq, lte, gte } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -64,7 +64,7 @@ export default function handler(
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
       const range = 3;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - range);
       const now = new Date();

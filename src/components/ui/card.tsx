@@ -14,7 +14,7 @@ const Card = ({
   }) => {
   return (
     <motion.article
-      className={cn(className, "md:p-3 flex flex-col gap-3")}
+      className={cn(className, "p-3 flex flex-col gap-3")}
       {...rest}
     >
       {children}

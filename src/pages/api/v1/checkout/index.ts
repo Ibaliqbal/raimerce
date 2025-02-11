@@ -1,21 +1,21 @@
-import { ApiResponse, secureMethods } from "@/utils/api";
+import { ApiResponse, secureMethods, verify } from "@/utils/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
-  calcuateGrossAmount,
+  calculateAfterDisc,
   convertDiscAmount,
-  groupCheckoutByProduct,
   groupDiscountsByCode,
-  verify,
 } from "@/utils/helper";
 import { JWT } from "next-auth/jwt";
-import { chekcoutBody } from "@/types/checkout";
+import { CheckoutBodyT, chekcoutBody } from "@/types/checkout";
 import { db } from "@/lib/db";
 import {
   CartsTable,
   OrdersTable,
   ProductsTable,
   PromoTable,
+  TProducts,
   UsersTable,
+  TCart,
 } from "@/lib/db/schema";
 import { eq, inArray, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -31,6 +31,118 @@ type Data = ApiResponse & {
 
 const acceptMethod = ["POST"];
 const secretKeyMidtrans = process.env.MIDTRANS_SERVER_KEY as string;
+
+const groupCheckoutByProduct = (
+  checkout: Array<
+    Pick<TCart, "id" | "quantity" | "variant" | "category"> & {
+      product: Pick<TProducts, "variant" | "id" | "name" | "soldout">;
+    }
+  >
+): Array<{
+  productID: string;
+  sumSoldout: number;
+  variant: Array<VariantSchemaT>;
+}> => {
+  const grouped = checkout.reduce(
+    (
+      acc: Array<{
+        productID: string;
+        sumSoldout: number;
+        variant: Array<VariantSchemaT>;
+      }>,
+      curr
+    ) => {
+      const existing = acc.find((item) => item.productID === curr.product.id);
+
+      if (existing) {
+        existing.sumSoldout += curr.quantity;
+        existing.variant = existing.variant.map((v) => {
+          if (v.name_variant === curr.variant) {
+            console.log(true);
+            return {
+              ...v,
+              stock: v.stock - curr.quantity,
+            };
+          }
+          return v;
+        });
+      } else {
+        acc.push({
+          productID: curr.product.id,
+          sumSoldout: curr.product.soldout + curr.quantity,
+          variant: curr.product.variant.map((v) => {
+            if (v.name_variant === curr.variant) {
+              return {
+                ...v,
+                stock: v.stock - curr.quantity,
+              };
+            }
+            return v;
+          }),
+        });
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  return grouped;
+};
+
+const calcuateGrossAmount = (
+  carts: Array<
+    Pick<TCart, "id" | "quantity" | "variant" | "category"> & {
+      product: Pick<TProducts, "variant" | "id" | "name" | "soldout">;
+    }
+  >,
+  promoCode: Pick<CheckoutBodyT, "discounts">
+): number => {
+  if (promoCode.discounts.length > 0) {
+    const cartsAfterDisc = carts.map((cart) => {
+      const findPromoByIdProduct = promoCode.discounts.find(
+        (disc) => disc.appliedTo === cart.product.id
+      );
+
+      if (findPromoByIdProduct) {
+        return {
+          ...cart,
+          product: {
+            ...cart.product,
+            variant: cart.product.variant.map((variant) => ({
+              ...variant,
+              price: calculateAfterDisc(
+                variant.price,
+                findPromoByIdProduct.amount
+              ),
+            })),
+          },
+        };
+      }
+
+      return cart;
+    });
+    return cartsAfterDisc.reduce(
+      (acc, curr) =>
+        acc +
+        curr.quantity *
+          (curr.product.variant.find(
+            (variant) => variant.name_variant === curr.variant
+          )?.price ?? 0),
+      0
+    );
+  }
+
+  return carts.reduce(
+    (acc, curr) =>
+      acc +
+      curr.quantity *
+        (curr.product.variant.find(
+          (variant) => variant.name_variant === curr.variant
+        )?.price ?? 0),
+    0
+  );
+};
 
 export default function handler(
   req: NextApiRequest,

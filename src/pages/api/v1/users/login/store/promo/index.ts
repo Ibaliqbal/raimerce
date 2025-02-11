@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { PromoTable, TPromo } from "@/lib/db/schema";
 import { promoSchema } from "@/types/product";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { getStoreiD } from "@/utils/db";
-import { verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { verify } from "@/utils/api";
 import { eq } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -27,7 +27,7 @@ export default function hanlder(
   secureMethods(acceptMethods, req, res, () => {
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
       if (req.method === "POST") {
         const body = req.body;
         const validation = promoSchema.safeParse({

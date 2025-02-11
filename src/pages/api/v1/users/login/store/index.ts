@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { StoresTable, TNews, TStore, TUser } from "@/lib/db/schema";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { eq, sql } from "drizzle-orm";
-import { verify } from "@/utils/helper";
+import { verify } from "@/utils/api";
 import { JWT } from "next-auth/jwt";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { TMedia } from "@/types/product";
@@ -58,6 +58,7 @@ export default function handler(
                 statusCode: 200,
               });
             } catch (err) {
+              console.log(err);
               return res.status(500).json({
                 message: "Failed to update header photo",
                 statusCode: 500,

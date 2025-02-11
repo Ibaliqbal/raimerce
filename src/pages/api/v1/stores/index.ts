@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { StoresTable, UsersTable } from "@/lib/db/schema";
-import { verify } from "@/utils/helper";
+import { verify } from "@/utils/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 import { gettingStartedSchema } from "@/types/store";

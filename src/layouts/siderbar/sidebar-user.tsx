@@ -67,7 +67,14 @@ const SidebarUser = () => {
         iconActive={<BsBellFill />}
         iconNonActive={<BsBell />}
       >
-        Notifications
+        <p className="relative">
+          Notifications
+          {(data?.user?.notificationsCount ?? 0) > 0 && (
+            <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
+              {data?.user?.notificationsCount}
+            </span>
+          )}
+        </p>
       </SideLink>
       {data?.user?.store?.id ? <SideListsStore {...data.user.store} /> : null}
     </aside>

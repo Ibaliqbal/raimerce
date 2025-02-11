@@ -42,8 +42,8 @@ const OrderDetailView = ({ order }: Props) => {
         Detail Pesanan #{order.transactionCode}
       </h1>
 
-      <div className="md:grid flex flex-col gap-3 md:grid-cols-3 gap-6 mb-8">
-        <div className="md:col-span-2 shadow-md">
+      <div className="md:grid flex flex-col md:grid-cols-3 gap-6 mb-8">
+        <Card className="md:col-span-2 shadow-md">
           <Card.Description asLink={false}>
             <h2 className="text-xl font-semibold mb-2">Informasi Pesanan</h2>
             <p className="mb-4">Detail pesanan dan status</p>
@@ -72,9 +72,9 @@ const OrderDetailView = ({ order }: Props) => {
               </p>
             </div>
           </Card.Description>
-        </div>
+        </Card>
 
-        <div className="shadow-md">
+        <Card className="shadow-md">
           <Card.Description asLink={false}>
             <h2 className="text-xl font-semibold mb-4">Ringkasan Pembayaran</h2>
             <div className="space-y-2">
@@ -116,7 +116,7 @@ const OrderDetailView = ({ order }: Props) => {
               </div>
             </div>
           </Card.Description>
-        </div>
+        </Card>
       </div>
 
       <div className="shadow-md overflow-hidden">

@@ -9,7 +9,10 @@ const Page = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data, isLoading } = useQuery<
-    Pick<TOrder, "status" | "createdAt" | "products" | "transactionCode" | "promoCodes"> & {
+    Pick<
+      TOrder,
+      "status" | "createdAt" | "products" | "transactionCode" | "promoCodes"
+    > & {
       user: Pick<TUser, "email" | "name" | "phone"> | null;
     }
   >({
@@ -25,7 +28,11 @@ const Page = () => {
       </div>
     );
 
-  return <BaseLayout className="pt-10">{data && <OrderDetailView order={data} />}</BaseLayout>;
+  return (
+    <BaseLayout className="py-10">
+      {data && <OrderDetailView order={data} />}
+    </BaseLayout>
+  );
 };
 
 export default Page;

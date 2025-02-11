@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import {
   CartsTable,
+  NotificationTable,
   OrdersTable,
   StoresTable,
   TStore,
@@ -12,13 +13,12 @@ import {
   resetPasswordSchema,
   updateProfileSchema,
 } from "@/types/user";
-import { verify } from "@/utils/helper";
-import { and, arrayContains, eq, sql } from "drizzle-orm";
+import { and, arrayContains, eq, or, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
 import bcrypt from "bcrypt";
 import { gettingStartedSchema } from "@/types/store";
-import { ApiResponse, secureMethods } from "@/utils/api";
+import { ApiResponse, secureMethods, verify } from "@/utils/api";
 import { mediaSchema } from "@/types/product";
 import instance from "@/lib/axios/instance";
 
@@ -30,9 +30,11 @@ type Data = ApiResponse & {
       > & {
         store: Pick<TStore, "id"> & {
           ordersCount: number;
+          notificationsCount: number;
         };
         cartsCount: number;
         pendingOrdersCount: number;
+        notificationsCount: number;
       })
     | null;
 };
@@ -213,6 +215,7 @@ export default async function handler(
       }
 
       let ordersStoreCount = 0;
+      let notificationsStoreCount = 0;
 
       const data = await db.query.UsersTable.findFirst({
         where: eq(UsersTable.id, decoded.id),
@@ -246,17 +249,37 @@ export default async function handler(
         )
       );
 
+      const notificationsCount = await db.$count(
+        NotificationTable,
+        and(
+          eq(NotificationTable.type, "order_client"),
+          eq(NotificationTable.isRead, false),
+          eq(NotificationTable.userId, decoded.id)
+        )
+      );
+
       if (!data)
         return res
           .status(404)
           .json({ message: "User not found", statusCode: 404, data: null });
 
       if (data.store?.id) {
+        notificationsStoreCount = await db.$count(
+          NotificationTable,
+          and(
+            or(
+              eq(NotificationTable.type, "order_store"),
+              eq(NotificationTable.type, "report_to_store")
+            ),
+            eq(NotificationTable.isRead, false),
+            eq(NotificationTable.userId, decoded.id)
+          )
+        );
         ordersStoreCount = await db.$count(
           OrdersTable,
           and(
             arrayContains(OrdersTable.storeIds, [data.store.id]),
-            eq(OrdersTable.status, "success")
+            eq(OrdersTable.status, "pending")
           )
         );
       }
@@ -269,9 +292,11 @@ export default async function handler(
           store: {
             id: data.store?.id,
             ordersCount: ordersStoreCount,
+            notificationsCount: notificationsStoreCount,
           },
           cartsCount,
           pendingOrdersCount,
+          notificationsCount,
         },
       });
     });

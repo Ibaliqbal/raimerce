@@ -85,8 +85,6 @@ const CheckoutView = () => {
             !discount.some((cart) => cart.appliedTo === product)
         );
 
-      console.log(filteredCoupon);
-
       if (filteredCoupon.length <= 0) {
         setStatus({
           type: "promo",
@@ -169,7 +167,7 @@ const CheckoutView = () => {
         <CardAddress />
       </section>
 
-      <section className="py-4 rounded-lg shadow">
+      <section className="p-4 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
         {data?.map((product) => (
           <div

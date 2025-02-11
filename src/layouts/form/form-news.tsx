@@ -119,7 +119,7 @@ const FormNews = () => {
                     }}
                   />
                   {field.value.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-4 mb-10">
+                    <div className="grid md:grid-cols-3 grid-cols-2 gap-4 mb-10">
                       {field.value.map((media) => (
                         <MediaPreview
                           key={media.keyFile}

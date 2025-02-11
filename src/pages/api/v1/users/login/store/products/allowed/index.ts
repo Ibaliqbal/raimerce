@@ -1,7 +1,7 @@
 import { ProductsTable, TProducts } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { getStoreiD } from "@/utils/db";
-import { verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { verify } from "@/utils/api";
 import { eq } from "drizzle-orm";
 import type { NextApiResponse, NextApiRequest } from "next";
 import { JWT } from "next-auth/jwt";
@@ -22,7 +22,7 @@ export default function handler(
   secureMethods(acceptMethods, req, res, () => {
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
 
       if (!storeID)
         return res.status(404).json({

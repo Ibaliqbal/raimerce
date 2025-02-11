@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { ProductsTable, TProducts } from "@/lib/db/schema";
 import { productSchema } from "@/types/product";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { getStoreiD } from "@/utils/db";
-import { verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { verify } from "@/utils/api";
 import { and, eq } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -25,7 +25,7 @@ export default function handler(
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
       const body = req.body;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
       const category = req.query.c as string;
       const _page = req.query.page as string;
       const _limit = req.query.limit as string;

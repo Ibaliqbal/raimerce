@@ -5,6 +5,7 @@ import { TOrder } from "@/lib/db/schema";
 import { calculateTotalWithPromo, convertPrice } from "@/utils/helper";
 import { Separator } from "../ui/separator";
 import DropdownOrder from "../dropdown/dropdown-order";
+import DropdownProductOrder from "../dropdown/dropdown-product-order";
 
 const CardOrder = ({
   transactionCode,
@@ -37,13 +38,13 @@ const CardOrder = ({
       <Separator className="my-2" />
       <div className="flex flex-col gap-3">
         {products?.map((product, i) => (
-          <Card className="border border-gray-500 rounded-md" key={i}>
+          <Card className="border border-gray-500 rounded-md p-3" key={i}>
             <div className="flex md:flex-row flex-col gap-4">
               <Card.Image
                 src={product.productVariant?.medias[0].url as string}
                 className="md:h-[200px] md:w-[200px] w-full aspect-square"
               />
-              <div>
+              <div className="grow">
                 <Card.Description asLink={false}>
                   <h1 className="font-semibold">{product.productName}</h1>
                   <p>
@@ -75,6 +76,21 @@ const CardOrder = ({
                   </Badge>
                 </Card.Description>
               </div>
+              {!isOwner &&
+                status === "success" &&
+                product.status === "confirmed" && (
+                  <DropdownProductOrder
+                    orderID={id}
+                    productID={(product.productID as string) || ""}
+                    productName={(product.productName as string) || ""}
+                    productVariant={
+                      (product.productVariant?.name_variant as string) || ""
+                    }
+                    imageVariant={
+                      product.productVariant?.medias[0].url as string
+                    }
+                  />
+                )}
             </div>
           </Card>
         ))}

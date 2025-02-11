@@ -26,6 +26,13 @@ export const StatusOrder = pgEnum("statusOrder", [
   "canceled",
   "success",
 ]);
+export const NotificationType = pgEnum("notificationType", [
+  "report_to_store",
+  "order_client",
+  "order_store",
+  "report_to_system",
+  "result_report_to_client",
+]);
 
 export const tsVector = customType<{
   data: string;
@@ -215,7 +222,7 @@ export const OrdersTable = pgTable(
           productID: string | undefined;
           productName: string | undefined;
           productVariant: VariantSchemaT | undefined;
-          status: "confirmed" | "recieved" | "not-confirmed";
+          status: "confirmed" | "received" | "not-confirmed";
         }>
       >(),
     status: StatusOrder("status").default("pending"),
@@ -317,6 +324,25 @@ export const FollowTable = pgTable(
   }
 );
 
+export const NotificationTable = pgTable(
+  "notification",
+  {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    userId: uuid("user_id")
+      .references(() => UsersTable.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    type: NotificationType("type").default("order_client").notNull(),
+    content: text().default("").notNull(),
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => ({
+    typeIndex: index("typeIndex").on(table.type),
+  })
+);
+
 // All relation table
 export const userRelation = relations(UsersTable, ({ one, many }) => ({
   store: one(StoresTable, {
@@ -327,6 +353,7 @@ export const userRelation = relations(UsersTable, ({ one, many }) => ({
   carts: many(CartsTable),
   orders: many(OrdersTable),
   comments: many(CommentsTable),
+  nofitications: many(NotificationTable),
 }));
 
 export const storeRelation = relations(StoresTable, ({ one, many }) => ({
@@ -402,6 +429,13 @@ export const followRelation = relations(FollowTable, ({ one }) => ({
   }),
 }));
 
+export const notificationRleation = relations(NotificationTable, ({ one }) => ({
+  user: one(UsersTable, {
+    fields: [NotificationTable.userId],
+    references: [UsersTable.id],
+  }),
+}));
+
 // All type
 export type TUser = typeof UsersTable.$inferSelect;
 export type TUserInsert = typeof UsersTable.$inferInsert;
@@ -413,3 +447,4 @@ export type TPromo = typeof PromoTable.$inferSelect;
 export type TNews = typeof NewsTable.$inferSelect;
 export type TComment = typeof CommentsTable.$inferSelect;
 export type TFollow = typeof FollowTable.$inferSelect;
+export type TNotification = typeof NotificationTable.$inferSelect;

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { FollowTable } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { verify } from "@/utils/helper";
+import { verify } from "@/utils/api";
 import { and, eq } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";

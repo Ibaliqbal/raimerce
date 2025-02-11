@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { NewsTable, TNews } from "@/lib/db/schema";
 import { newsSchema } from "@/types/store";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { getStoreiD } from "@/utils/db";
-import { verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { verify } from "@/utils/api";
 import { eq } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -22,7 +22,7 @@ export default function handler(
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
       const body = req.body;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
       if (req.method === "POST") {
         const validation = newsSchema.safeParse(body);
         if (!validation.success)

@@ -6,6 +6,8 @@ import {
   BsGear,
   BsBag,
   BsBagFill,
+  BsBell,
+  BsBellFill,
 } from "react-icons/bs";
 import {
   Accordion,
@@ -21,9 +23,10 @@ import { TStore } from "@/lib/db/schema";
 
 type Props = Pick<TStore, "id"> & {
   ordersCount: number;
+  notificationsCount: number;
 };
 
-const SideListsStore = ({ ordersCount }: Props) => {
+const SideListsStore = ({ ordersCount, notificationsCount }: Props) => {
   const { pathname } = useRouter();
   return (
     <Accordion type="single" collapsible>
@@ -74,6 +77,21 @@ const SideListsStore = ({ ordersCount }: Props) => {
               {ordersCount > 0 && (
                 <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
                   {ordersCount}
+                </span>
+              )}
+            </p>
+          </SideLink>
+          <SideLink
+            href="/my/store/notifications"
+            iconActive={<BsBellFill />}
+            iconNonActive={<BsBell />}
+            className="text-xl"
+          >
+            <p className="relative">
+              Notifications
+              {(notificationsCount ?? 0) > 0 && (
+                <span className="bg-red-500 text-xs w-6 h-6 rounded-full flex items-center justify-center absolute -right-5 -top-1 text-white">
+                  {notificationsCount}
                 </span>
               )}
             </p>

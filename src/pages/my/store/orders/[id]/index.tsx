@@ -30,7 +30,7 @@ const Page = () => {
       </div>
     );
   return (
-    <BaseLayout className="pt-10">
+    <BaseLayout className="py-10">
       {data && <StoreOrderDetailView order={data} />}
     </BaseLayout>
   );

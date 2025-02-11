@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import {
+  NotificationTable,
   OrdersTable,
   ProductsTable,
   StoresTable,
@@ -7,7 +8,8 @@ import {
   TUser,
 } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { verify } from "@/utils/helper";
+import { verify } from "@/utils/api";
+import { templateOrderNotification } from "@/utils/helper";
 import { eq, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -61,28 +63,57 @@ export default function handler(
               where: eq(OrdersTable.id, _id),
               columns: {
                 products: true,
+                userId: true,
+                transactionCode: true,
               },
             });
 
-            await db
-              .update(OrdersTable)
-              .set({
-                updatedAt: sql`NOW()`,
-                products: lastData?.products?.map((order) => {
-                  const isOwned = productsStore.some(
-                    (product) => product.id === order.productID
-                  );
-                  if (isOwned) {
-                    return {
-                      ...order,
-                      status: "confirmed",
-                    };
-                  } else {
-                    return order;
-                  }
-                }),
-              })
-              .where(eq(OrdersTable.id, _id));
+            const isOwnedProducts =
+              lastData?.products?.filter((order) =>
+                productsStore.some((product) => product.id === order.productID)
+              ) || [];
+
+            const setNotifications = async () => {
+              for (const product of isOwnedProducts) {
+                try {
+                  await db.insert(NotificationTable).values({
+                    userId: lastData?.userId as string,
+                    type: "order_client",
+                    isRead: false,
+                    content: templateOrderNotification(
+                      lastData?.transactionCode || "",
+                      `${product.productName} - ${product.productVariant?.name_variant}`,
+                      "confirmed"
+                    ),
+                  });
+                } catch (error) {
+                  console.error(`Failed to set notification`, error);
+                }
+              }
+            };
+
+            await Promise.all([
+              setNotifications(),
+              db
+                .update(OrdersTable)
+                .set({
+                  updatedAt: sql`NOW()`,
+                  products: lastData?.products?.map((order) => {
+                    const isOwned = productsStore.some(
+                      (product) => product.id === order.productID
+                    );
+                    if (isOwned) {
+                      return {
+                        ...order,
+                        status: "confirmed",
+                      };
+                    } else {
+                      return order;
+                    }
+                  }),
+                })
+                .where(eq(OrdersTable.id, _id)),
+            ]);
 
             return res.status(200).json({
               message: "Order confirmed",

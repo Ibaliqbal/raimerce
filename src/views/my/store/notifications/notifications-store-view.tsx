@@ -4,8 +4,9 @@ import instance from "@/lib/axios/instance";
 import { TNotification } from "@/lib/db/schema";
 import { pageSizeNotifications } from "@/utils/constant";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import React from "react";
 
-const NotificationsView = () => {
+const NotificationsStoreView = () => {
   const {
     isFetchingNextPage,
     fetchNextPage,
@@ -14,11 +15,11 @@ const NotificationsView = () => {
     isLoading,
     data,
   } = useInfiniteQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", "store"],
     queryFn: async ({ pageParam }) =>
       (
         await instance.get(
-          `/notifications?page=${pageParam}&limit=${pageSizeNotifications}`
+          `/users/login/store/notifications?page=${pageParam}&limit=${pageSizeNotifications}`
         )
       ).data,
     initialPageParam: 1,
@@ -54,4 +55,4 @@ const NotificationsView = () => {
   );
 };
 
-export default NotificationsView;
+export default NotificationsStoreView;

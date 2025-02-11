@@ -2,6 +2,7 @@ import Modal from "@/components/ui/modal";
 import * as React from "react";
 import { motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
+import { useRouter } from "next/router";
 
 type LoadingScreenContextType = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +20,19 @@ export const LoadingScreenProvider = ({
   children: React.ReactElement;
 }) => {
   const [open, setOpen] = React.useState<boolean>(false);
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const handleRouteChange = () => {
+      setOpen(false);
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   return (
     <LoadingScreenContext.Provider value={{ setOpen, open }}>

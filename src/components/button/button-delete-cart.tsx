@@ -97,6 +97,9 @@ const ButtonDeleteCart = ({ id }: { id: string }) => {
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["login-user"],
+      });
     },
   });
 

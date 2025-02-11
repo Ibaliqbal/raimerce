@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import crypto from "crypto";
 import { db } from "@/lib/db";
-import { OrdersTable, ProductsTable } from "@/lib/db/schema";
+import { OrdersTable, ProductsTable, TOrder } from "@/lib/db/schema";
 import { eq, inArray, sql } from "drizzle-orm";
-import { groupOrderByProduct } from "@/utils/helper";
 
 type Data = {
   status: boolean;
@@ -11,6 +10,52 @@ type Data = {
 };
 
 const acceptMethod = ["POST"];
+
+const groupOrderByProduct = (
+  products: Pick<TOrder, "products">
+): Array<{
+  productID: string;
+  sumSoldout: number;
+  variant: Array<{
+    name_variant: string;
+    quantity: number;
+  }>;
+}> => {
+  const grouped = products.products?.reduce(
+    (
+      acc: Array<{
+        productID: string;
+        sumSoldout: number;
+        variant: Array<{
+          name_variant: string;
+          quantity: number;
+        }>;
+      }>,
+      curr
+    ) => {
+      const existing = acc.find((item) => item.productID === curr.productID);
+
+      if (existing) {
+        existing.sumSoldout += curr.quantity;
+        existing.variant.push({
+          name_variant: curr.variant,
+          quantity: curr.quantity,
+        });
+      } else {
+        acc.push({
+          productID: curr.productID || "",
+          sumSoldout: curr.quantity,
+          variant: [{ name_variant: curr.variant, quantity: curr.quantity }],
+        });
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  return grouped || [];
+};
 
 export default async function handler(
   req: NextApiRequest,

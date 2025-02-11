@@ -2,17 +2,17 @@ import { db } from "@/lib/db";
 import { StoresTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
-async function getStoreiD(currentUserID: string): Promise<string | undefined> {
-  const getStoreId = await db.query.StoresTable.findFirst({
+async function getStoreID(currentUserID: string): Promise<string | undefined> {
+  const getStoreID = await db.query.StoresTable.findFirst({
     where: eq(StoresTable.userId, currentUserID),
     columns: {
       id: true,
     },
   });
 
-  if (!getStoreId) return undefined;
+  if (!getStoreID) return undefined;
 
-  return getStoreId.id;
+  return getStoreID.id;
 }
 
-export { getStoreiD };
+export { getStoreID };

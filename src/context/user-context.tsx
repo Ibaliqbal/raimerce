@@ -20,9 +20,11 @@ type UserContextType = {
       > & {
         store: Pick<TStore, "id"> & {
           ordersCount: number;
+          notificationsCount: number;
         };
         cartsCount: number;
         pendingOrdersCount: number;
+        notificationsCount: number;
       })
     | null;
   loading: boolean;

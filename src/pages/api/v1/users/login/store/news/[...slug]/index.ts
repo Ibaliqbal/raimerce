@@ -2,7 +2,7 @@ import instance from "@/lib/axios/instance";
 import { db } from "@/lib/db";
 import { NewsTable, StoresTable } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { verify } from "@/utils/helper";
+import { verify } from "@/utils/api";
 import { eq } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";

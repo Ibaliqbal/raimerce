@@ -1,5 +1,6 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import jwt from "jsonwebtoken";
 
 const API_LOCATION = process.env.NEXT_PUBLIC_API_LOCATION;
 
@@ -65,4 +66,27 @@ function secureMethods<
   next();
 }
 
-export { fetchProvincies, fetchCities, fetchDistricts, secureMethods };
+const verify = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  callback: (decode: string | jwt.JwtPayload | undefined) => void
+) => {
+  const token = req.headers.authorization?.split(" ")[1] || "";
+  if (token) {
+    jwt.verify(token, process.env.AUTH_SECRET || "", async (_, decode) => {
+      if (decode) {
+        callback(decode);
+      } else {
+        return res
+          .status(403)
+          .json({ statusCode: 403, message: "Access denied", data: null });
+      }
+    });
+  } else {
+    return res
+      .status(401)
+      .json({ statusCode: 401, message: "Unautorized", data: null });
+  }
+};
+
+export { fetchProvincies, fetchCities, fetchDistricts, secureMethods, verify };

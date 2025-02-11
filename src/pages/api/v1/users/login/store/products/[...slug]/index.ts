@@ -9,8 +9,8 @@ import {
 } from "@/lib/db/schema";
 import { productSchema, TMedia } from "@/types/product";
 import { ApiResponse, secureMethods } from "@/utils/api";
-import { getStoreiD } from "@/utils/db";
-import { verify } from "@/utils/helper";
+import { getStoreID } from "@/utils/db";
+import { verify } from "@/utils/api";
 import { arrayContains, eq, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
@@ -100,7 +100,7 @@ export default function handler(
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
       const body = req.body;
-      const storeID = await getStoreiD(decoded.id);
+      const storeID = await getStoreID(decoded.id);
       if (req.method === "PUT") {
         const validation = productSchema.safeParse(body);
 
