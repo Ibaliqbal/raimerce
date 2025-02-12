@@ -62,7 +62,7 @@ const DropdownProductOrder = ({
           transition={{
             duration: 0.4,
           }}
-          className="md:w-[700px] w-[320px] h-fit flex flex-col items-center justify-center style-base-modal p-3 py-4"
+          className="md:w-[700px] w-[370px] h-fit flex flex-col items-center justify-center style-base-modal p-3 py-4"
         >
           <div className="flex flex-col gap-5 w-full px-4 h-[550px] overflow-auto custom-vertical-scroll">
             <h1 className="font-bold text-2xl">

@@ -34,7 +34,6 @@ export default function handler(
             eq(NotificationTable.type, "order_store"),
             eq(NotificationTable.type, "report_to_store")
           ),
-          eq(NotificationTable.isRead, false),
           eq(NotificationTable.userId, decoded.id)
         ),
         columns: {
@@ -55,7 +54,6 @@ export default function handler(
             eq(NotificationTable.type, "order_store"),
             eq(NotificationTable.type, "report_to_store")
           ),
-          eq(NotificationTable.isRead, false),
           eq(NotificationTable.userId, decoded.id)
         )
       );

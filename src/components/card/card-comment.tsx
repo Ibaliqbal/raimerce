@@ -1,33 +1,51 @@
-import type { TComment } from "@/lib/db/schema";
+import type { TComment, TUser } from "@/lib/db/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { CornerDownRight, Calendar } from "lucide-react";
 import Card from "../ui/card";
+import Rating from "../ui/rating";
+import { FaRegUser } from "react-icons/fa";
 
-type Props = TComment;
+type Props = Pick<
+  TComment,
+  "content" | "createdAt" | "id" | "medias" | "rating" | "variant"
+> & {
+  user: Pick<TUser, "name" | "avatar"> | null;
+};
 
-const CardComment = ({ createdAt, content, medias }: Props) => {
+const CardComment = ({
+  createdAt,
+  content,
+  medias,
+  user,
+  variant,
+  rating,
+}: Props) => {
   return (
     <Card className="mb-4 overflow-hidden transition-all duration-300 hover:shadow-lg">
       <div className="p-2 sm:p-4 space-y-2 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>IM</AvatarFallback>
+            <AvatarImage src={user?.avatar?.url} />
+            <AvatarFallback>
+              <FaRegUser />
+            </AvatarFallback>
           </Avatar>
           <div>
             <h3 className="text-sm sm:text-lg font-semibold break-all">
-              iqbalmuthahhary@gmail.com
+              {user?.name}
             </h3>
             <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
               <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-              <time dateTime={createdAt?.toISOString()}>
+              <time dateTime={new Date(createdAt as Date).toISOString()}>
                 {format(createdAt as Date, "do MMM yyyy")}
               </time>
             </div>
           </div>
         </div>
         <div className="pl-0 sm:pl-16 space-y-2">
+          <p className="text-xs sm:text-sm">variant : {variant}</p>
+          <Rating value={Number(rating)} />
           <div className="flex items-start space-x-2">
             <CornerDownRight className="hidden sm:block w-4 h-4 text-muted-foreground flex-shrink-0" />
             <p className="text-xs sm:text-sm text-justify leading-relaxed">

@@ -353,7 +353,7 @@ export default function handler(
         productID: string | undefined;
         productName: string | undefined;
         productVariant: VariantSchemaT | undefined;
-        status: "confirmed" | "recieved" | "not-confirmed";
+        status: "confirmed" | "received" | "not-confirmed";
       }> = carts.map((cart) => ({
         quantity: cart.quantity,
         variant: cart.variant,

@@ -13,12 +13,20 @@ import SideListsStore from "@/components/store/side-lists";
 import { useGetUserLogin } from "@/context/user-context";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const SidebarUser = () => {
+type Props = {
+  inMobile: boolean;
+};
+
+const SidebarUser = ({ inMobile }: Props) => {
   const data = useGetUserLogin();
 
   if (data?.loading)
     return (
-      <aside className="col-span-1 hidden lg:flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
+      <aside
+        className={`lg:col-span-1 ${
+          inMobile ? "flex" : "hidden lg:flex"
+        } flex-col gap-3 p-3 text-xl h-fit sticky top-3 lg:border lg:border-gray-500 rounded-md first:rounded-t-md`}
+      >
         <Skeleton className="w-full h-12" />
         <Skeleton className="w-full h-12" />
         <Skeleton className="w-full h-12" />
@@ -26,7 +34,11 @@ const SidebarUser = () => {
     );
 
   return (
-    <aside className="col-span-1 hidden lg:flex flex-col gap-3 p-3 text-xl h-fit sticky top-3 border border-gray-500 rounded-md first:rounded-t-md">
+    <aside
+      className={`lg:col-span-1 ${
+        inMobile ? "flex" : "hidden lg:flex"
+      } flex-col gap-3 p-3 text-xl h-fit sticky top-3 lg:border lg:border-gray-500 rounded-md first:rounded-t-md`}
+    >
       <SideLink
         href="/settings"
         iconActive={<BsGearFill />}

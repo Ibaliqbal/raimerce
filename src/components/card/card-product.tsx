@@ -48,7 +48,9 @@ const CardProduct = ({
         <Card.Footer className="items-center">
           <div className="flex items-center gap-2">
             <FaStar className="text-yellow-400" />
-            <span className="md:text-base text-sm">{rating}</span>
+            <span className="md:text-base text-sm">
+              {Number(rating).toFixed(1)}
+            </span>
           </div>
           {withoutAction ? null : hisMine ? (
             <div className="flex items-center gap-3">
@@ -71,7 +73,7 @@ const CardProduct = ({
       <Modal open={open} setOpen={setOpen}>
         <motion.article
           layoutId={`card-${id}`}
-          className="lg:w-[900px] md:w-[500px] w-[320px] h-[500px] flex lg:flex-row flex-col gap-4 overflow-auto style-base-modal p-3"
+          className="lg:w-[900px] md:w-[500px] w-[370px] h-[500px] flex lg:flex-row flex-col gap-4 overflow-auto style-base-modal p-3"
         >
           <Image
             motionProps={{

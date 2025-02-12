@@ -88,7 +88,7 @@ const CardProductVariant = ({
       <Modal open={open} setOpen={setOpen}>
         <motion.article
           layoutId={`card-${i}`}
-          className="md:w-[500px] w-[320px] h-[600px] flex flex-col gap-4 overflow-auto style-base-modal p-3"
+          className="md:w-[500px] w-[370px] h-[600px] flex flex-col gap-4 overflow-auto style-base-modal p-3"
         >
           <Carousel
             effect="fade"

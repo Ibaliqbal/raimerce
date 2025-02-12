@@ -161,7 +161,7 @@ const CheckoutView = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <main className="flex flex-col gap-8 wrapper-page max-w-4xl mx-auto py-8 px-4">
+    <main className="flex flex-col gap-8 wrapper-page max-w-4xl mx-auto md:py-8 pb-4 px-4">
       <section className="py-4">
         <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
         <CardAddress />

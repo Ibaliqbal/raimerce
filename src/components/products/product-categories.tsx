@@ -6,7 +6,7 @@ const ProductCategories = () => {
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Categories</h1>
-      <div className="lg:flex gap-4 grid md:grid-cols-4 grid-cols-3">
+      <div className="lg:flex gap-4 grid md:grid-cols-4 grid-cols-4 sm:grid-cols-3 items-center">
         {categories.map((category, i) => (
           <Link
             href={`/products?page=1&c=${category.name.toLowerCase()}`}

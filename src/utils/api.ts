@@ -72,21 +72,19 @@ const verify = (
   callback: (decode: string | jwt.JwtPayload | undefined) => void
 ) => {
   const token = req.headers.authorization?.split(" ")[1] || "";
-  if (token) {
-    jwt.verify(token, process.env.AUTH_SECRET || "", async (_, decode) => {
-      if (decode) {
-        callback(decode);
-      } else {
-        return res
-          .status(403)
-          .json({ statusCode: 403, message: "Access denied", data: null });
-      }
-    });
-  } else {
+  if (!token)
     return res
       .status(401)
       .json({ statusCode: 401, message: "Unautorized", data: null });
-  }
+
+  jwt.verify(token, process.env.AUTH_SECRET || "", async (_, decode) => {
+    if (!decode)
+      return res
+        .status(403)
+        .json({ statusCode: 403, message: "Access denied", data: null });
+
+    callback(decode);
+  });
 };
 
 export { fetchProvincies, fetchCities, fetchDistricts, secureMethods, verify };

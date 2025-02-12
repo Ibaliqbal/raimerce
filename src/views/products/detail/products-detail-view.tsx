@@ -32,7 +32,7 @@ type Props = Pick<
       TComment,
       "content" | "createdAt" | "id" | "medias" | "rating" | "variant"
     > & {
-      user: Pick<TUser, "name"> | null;
+      user: Pick<TUser, "name" | "avatar"> | null;
     }
   >;
 };
@@ -183,7 +183,7 @@ const ProductsDetailView = ({
           </div>
           <ButtonFollow id={store?.id || ""} className="self-start" />
         </div>
-        <ProductsListComment datas={comments} />
+        <ProductsListComment datas={comments} id={id} />
         <div className="flex flex-col gap-4">
           <h3 className="text-xl">Description</h3>
           <div className="flex flex-col gap-2">

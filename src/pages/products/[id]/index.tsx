@@ -17,7 +17,7 @@ type Props = Pick<
       TComment,
       "content" | "createdAt" | "id" | "medias" | "rating" | "variant"
     > & {
-      user: Pick<TUser, "name"> | null;
+      user: Pick<TUser, "name" | "avatar"> | null;
     }
   >;
 };

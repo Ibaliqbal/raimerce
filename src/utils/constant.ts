@@ -143,6 +143,8 @@ const pageSizeCarts = 2;
 
 const pageSizeNotifications = 10;
 
+const pageSizeComments = 8;
+
 const fee = 2000;
 
 const months = [
@@ -174,5 +176,6 @@ export {
   pageSizeOrders,
   pageSizeCarts,
   pageSizeNotifications,
+  pageSizeComments,
   months,
 };

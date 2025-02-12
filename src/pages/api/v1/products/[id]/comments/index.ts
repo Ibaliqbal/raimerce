@@ -8,6 +8,7 @@ import {
   OrdersTable,
   ProductsTable,
   TComment,
+  TUser,
 } from "@/lib/db/schema";
 import { commentSchema } from "@/types/comment";
 import { JWT } from "next-auth/jwt";
@@ -18,8 +19,11 @@ type Data = ApiResponse & {
     Pick<
       TComment,
       "id" | "content" | "rating" | "createdAt" | "medias" | "variant"
-    >
+    > & {
+      user: Pick<TUser, "name" | "avatar">;
+    }
   >;
+  totalPage?: number;
 };
 
 const acceptMethods = ["GET", "POST"];
@@ -31,11 +35,74 @@ export default function handler(
   secureMethods(acceptMethods, req, res, async () => {
     const _id = req.query.id as string;
 
-    if (req.method === "POST") {
-      verify(req, res, async (decode) => {
-        const decoded = decode as JWT;
+    if (req.method === "GET") {
+      const _page = req.query.page as string;
+      const _limit = req.query.limit as string;
+
+      if (isNaN(Number(_page)) || isNaN(Number(_limit)))
+        return res.status(400).json({
+          message: "Invalid page or limit",
+          statusCode: 400,
+        });
+
+      const productDetail = await db.query.ProductsTable.findFirst({
+        where: eq(ProductsTable.id, _id),
+        columns: {
+          id: true,
+          name: true,
+          category: true,
+          rating: true,
+          variant: true,
+        },
+      });
+
+      if (!productDetail)
+        return res.status(404).json({
+          message: "Product not found",
+          statusCode: 404,
+        });
+
+      const data = await db.query.CommentsTable.findMany({
+        where: eq(CommentsTable.productId, _id),
+        columns: {
+          id: true,
+          variant: true,
+          content: true,
+          medias: true,
+          rating: true,
+          createdAt: true,
+        },
+        with: {
+          user: {
+            columns: {
+              name: true,
+              avatar: true,
+            },
+          },
+        },
+        limit: Number(_limit),
+        offset: (Number(_page) - 1) * Number(_limit),
+        orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+      });
+
+      const totalComments = await db.$count(
+        CommentsTable,
+        eq(CommentsTable.productId, _id)
+      );
+
+      return res.status(200).json({
+        message: "Success get product comments",
+        statusCode: 200,
+        data,
+        totalPage: Math.ceil(totalComments / Number(_limit)),
+      });
+    }
+
+    verify(req, res, async (decode) => {
+      const decoded = decode as JWT;
+      const body = req.body;
+      if (req.method === "POST") {
         const _orderID = req.query.orderId as string;
-        const body = req.body;
         const validation = commentSchema.safeParse(body);
 
         if (!validation.success)
@@ -83,12 +150,10 @@ export default function handler(
             statusCode: 404,
           });
 
-        const allRating = await db.query.CommentsTable.findMany({
-          where: eq(CommentsTable.productId, _id),
-          columns: {
-            rating: true,
-          },
-        });
+        const allRating = await db.$count(
+          CommentsTable,
+          eq(CommentsTable.productId, _id)
+        );
 
         const getSelectedVariantProductComment = detailOrder.products?.find(
           (product) => product.productID === _id
@@ -145,12 +210,9 @@ export default function handler(
             .set({
               updatedAt: sql`NOW()`,
               rating: (
-                (Number(getInfoStoreAndProduct.rating) *
-                  allRating
-                    .map((rating) => Number(rating.rating))
-                    .reduce((acc, curr) => acc + curr, 0) +
+                (Number(getInfoStoreAndProduct.rating) * allRating +
                   validation.data.rating) /
-                (allRating.length + 1)
+                (allRating + 1)
               ).toString(),
             })
             .where(eq(ProductsTable.id, _id)),
@@ -160,50 +222,7 @@ export default function handler(
           message: "Comment created successfully",
           statusCode: 201,
         });
-      });
-    }
-
-    const productDetail = await db.query.ProductsTable.findFirst({
-      where: eq(ProductsTable.id, _id),
-      columns: {
-        id: true,
-        name: true,
-        category: true,
-        rating: true,
-        variant: true,
-      },
-    });
-
-    if (!productDetail)
-      return res.status(404).json({
-        message: "Product not found",
-        statusCode: 404,
-      });
-
-    const data = await db.query.CommentsTable.findMany({
-      where: eq(CommentsTable.productId, _id),
-      columns: {
-        id: true,
-        variant: true,
-        content: true,
-        medias: true,
-        rating: true,
-        createdAt: true,
-      },
-      with: {
-        user: {
-          columns: {
-            name: true,
-            avatar: true,
-          },
-        },
-      },
-    });
-
-    return res.status(200).json({
-      message: "Success get product comments",
-      statusCode: 200,
-      data,
+      }
     });
   });
 }

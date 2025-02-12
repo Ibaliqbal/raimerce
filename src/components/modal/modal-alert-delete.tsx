@@ -36,7 +36,7 @@ const ModalAlertDelete = ({
         transition={{
           duration: 0.4,
         }}
-        className="md:w-[700px] w-[320px] h-fit flex flex-col items-center justify-center overflow-auto style-base-modal p-3 py-10"
+        className="md:w-[700px] w-[370px] h-fit flex flex-col items-center justify-center overflow-auto style-base-modal p-3 py-10"
       >
         <div className="flex flex-col gap-5 w-full px-10">
           <h1 className="font-bold text-2xl">{title}</h1>
