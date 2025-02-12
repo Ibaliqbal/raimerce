@@ -3,7 +3,7 @@ import UserLayout from "@/layouts/user-layout";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <UserLayout title="Setting profile - Raimerce">
       <SettingsProfileUserView />
     </UserLayout>
   );

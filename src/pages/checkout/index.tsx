@@ -5,7 +5,7 @@ import CheckoutView from "@/views/checkout/checkout-view";
 const Page = () => {
   return (
     <UserProvider>
-      <BaseLayout>
+      <BaseLayout title="Checkout - Raimerce">
         <CheckoutView />
       </BaseLayout>
     </UserProvider>

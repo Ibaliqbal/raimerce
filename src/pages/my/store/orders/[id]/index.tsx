@@ -30,7 +30,10 @@ const Page = () => {
       </div>
     );
   return (
-    <BaseLayout className="py-10">
+    <BaseLayout
+      className="py-10"
+      title={`Detail Pesanan ${data?.transactionCode} - Raimerce`}
+    >
       {data && <StoreOrderDetailView order={data} />}
     </BaseLayout>
   );

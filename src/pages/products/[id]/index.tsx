@@ -43,7 +43,18 @@ const Page = ({
   selectedVariant,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <BaseLayout>
+    <BaseLayout
+      title={`Detail ${data.name} - Raimerce`}
+      description={`Lihat detail lengkap ${data.name} di Raimerce. Temukan informasi mendalam tentang ${data.name}, termasuk deskripsi, spesifikasi, dan ulasan. Dapatkan pengalaman belanja yang lebih baik dengan informasi yang tepat!`}
+      keyword={[
+        "detail produk",
+        "Raimerce",
+        "informasi produk",
+        "spesifikasi produk",
+        "ulasan produk",
+        "belanja online",
+      ]}
+    >
       <main className="flex flex-col gap-5 container xl:max-w-[1400px] max-w-7xl p-4 pb-10">
         <ProductsDetailView
           {...data}

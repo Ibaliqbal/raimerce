@@ -3,7 +3,7 @@ import NotificationsStoreView from "@/views/my/store/notifications/notifications
 
 const Page = () => {
   return (
-    <UserLayout>
+    <UserLayout title="Notifikasi Store - Raimerce">
       <NotificationsStoreView />
     </UserLayout>
   );

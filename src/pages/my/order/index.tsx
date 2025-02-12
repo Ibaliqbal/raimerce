@@ -3,7 +3,7 @@ import OrderView from "@/views/my/order/order-view";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <UserLayout title="Daftar Pesanan - Raimerce">
       <OrderView />
     </UserLayout>
   );

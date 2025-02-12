@@ -19,7 +19,7 @@ const NavbarBase = () => {
       setHidden(false);
     }
   });
-  
+
   return (
     <motion.header
       variants={{
@@ -30,7 +30,7 @@ const NavbarBase = () => {
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className="w-full flex justify-between items-center px-4 py-3 z-[50] blur-background mb-4"
     >
-      <h1 className="text-2xl">RAY-COMMERCE</h1>
+      <h1 className="text-2xl">RAIMERCE</h1>
       {session.status === "loading" ? (
         <p>Loading...</p>
       ) : session.data ? (

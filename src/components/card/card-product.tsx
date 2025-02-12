@@ -97,7 +97,9 @@ const CardProduct = ({
               href={
                 hisMine
                   ? `/my/store/products/${id}`
-                  : `/products/${id}?variant=${variant[0].name_variant}`
+                  : `/products/${id}?variant=${encodeURIComponent(
+                      variant[0].name_variant
+                    )}`
               }
               className="self-end hover:underline"
             >

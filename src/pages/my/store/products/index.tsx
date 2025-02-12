@@ -3,7 +3,7 @@ import StoreProductsView from "@/views/my/store/products/store-products-view";
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Produk Store - Raimerce">
       <StoreProductsView />
     </StoreOwnerLayout>
   );

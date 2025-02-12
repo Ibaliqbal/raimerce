@@ -20,7 +20,7 @@ const AuthLayout = ({ children, type, textMore, title }: Props) => {
   const callbackUrl = (router.query.callbackUrl as string) || "/";
 
   return (
-    <main className="flex items-center justify-center h-dvh">
+    <section className="flex items-center justify-center h-dvh">
       <section className="container max-w-7xl lg:grid lg:grid-cols-2 gap-8 lg:h-[90%] h-full rounded-lg">
         <AnimatePresence mode="wait">
           <motion.section
@@ -84,7 +84,7 @@ const AuthLayout = ({ children, type, textMore, title }: Props) => {
           />
         </figure>
       </section>
-    </main>
+    </section>
   );
 };
 

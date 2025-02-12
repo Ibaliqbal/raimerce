@@ -3,7 +3,7 @@ import CartView from "@/views/my/cart/cart-view";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <UserLayout title="Keranjang Belanja - Raimerce">
       <CartView />
     </UserLayout>
   );

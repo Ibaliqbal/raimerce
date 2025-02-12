@@ -4,11 +4,14 @@ import UserLayout from "./user-layout";
 
 type Props = {
   children: ReactNode;
+  title: string;
+  description?: string;
+  keyword?: string[];
 };
 
-const StoreOwnerLayout = ({ children }: Props) => {
+const StoreOwnerLayout = ({ children, ...rest }: Props) => {
   return (
-    <UserLayout>
+    <UserLayout {...rest}>
       <StoreProvider>{children}</StoreProvider>
     </UserLayout>
   );

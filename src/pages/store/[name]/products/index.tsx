@@ -9,6 +9,7 @@ type Props = Pick<
   "address" | "name" | "headerPhoto" | "description" | "id"
 > & {
   productsCount: number;
+  followersCount: number;
 };
 
 // fetching in server side
@@ -29,7 +30,19 @@ const Page = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <StoreLayout {...data}>
+    <StoreLayout
+      title={`Produk Toko-${data.name} - Raimerce`}
+      descriptionWeb="Jelajahi berbagai produk yang ditawarkan oleh toko ini di Raimerce. Temukan pilihan produk berkualitas dengan harga terbaik dan nikmati pengalaman belanja yang menyenangkan."
+      keyword={[
+        "produk toko",
+        "Raimerce",
+        "daftar produk",
+        "belanja online",
+        "produk berkualitas",
+        "harga terbaik",
+      ]}
+      {...data}
+    >
       <StoreProductsView />
     </StoreLayout>
   );

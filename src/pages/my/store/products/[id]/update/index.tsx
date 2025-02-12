@@ -28,7 +28,7 @@ const Page = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <BaseLayout>
+    <BaseLayout title="Perbarui Produk Anda - Raimerce">
       <StoreProductUpdateView data={data} />
     </BaseLayout>
   );

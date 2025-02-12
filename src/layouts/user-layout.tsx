@@ -7,11 +7,21 @@ import SidebarMobile from "./siderbar/sidebar-mobile";
 
 type Props = {
   children: React.ReactNode;
+  title: string;
+  description?: string;
+  keyword?: string[];
 } & ComponentPropsWithoutRef<"main">;
 
-const UserLayout = ({ children, className, ...rest }: Props) => {
+const UserLayout = ({
+  children,
+  className,
+  title,
+  description,
+  keyword,
+  ...rest
+}: Props) => {
   return (
-    <BaseLayout>
+    <BaseLayout title={title} description={description} keyword={keyword}>
       <UserProvider>
         <main
           className={cn(

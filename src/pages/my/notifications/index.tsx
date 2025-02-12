@@ -3,7 +3,7 @@ import NotificationsView from "@/views/my/notifications/notifications-view";
 
 const Page = () => {
   return (
-    <UserLayout>
+    <UserLayout title="Notifikasi - Raimerce">
       <NotificationsView />
     </UserLayout>
   );

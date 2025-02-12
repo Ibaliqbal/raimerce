@@ -30,7 +30,19 @@ const Page = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <StoreLayout {...data}>
+    <StoreLayout
+      title={`Berita Toko-${data.name} - Raimerce`}
+      descriptionWeb="Temukan berita terbaru dan informasi penting dari toko Anda di Raimerce. Dapatkan update tentang produk baru, penawaran khusus, dan acara yang akan datang untuk tetap terhubung dengan pelanggan Anda."
+      keyword={[
+        "berita toko",
+        "Raimerce",
+        "informasi toko",
+        "update produk",
+        "penawaran khusus",
+        "acara toko",
+      ]}
+      {...data}
+    >
       <StoreNewsView />
     </StoreLayout>
   );

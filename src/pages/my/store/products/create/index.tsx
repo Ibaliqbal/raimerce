@@ -3,7 +3,7 @@ import StoreCreateProductView from "@/views/my/store/products/store-create-produ
 
 const Products = () => {
   return (
-    <BaseLayout>
+    <BaseLayout title="Buat dan Kelola Produk Anda - Raimerce">
       <StoreCreateProductView />
     </BaseLayout>
   );

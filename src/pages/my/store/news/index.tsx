@@ -3,7 +3,7 @@ import StoreNewsView from "@/views/my/store/news/store-news-view";
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Berita dan Pengumuman Toko - Raimerce">
       <StoreNewsView />
     </StoreOwnerLayout>
   );

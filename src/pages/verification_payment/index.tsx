@@ -3,7 +3,7 @@ import VerificationPaymentView from "@/views/verification_payment/verification-p
 
 const Page = () => {
   return (
-    <BaseLayout>
+    <BaseLayout title="Payment verif - Raimerce">
       <VerificationPaymentView />
     </BaseLayout>
   );

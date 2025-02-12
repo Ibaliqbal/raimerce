@@ -21,14 +21,14 @@ body {
   scroll-behavior: smooth;
 }
 
+.custom-horizontal-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
 body::-webkit-scrollbar,
 textarea::-webkit-scrollbar,
 .custom-vertical-scroll::-webkit-scrollbar {
   width: 5px;
-}
-
-.custom-horizontal-scroll::-webkit-scrollbar {
-  height: 5px;
 }
 
 body::-webkit-scrollbar-track,

@@ -3,7 +3,7 @@ import StoreDashboardView from "@/views/my/store/dashboard/store-dashboard-view"
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Dashboard Store - Raimerce">
       <StoreDashboardView />
     </StoreOwnerLayout>
   );

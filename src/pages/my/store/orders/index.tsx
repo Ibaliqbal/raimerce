@@ -3,7 +3,7 @@ import StoreOrdersView from "@/views/my/store/orders/store-orders-view";
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Daftar Pesanan Store - Raimerce">
       <StoreOrdersView />
     </StoreOwnerLayout>
   );

@@ -8,11 +8,20 @@ type Props = {
   children: ReactNode;
   productsCount: number;
   followersCount: number;
+  title: string;
+  descriptionWeb?: string;
+  keyword?: string[];
 } & Pick<TStore, "address" | "name" | "headerPhoto" | "description" | "id">;
 
-const StoreLayout = ({ children, ...data }: Props) => {
+const StoreLayout = ({
+  children,
+  title,
+  descriptionWeb,
+  keyword,
+  ...data
+}: Props) => {
   return (
-    <BaseLayout>
+    <BaseLayout title={title} description={descriptionWeb} keyword={keyword}>
       <main className="wrapper-page flex flex-col gap-4">
         <ProfileStore {...data} />
         <TabNavigationStore />

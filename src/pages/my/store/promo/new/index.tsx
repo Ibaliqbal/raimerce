@@ -3,7 +3,7 @@ import StoreCreatePromoView from "@/views/my/store/promo/store-create-promo-view
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Buat Promo Baru - Raimerce">
       <StoreCreatePromoView />
     </StoreOwnerLayout>
   );

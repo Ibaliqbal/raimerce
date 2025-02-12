@@ -3,7 +3,7 @@ import StoreUpdatePromoView from "@/views/my/store/promo/store-update-promo-view
 
 const Page = () => {
   return (
-    <StoreOwnerLayout>
+    <StoreOwnerLayout title="Perbarui Promo - Raimerce">
       <StoreUpdatePromoView />
     </StoreOwnerLayout>
   );

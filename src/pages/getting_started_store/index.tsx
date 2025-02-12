@@ -4,7 +4,19 @@ import GettingStartedStoreView from "@/views/getting-started/getting-started-sto
 
 const Page = () => {
   return (
-    <BaseLayout>
+    <BaseLayout
+      title="Buat Toko Baru - Raimerce"
+      description="Bergabunglah dengan Raimerce dan buat toko online Anda sendiri! Isi informasi yang diperlukan untuk memulai perjalanan e-commerce Anda dan jangkau pelanggan di seluruh dunia."
+      keyword={[
+        "buat toko",
+        "Raimerce",
+        "toko online",
+        "e-commerce",
+        "bergabung",
+        "jual produk",
+        "platform belanja",
+      ]}
+    >
       <UserProvider>
         <GettingStartedStoreView />
       </UserProvider>
