@@ -3,9 +3,10 @@ import { OrdersTable, ProductsTable, TOrder, TUser } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { getStoreID } from "@/utils/db";
 import { verify } from "@/utils/api";
-import { and, arrayContains, eq } from "drizzle-orm";
+import { and, arrayContains, eq, gte, lte } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { JWT } from "next-auth/jwt";
+import { TZDate } from "@date-fns/tz";
 
 type Data = ApiResponse & {
   data?: Array<
@@ -31,6 +32,8 @@ export default function handler(
       const _status = req.query.status as "pending" | "success" | "canceled";
       const _page = req.query.page as string;
       const _limit = req.query.limit as string;
+      const _fromDay = req.query.from as string;
+      const _toDay = req.query.to as string;
 
       if (isNaN(Number(_page)) || isNaN(Number(_limit)))
         return res.status(400).json({
@@ -58,14 +61,38 @@ export default function handler(
           OrdersTable,
           and(
             arrayContains(OrdersTable.storeIds, [storeID]),
-            eq(OrdersTable.status, _status)
+            eq(OrdersTable.status, _status),
+            _fromDay && _toDay
+              ? and(
+                  gte(
+                    OrdersTable.createdAt,
+                    new TZDate(new Date(_fromDay), "Asia/Jakarta")
+                  ),
+                  lte(
+                    OrdersTable.createdAt,
+                    new TZDate(new Date(_toDay), "Asia/Jakarta")
+                  )
+                )
+              : undefined
           )
         );
 
         const orders = await db.query.OrdersTable.findMany({
           where: and(
             arrayContains(OrdersTable.storeIds, [storeID]),
-            eq(OrdersTable.status, _status)
+            eq(OrdersTable.status, _status),
+            _fromDay && _toDay
+              ? and(
+                  gte(
+                    OrdersTable.createdAt,
+                    new TZDate(new Date(_fromDay), "Asia/Jakarta")
+                  ),
+                  lte(
+                    OrdersTable.createdAt,
+                    new TZDate(new Date(_toDay), "Asia/Jakarta")
+                  )
+                )
+              : undefined
           ),
           columns: {
             id: true,
@@ -105,11 +132,39 @@ export default function handler(
 
       const totalOrders = await db.$count(
         OrdersTable,
-        arrayContains(OrdersTable.storeIds, [storeID])
+        and(
+          arrayContains(OrdersTable.storeIds, [storeID]),
+          _fromDay && _toDay
+            ? and(
+                gte(
+                  OrdersTable.createdAt,
+                  new TZDate(new Date(_fromDay), "Asia/Jakarta")
+                ),
+                lte(
+                  OrdersTable.createdAt,
+                  new TZDate(new Date(_toDay), "Asia/Jakarta")
+                )
+              )
+            : undefined
+        )
       );
 
       const orders = await db.query.OrdersTable.findMany({
-        where: arrayContains(OrdersTable.storeIds, [storeID]),
+        where: and(
+          arrayContains(OrdersTable.storeIds, [storeID]),
+          _fromDay && _toDay
+            ? and(
+                gte(
+                  OrdersTable.createdAt,
+                  new TZDate(new Date(_fromDay), "Asia/Jakarta")
+                ),
+                lte(
+                  OrdersTable.createdAt,
+                  new TZDate(new Date(_toDay), "Asia/Jakarta")
+                )
+              )
+            : undefined
+        ),
         columns: {
           id: true,
           products: true,

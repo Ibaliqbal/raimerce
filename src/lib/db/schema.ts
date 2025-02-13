@@ -336,7 +336,7 @@ export const NotificationTable = pgTable(
     type: NotificationType("type").default("order_client").notNull(),
     content: text().default("").notNull(),
     isRead: boolean("is_read").default(false).notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     typeIndex: index("typeIndex").on(table.type),

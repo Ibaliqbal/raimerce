@@ -1,5 +1,6 @@
 import { convertPrice } from "@/utils/helper";
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
 import { BsCart } from "react-icons/bs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaMinus, FaPlus, FaUser } from "react-icons/fa";
@@ -17,7 +18,9 @@ import instance from "@/lib/axios/instance";
 import { VariantSchemaT } from "@/types/product";
 import { AxiosError } from "axios";
 import ButtonFollow from "@/components/button/button-follow";
-import NumberFlow from "@number-flow/react";
+const NumberFlow = dynamic(() => import("@number-flow/react"), {
+  ssr: false,
+});
 
 type Props = Pick<
   TProducts,
@@ -25,7 +28,9 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name" | "id"> | null;
+  store: Pick<TStore, "name" | "id"> & {
+    owner: Pick<TUser, "avatar">;
+  };
   selectedVariant: string;
   comments: Array<
     Pick<
@@ -163,7 +168,7 @@ const ProductsDetailView = ({
           >
             <Avatar className="w-16 h-16">
               <AvatarImage
-                src="/Background.jpeg"
+                src={store.owner.avatar?.url}
                 alt="Avatar"
                 className="object-cover object-center"
               />

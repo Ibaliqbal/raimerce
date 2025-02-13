@@ -79,7 +79,7 @@ export default function handler(
       const data = await db.query.ProductsTable.findMany({
         where: and(
           eq(ProductsTable.storeId, checkAvaibleStore.id),
-          gte(ProductsTable.rating, parseInt(ratingFilter))
+          gte(ProductsTable.rating, ratingFilter)
         ),
         columns: {
           id: true,
@@ -101,7 +101,7 @@ export default function handler(
       where: and(
         eq(ProductsTable.storeId, checkAvaibleStore.id),
         eq(ProductsTable.category, categoryFilter),
-        gte(ProductsTable.rating, parseInt(ratingFilter))
+        gte(ProductsTable.rating, ratingFilter)
       ),
       columns: {
         id: true,

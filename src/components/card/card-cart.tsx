@@ -6,7 +6,10 @@ import { VariantSchemaT } from "@/types/product";
 import ButtonDeleteCart from "../button/button-delete-cart";
 import ButtonQtyCart from "../button/button-qty-cart";
 import { Separator } from "../ui/separator";
-import NumberFlow from "@number-flow/react";
+import dynamic from "next/dynamic";
+const NumberFlow = dynamic(() => import("@number-flow/react"), {
+  ssr: false,
+});
 
 type Props = {
   id: string;

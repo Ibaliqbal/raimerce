@@ -62,8 +62,11 @@ const DropdownOrder = ({ id, status, isOwner, products }: Props) => {
             status === "success" &&
             !(
               products?.length ===
-              products?.filter((product) => product.status === "confirmed")
-                .length
+              products?.filter(
+                (product) =>
+                  product.status === "confirmed" ||
+                  product.status === "received"
+              ).length
             ) && (
               <DropdownMenuItem
                 onClick={() =>

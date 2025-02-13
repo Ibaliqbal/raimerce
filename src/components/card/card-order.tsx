@@ -25,7 +25,7 @@ const CardOrder = ({
       <Card.Description asLink={false}>
         <div className="flex items-center justify-between">
           <h1 className="md:text-xl text-lg flex md:flex-row flex-col">
-            <span>Code Transaction :</span> <span>{transactionCode}</span>
+            <span>Code Transaction :</span> <span> {transactionCode}</span>
           </h1>
           <DropdownOrder
             id={id}

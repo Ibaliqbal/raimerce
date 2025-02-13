@@ -11,7 +11,9 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name" | "id"> | null;
+  store: Pick<TStore, "name" | "id"> & {
+    owner: Pick<TUser, "avatar">;
+  };
   comments: Array<
     Pick<
       TComment,
@@ -27,6 +29,9 @@ type Props = Pick<
 export const getServerSideProps = (async ({ params, query }) => {
   const { data } = await instance.get(`/products/${params?.id}`);
   const product = data.data as Props;
+
+  console.log(product);
+
   return {
     props: {
       data: product,

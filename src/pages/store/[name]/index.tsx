@@ -1,6 +1,6 @@
 import StoreLayout from "@/layouts/store-layout";
 import instance from "@/lib/axios/instance";
-import { TStore } from "@/lib/db/schema";
+import { TStore, TUser } from "@/lib/db/schema";
 import StoreNewsView from "@/views/store/store-news-view";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
@@ -10,6 +10,7 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
+  owner: Pick<TUser, "avatar">
 };
 
 // fetching in server side

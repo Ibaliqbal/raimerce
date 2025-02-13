@@ -7,9 +7,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import useInterval from "@/hooks/useInterval";
-import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
+import { NumberFlowGroup } from "@number-flow/react";
 import { FaRegCopy } from "react-icons/fa";
 import toast from "react-hot-toast";
+import dynamic from "next/dynamic";
+const NumberFlow = dynamic(() => import("@number-flow/react"), {
+  ssr: false,
+});
 
 const VerificationPaymentView = () => {
   const { query, reload } = useRouter();

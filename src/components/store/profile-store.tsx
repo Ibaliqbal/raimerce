@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaUser } from "react-icons/fa";
 import Image from "../ui/image";
-import { TStore } from "@/lib/db/schema";
+import { TStore, TUser } from "@/lib/db/schema";
 import { MdLocationOn } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoBagHandleSharp } from "react-icons/io5";
@@ -13,6 +13,7 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
+  owner: Pick<TUser, "avatar">;
 };
 
 const ProfileStore = ({
@@ -22,12 +23,13 @@ const ProfileStore = ({
   headerPhoto,
   followersCount,
   id,
+  owner,
 }: Props) => {
   return (
     <section className="flex flex-col gap-4 pb-4 border-b border-gray-500">
       {headerPhoto ? (
         <Image
-          figureClassName="w-full h-[400px] relative"
+          figureClassName="w-full md:h-[400px] h-[250px] relative"
           width={500}
           height={500}
           className="w-full h-full absolute inset-0 object-cover object-center rounded-xl"
@@ -35,13 +37,13 @@ const ProfileStore = ({
           src={headerPhoto.url}
         />
       ) : (
-        <div className="w-full inset-0 h-[400px] rounded-xl bg-slate-600" />
+        <div className="w-full inset-0 md:h-[400px] h-[250px] rounded-xl bg-slate-600" />
       )}
       <div className="flex flex-col gap-4 px-3 -mt-24">
         <div className="w-40 h-40 p-2 bg-white z-[2] rounded-full dark:bg-[#121212]">
           <Avatar className="w-full h-full">
             <AvatarImage
-              src="/Background.jpeg"
+              src={owner.avatar?.url}
               alt="Avatar"
               className="object-cover object-center"
             />

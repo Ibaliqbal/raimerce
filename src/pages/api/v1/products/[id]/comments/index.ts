@@ -159,64 +159,69 @@ export default function handler(
           (product) => product.productID === _id
         )?.variant;
 
-        await Promise.all([
-          db.insert(CommentsTable).values({
-            productId: _id,
-            userId: decoded.id,
-            content: validation.data.content,
-            rating: validation.data.rating.toString(),
-            medias: validation.data.medias,
-            variant: getSelectedVariantProductComment,
-          }),
-          db.insert(NotificationTable).values([
-            {
+        await db.transaction(async (tx) => {
+          try {
+            tx.insert(CommentsTable).values({
+              productId: _id,
               userId: decoded.id,
-              type: "order_client",
-              content: templateOrderNotification(
-                detailOrder.transactionCode,
-                `${getInfoStoreAndProduct.name} - ${getSelectedVariantProductComment}`,
-                "received",
-                false
-              ),
-            },
-            {
-              userId: getInfoStoreAndProduct.store.owner.id,
-              type: "order_store",
-              content: templateOrderNotification(
-                detailOrder.transactionCode,
-                `${getInfoStoreAndProduct.name} - ${getSelectedVariantProductComment}`,
-                "received",
-                true
-              ),
-            },
-          ]),
-          db
-            .update(OrdersTable)
-            .set({
-              updatedAt: sql`NOW()`,
-              products: detailOrder.products?.map((product) => {
-                if (product.productID === _id) {
-                  return {
-                    ...product,
-                    status: "received",
-                  };
-                }
-                return product;
-              }),
-            })
-            .where(eq(OrdersTable.id, _orderID)),
-          db
-            .update(ProductsTable)
-            .set({
-              updatedAt: sql`NOW()`,
-              rating: (
-                (Number(getInfoStoreAndProduct.rating) * allRating +
-                  validation.data.rating) /
-                (allRating + 1)
-              ).toString(),
-            })
-            .where(eq(ProductsTable.id, _id)),
-        ]);
+              content: validation.data.content,
+              rating: validation.data.rating.toString(),
+              medias: validation.data.medias,
+              variant: getSelectedVariantProductComment,
+            });
+
+            tx.insert(NotificationTable).values([
+              {
+                userId: decoded.id,
+                type: "order_client",
+                content: templateOrderNotification(
+                  detailOrder.transactionCode,
+                  `${getInfoStoreAndProduct.name} - ${getSelectedVariantProductComment}`,
+                  "received",
+                  false
+                ),
+              },
+              {
+                userId: getInfoStoreAndProduct.store.owner.id,
+                type: "order_store",
+                content: templateOrderNotification(
+                  detailOrder.transactionCode,
+                  `${getInfoStoreAndProduct.name} - ${getSelectedVariantProductComment}`,
+                  "received",
+                  true
+                ),
+              },
+            ]);
+
+            tx.update(OrdersTable)
+              .set({
+                updatedAt: sql`NOW()`,
+                products: detailOrder.products?.map((product) => {
+                  if (product.productID === _id) {
+                    return {
+                      ...product,
+                      status: "received",
+                    };
+                  }
+                  return product;
+                }),
+              })
+              .where(eq(OrdersTable.id, _orderID));
+
+            tx.update(ProductsTable)
+              .set({
+                updatedAt: sql`NOW()`,
+                rating: (
+                  (Number(getInfoStoreAndProduct.rating) * allRating +
+                    validation.data.rating) /
+                  (allRating + 1)
+                ).toString(),
+              })
+              .where(eq(ProductsTable.id, _id));
+          } catch (error) {
+            console.log(error);
+          }
+        });
 
         return res.status(201).json({
           message: "Comment created successfully",

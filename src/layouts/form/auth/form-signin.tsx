@@ -36,7 +36,7 @@ const FormSignin = () => {
         redirect: false,
       });
 
-      if (!res?.ok) return toast.error(res?.error);
+      if (!res?.ok) return toast.error(res?.error as string);
 
       router.push(callbackUrl);
       setOpen(true);

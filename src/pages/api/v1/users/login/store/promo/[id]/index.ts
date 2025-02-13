@@ -12,7 +12,7 @@ type Data = ApiResponse & {
   >;
 };
 
-const acceptMethod = ["GET", "PUT"];
+const acceptMethod = ["GET", "PUT", "DELETE"];
 
 export default function handler(
   req: NextApiRequest,
@@ -20,6 +20,16 @@ export default function handler(
 ) {
   secureMethods(acceptMethod, req, res, async () => {
     const id = req.query.id as string;
+
+    if (req.method === "DELETE") {
+      
+      await db.delete(PromoTable).where(eq(PromoTable.id, id));
+
+      return res.status(200).json({
+        message: "Promo deleted successfully",
+        statusCode: 200,
+      });
+    }
 
     if (req.method === "PUT") {
       const body = req.body;

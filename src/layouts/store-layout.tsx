@@ -2,12 +2,13 @@ import React, { ReactNode } from "react";
 import BaseLayout from "./base-layout";
 import ProfileStore from "@/components/store/profile-store";
 import TabNavigationStore from "@/components/store/tab-navigation-store";
-import { TStore } from "@/lib/db/schema";
+import { TStore, TUser } from "@/lib/db/schema";
 
 type Props = {
   children: ReactNode;
   productsCount: number;
   followersCount: number;
+  owner: Pick<TUser, "avatar">;
   title: string;
   descriptionWeb?: string;
   keyword?: string[];

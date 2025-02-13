@@ -10,7 +10,7 @@ type Data = ApiResponse & {
   data?: Array<Pick<TNotification, "id" | "content" | "createdAt" | "isRead">>;
 };
 
-const acceptMethods = ["GET"];
+const acceptMethods = ["GET", "PUT", "DELETE"];
 
 export default function handler(
   req: NextApiRequest,
@@ -19,6 +19,50 @@ export default function handler(
   secureMethods(acceptMethods, req, res, () => {
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
+
+      if (req.method === "DELETE") {
+        if (req.method === "DELETE") {
+          await db
+            .delete(NotificationTable)
+            .where(
+              and(
+                or(
+                  eq(NotificationTable.type, "order_store"),
+                  eq(NotificationTable.type, "report_to_store")
+                ),
+                eq(NotificationTable.userId, decoded.id)
+              )
+            );
+
+          return res.status(200).json({
+            message: "All notifications deleted",
+            statusCode: 200,
+          });
+        }
+      }
+
+      if (req.method === "PUT") {
+        await db
+          .update(NotificationTable)
+          .set({
+            isRead: true,
+          })
+          .where(
+            and(
+              or(
+                eq(NotificationTable.type, "order_store"),
+                eq(NotificationTable.type, "report_to_store")
+              ),
+              eq(NotificationTable.userId, decoded.id)
+            )
+          );
+
+        return res.status(200).json({
+          message: "Notifications marked as read",
+          statusCode: 200,
+        });
+      }
+
       const _page = req.query.page as string;
       const _limit = req.query.limit as string;
 

@@ -11,16 +11,23 @@ import { useRouter } from "next/router";
 
 type Props = {
   lists: string[];
-  baseRoute: "/my/order" | "/my/store/orders";
 };
 
-const FilterOrder = ({ lists, baseRoute }: Props) => {
+const FilterOrder = ({ lists }: Props) => {
   const router = useRouter();
+  const { ...otherQueries } = router.query;
 
   return (
     <Select
       onValueChange={(e) => {
-        router.push(`${baseRoute}?status=${e}`);
+        router.push(
+          {
+            pathname: router.pathname,
+            query: { ...otherQueries, status: e },
+          },
+          undefined,
+          { shallow: true }
+        );
       }}
       defaultValue={router.query.status as string}
     >

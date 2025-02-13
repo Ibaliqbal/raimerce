@@ -4,6 +4,7 @@ import {
   ProductsTable,
   StoresTable,
   TStore,
+  TUser,
 } from "@/lib/db/schema";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { eq } from "drizzle-orm";
@@ -15,7 +16,8 @@ type Data = ApiResponse & {
     "address" | "name" | "headerPhoto" | "description" | "id"
   > & {
     productsCount: number;
-    followersCount: number
+    followersCount: number;
+    owner: Pick<TUser, "avatar">;
   };
 };
 const acceptMethod = ["GET"];
@@ -34,6 +36,13 @@ export default async function handler(
         headerPhoto: true,
         address: true,
         id: true,
+      },
+      with: {
+        owner: {
+          columns: {
+            avatar: true,
+          },
+        },
       },
     });
 

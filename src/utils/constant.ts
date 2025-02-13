@@ -107,34 +107,6 @@ const effectCarousel = {
   slideAndOpacity: slideAndOpacityCarousel,
 };
 
-const dataDemoPromo = [
-  {
-    label: "D-01",
-    data: [12, 19, 4, 5, 20, 3, 9, 20, 33, 25, 10, 26],
-    borderWidth: 2,
-  },
-  {
-    label: "D-02",
-    data: [22, 15, 7, 9, 17, 5, 20, 44, 35, 20, 28, 19],
-    borderWidth: 2,
-  },
-  {
-    label: "D-03",
-    data: [4, 10, 17, 12, 15, 7, 15, 20, 35, 28, 30, 25],
-    borderWidth: 2,
-  },
-  {
-    label: "D-04",
-    data: [33, 15, 18, 22, 25, 13, 17, 12, 15, 7, 15, 20],
-    borderWidth: 2,
-  },
-  {
-    label: "D-05",
-    data: [30, 50, 7, 9, 17, 5, 20, 44, 35, 20, 28, 19],
-    borderWidth: 2,
-  },
-];
-
 const pageSizeProduct = 12;
 
 const pageSizeOrders = 2;
@@ -168,7 +140,6 @@ export {
   styleReactRating,
   navigationStore,
   effectCarousel,
-  dataDemoPromo,
   ratings,
   banks,
   pageSizeProduct,

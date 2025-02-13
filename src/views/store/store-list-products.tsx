@@ -35,7 +35,7 @@ const StoreListProducts = () => {
   });
 
   return (
-    <div className="w-full grid grid-cols-4 gap-4">
+    <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4">
       {isLoading ? (
         Array.from({ length: 4 }).map((_, i) => (
           <CardProduct.Skeleton key={i} />

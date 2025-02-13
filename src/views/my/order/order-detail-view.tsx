@@ -172,7 +172,7 @@ const OrderDetailView = ({ order }: Props) => {
                     </TableCell>
                     <TableCell
                       className={`text-right ${
-                        item.status === "recieved"
+                        item.status === "received"
                           ? "text-green-500"
                           : item.status === "confirmed"
                           ? "text-blue-400"

@@ -217,72 +217,94 @@ export default async function handler(
       let ordersStoreCount = 0;
       let notificationsStoreCount = 0;
 
-      const data = await db.query.UsersTable.findFirst({
-        where: eq(UsersTable.id, decoded.id),
-        columns: {
-          address: true,
-          avatar: true,
-          email: true,
-          name: true,
-          typeLogin: true,
-          phone: true,
-        },
-        with: {
-          store: {
-            columns: {
-              id: true,
-            },
-          },
-        },
-      });
+      const { data, notificationsCount, cartsCount, pendingOrdersCount } =
+        await db.transaction(async (tx) => {
+          try {
+            const data = await tx.query.UsersTable.findFirst({
+              where: eq(UsersTable.id, decoded.id),
+              columns: {
+                address: true,
+                avatar: true,
+                email: true,
+                name: true,
+                typeLogin: true,
+                phone: true,
+              },
+              with: {
+                store: {
+                  columns: {
+                    id: true,
+                  },
+                },
+              },
+            });
 
-      const cartsCount = await db.$count(
-        CartsTable,
-        eq(CartsTable.userId, decoded.id)
-      );
+            if (!data)
+              return {
+                data: null,
+                cartsCount: 0,
+                notificationsCount: 0,
+                pendingOrdersCount: 0,
+              };
 
-      const pendingOrdersCount = await db.$count(
-        OrdersTable,
-        and(
-          eq(OrdersTable.userId, decoded.id),
-          eq(OrdersTable.status, "pending")
-        )
-      );
+            const cartsCount = await tx.$count(
+              CartsTable,
+              eq(CartsTable.userId, decoded.id)
+            );
 
-      const notificationsCount = await db.$count(
-        NotificationTable,
-        and(
-          eq(NotificationTable.type, "order_client"),
-          eq(NotificationTable.isRead, false),
-          eq(NotificationTable.userId, decoded.id)
-        )
-      );
+            const pendingOrdersCount = await tx.$count(
+              OrdersTable,
+              and(
+                eq(OrdersTable.userId, decoded.id),
+                eq(OrdersTable.status, "pending")
+              )
+            );
+
+            const notificationsCount = await tx.$count(
+              NotificationTable,
+              and(
+                eq(NotificationTable.type, "order_client"),
+                eq(NotificationTable.isRead, false),
+                eq(NotificationTable.userId, decoded.id)
+              )
+            );
+
+            if (data.store?.id) {
+              notificationsStoreCount = await tx.$count(
+                NotificationTable,
+                and(
+                  or(
+                    eq(NotificationTable.type, "order_store"),
+                    eq(NotificationTable.type, "report_to_store")
+                  ),
+                  eq(NotificationTable.isRead, false),
+                  eq(NotificationTable.userId, decoded.id)
+                )
+              );
+              ordersStoreCount = await tx.$count(
+                OrdersTable,
+                and(
+                  arrayContains(OrdersTable.storeIds, [data.store.id]),
+                  eq(OrdersTable.status, "pending")
+                )
+              );
+            }
+            return { data, cartsCount, notificationsCount, pendingOrdersCount };
+          } catch (error) {
+            console.log(error);
+            return {
+              data: null,
+              cartsCount: 0,
+              notificationsCount: 0,
+              pendingOrdersCount: 0,
+            };
+          }
+        });
 
       if (!data)
         return res
           .status(404)
           .json({ message: "User not found", statusCode: 404, data: null });
-
-      if (data.store?.id) {
-        notificationsStoreCount = await db.$count(
-          NotificationTable,
-          and(
-            or(
-              eq(NotificationTable.type, "order_store"),
-              eq(NotificationTable.type, "report_to_store")
-            ),
-            eq(NotificationTable.isRead, false),
-            eq(NotificationTable.userId, decoded.id)
-          )
-        );
-        ordersStoreCount = await db.$count(
-          OrdersTable,
-          and(
-            arrayContains(OrdersTable.storeIds, [data.store.id]),
-            eq(OrdersTable.status, "pending")
-          )
-        );
-      }
 
       return res.status(200).json({
         message: "Success get data user login",

@@ -23,6 +23,7 @@ export default function handler(
 ) {
   secureMethods(acceptMethod, req, res, async () => {
     const id = req.query.id as string;
+    let timeLeft = "";
 
     const data = await db.query.OrdersTable.findFirst({
       where: eq(OrdersTable.id, id),
@@ -41,16 +42,18 @@ export default function handler(
         statusCode: 404,
       });
 
-    const now = new Date();
+    if (data.status === "pending") {
+      const now = new Date();
 
-    const targetDate = addHours(
-      new TZDate(data.createdAt as Date, "Asia/Jakarta"),
-      24
-    );
+      const targetDate = addHours(
+        new TZDate(data.createdAt as Date, "Asia/Jakarta"),
+        24
+      );
 
-    const result = formatDistanceStrict(targetDate, now, {
-      unit: "second",
-    });
+      timeLeft = formatDistanceStrict(targetDate, now, {
+        unit: "second",
+      });
+    }
 
     return res.status(200).json({
       message: "Success",
@@ -60,7 +63,7 @@ export default function handler(
         status: data.status,
         vaNumber: data.vaNumber,
         transactionCode: data.transactionCode,
-        timeLeft: Number(result.split(" ")[0]),
+        timeLeft: Number(timeLeft.split(" ")[0]),
       },
     });
   });

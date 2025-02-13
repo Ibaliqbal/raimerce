@@ -54,7 +54,7 @@ const CardNotification = ({ content, createdAt, isRead, id }: Props) => {
               {content}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {formatDistanceToNowStrict(new Date(createdAt as Date))} ago
+              {formatDistanceToNowStrict(createdAt as Date)} ago
             </p>
           </div>
           {!isRead && <ButtonMarkAsRead id={id} />}

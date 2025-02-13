@@ -25,7 +25,9 @@ type Data = ApiResponse & {
   > & {
     productsCount: number;
     followersCount: number;
-    store: Pick<TStore, "name" | "id"> | null;
+    store: Pick<TStore, "name" | "id"> & {
+      owner: Pick<TUser, "avatar">;
+    };
     comments: Array<
       Pick<
         TComment,
@@ -45,26 +47,86 @@ export default function handler(
   secureMethods(acceptMethod, req, res, async () => {
     const id = req.query.id as string;
 
-    const data = await db.query.ProductsTable.findFirst({
-      where: eq(ProductsTable.id, id),
-      columns: {
-        id: true,
-        name: true,
-        description: true,
-        rating: true,
-        variant: true,
-        storeId: true,
-        category: true,
-      },
-      with: {
-        store: {
-          columns: {
-            name: true,
-            id: true,
-          },
-        },
-      },
-    });
+    const { data, followersCount, productsCount, comments } =
+      await db.transaction(async () => {
+        try {
+          const data = await db.query.ProductsTable.findFirst({
+            where: eq(ProductsTable.id, id),
+            columns: {
+              id: true,
+              name: true,
+              description: true,
+              rating: true,
+              variant: true,
+              storeId: true,
+              category: true,
+            },
+            with: {
+              store: {
+                columns: {
+                  name: true,
+                  id: true,
+                },
+                with: {
+                  owner: {
+                    columns: {
+                      avatar: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (!data)
+            return {
+              data: null,
+              productsCount: 0,
+              followersCount: 0,
+              comments: [],
+            };
+
+          const productsCount = await db.$count(
+            ProductsTable,
+            eq(ProductsTable.storeId, data.storeId as string)
+          );
+
+          const followersCount = await db.$count(
+            FollowTable,
+            eq(FollowTable.storeId, data.storeId as string)
+          );
+
+          const comments = await db.query.CommentsTable.findMany({
+            where: eq(CommentsTable.productId, id),
+            columns: {
+              id: true,
+              createdAt: true,
+              content: true,
+              variant: true,
+              rating: true,
+              medias: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  name: true,
+                  avatar: true,
+                },
+              },
+            },
+          });
+
+          return { data, productsCount, followersCount, comments };
+        } catch (error) {
+          console.log(error);
+          return {
+            data: null,
+            productsCount: 0,
+            followersCount: 0,
+            comments: [],
+          };
+        }
+      });
 
     if (!data)
       return res.status(404).json({
@@ -72,38 +134,8 @@ export default function handler(
         statusCode: 404,
       });
 
-    const productsCount = await db.$count(
-      ProductsTable,
-      eq(ProductsTable.storeId, data.storeId as string)
-    );
-
-    const followersCount = await db.$count(
-      FollowTable,
-      eq(FollowTable.storeId, data.storeId as string)
-    );
-
-    const comments = await db.query.CommentsTable.findMany({
-      where: eq(CommentsTable.productId, id),
-      columns: {
-        id: true,
-        createdAt: true,
-        content: true,
-        variant: true,
-        rating: true,
-        medias: true,
-      },
-      with: {
-        user: {
-          columns: {
-            name: true,
-            avatar: true,
-          },
-        },
-      },
-    });
-
     return res.status(200).json({
-      message: "Welcome to our API",
+      message: "Success get detail product",
       statusCode: 200,
       data: { ...data, productsCount, comments, followersCount },
     });

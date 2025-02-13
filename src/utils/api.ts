@@ -4,15 +4,10 @@ import jwt from "jsonwebtoken";
 
 const API_LOCATION = process.env.NEXT_PUBLIC_API_LOCATION;
 
-interface ErrorResponse {
+export interface ApiResponse {
   message: string;
   statusCode: number;
 }
-
-export type ApiResponse = {
-  message: string;
-  statusCode: number;
-};
 
 async function fetchProvincies() {
   const res = await axios.get(`${API_LOCATION}/provinces.json`);
@@ -47,7 +42,7 @@ async function fetchDistricts(city: string) {
 
 function secureMethods<
   T extends
-    | ErrorResponse
+    | ApiResponse
     | {
         status: boolean;
         message: string;

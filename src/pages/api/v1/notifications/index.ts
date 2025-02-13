@@ -10,7 +10,7 @@ type Data = ApiResponse & {
   data?: Array<Pick<TNotification, "id" | "content" | "createdAt" | "isRead">>;
 };
 
-const acceptMethods = ["GET"];
+const acceptMethods = ["GET", "PUT", "DELETE"];
 
 export default function handler(
   req: NextApiRequest,
@@ -19,6 +19,37 @@ export default function handler(
   secureMethods(acceptMethods, req, res, () => {
     verify(req, res, async (decode) => {
       const decoded = decode as JWT;
+
+      if (req.method === "DELETE") {
+        await db
+          .delete(NotificationTable)
+          .where(and(eq(NotificationTable.userId, decoded.id)));
+
+        return res.status(200).json({
+          message: "All notifications deleted",
+          statusCode: 200,
+        });
+      }
+
+      if (req.method === "PUT") {
+        await db
+          .update(NotificationTable)
+          .set({
+            isRead: true,
+          })
+          .where(
+            and(
+              eq(NotificationTable.userId, decoded.id),
+              eq(NotificationTable.type, "order_client")
+            )
+          );
+
+        return res.status(200).json({
+          message: "Notifications marked as read",
+          statusCode: 200,
+        });
+      }
+
       const _page = req.query.page as string;
       const _limit = req.query.limit as string;
 
@@ -28,29 +59,40 @@ export default function handler(
           statusCode: 400,
         });
 
-      const data = await db.query.NotificationTable.findMany({
-        where: and(
-          eq(NotificationTable.userId, decoded.id),
-          eq(NotificationTable.type, "order_client")
-        ),
-        columns: {
-          id: true,
-          content: true,
-          isRead: true,
-          createdAt: true,
-        },
-        orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
-        limit: Number(_limit),
-        offset: (Number(_page) - 1) * Number(_limit),
-      });
+      const { data, totalNotifications } = await db.transaction(async (tx) => {
+        try {
+          const data = await tx.query.NotificationTable.findMany({
+            where: and(
+              eq(NotificationTable.userId, decoded.id),
+              eq(NotificationTable.type, "order_client")
+            ),
+            columns: {
+              id: true,
+              content: true,
+              isRead: true,
+              createdAt: true,
+            },
+            orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+            limit: Number(_limit),
+            offset: (Number(_page) - 1) * Number(_limit),
+          });
 
-      const totalNotifications = await db.$count(
-        NotificationTable,
-        and(
-          eq(NotificationTable.userId, decoded.id),
-          eq(NotificationTable.type, "order_client")
-        )
-      );
+          const totalNotifications = await tx.$count(
+            NotificationTable,
+            and(
+              eq(NotificationTable.userId, decoded.id),
+              eq(NotificationTable.type, "order_client")
+            )
+          );
+          return { data, totalNotifications };
+        } catch (error) {
+          console.log(error);
+          return {
+            data: [],
+            totalNotifications: 0,
+          };
+        }
+      });
 
       return res.status(200).json({
         message: "Welcome to the e-commerce API!",

@@ -8,7 +8,16 @@ export const resetPasswordSchema = z.object({
   newPassword: z
     .string()
     .min(8, { message: "Password minimun 8 char" })
-    .max(20, { message: "Password miximum 20 char" }),
+    .max(20, { message: "Password miximum 20 char" })
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "Confirm password must contain at least one uppercase letter",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "Confirm password must contain at least one number",
+    })
+    .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+      message: "Confirm password must contain at least one special character",
+    }),
 });
 
 export type TResetPasswordT = z.infer<typeof resetPasswordSchema>;
@@ -43,29 +52,29 @@ export const signupSchema = z
     password: z
       .string()
       .min(8, { message: "Password minimun 8 char" })
-      .max(16, { message: "Password miximum 20 char" }),
-      // .refine((val) => /[A-Z]/.test(val), {
-      //   message: "Password must contain at least one uppercase letter",
-      // })
-      // .refine((val) => /[0-9]/.test(val), {
-      //   message: "Password must contain at least one number",
-      // })
-      // .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
-      //   message: "Password must contain at least one special character",
-      // }),
+      .max(16, { message: "Password miximum 20 char" })
+      .refine((val) => /[A-Z]/.test(val), {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .refine((val) => /[0-9]/.test(val), {
+        message: "Password must contain at least one number",
+      })
+      .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+        message: "Password must contain at least one special character",
+      }),
     confirmPassword: z
       .string()
       .min(8, { message: "Password minimun 8 char" })
-      .max(16, { message: "Password miximum 20 char" }),
-    // .refine((val) => /[A-Z]/.test(val), {
-    //   message: "Confirm password must contain at least one uppercase letter",
-    // })
-    // .refine((val) => /[0-9]/.test(val), {
-    //   message: "Confirm password must contain at least one number",
-    // })
-    // .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
-    //   message: "Confirm password must contain at least one special character",
-    // }),
+      .max(16, { message: "Password miximum 20 char" })
+      .refine((val) => /[A-Z]/.test(val), {
+        message: "Confirm password must contain at least one uppercase letter",
+      })
+      .refine((val) => /[0-9]/.test(val), {
+        message: "Confirm password must contain at least one number",
+      })
+      .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
+        message: "Confirm password must contain at least one special character",
+      }),
   })
   .refine((val) => val.password === val.confirmPassword, {
     message: "Confirm password is not same as password",
@@ -75,7 +84,7 @@ export const signupSchema = z
 export type SignupSchemaT = z.infer<typeof signupSchema>;
 
 export const addLocationSchema = z.object({
-  moreSpesific: z.string().max(100),
+  moreSpesific: z.string().max(100).trim(),
   province: z.string({ required_error: "Please which one of these" }),
   city: z.string({ required_error: "Please which one of these" }),
   district: z.string({ required_error: "Please which one of these" }),
