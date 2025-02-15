@@ -28,9 +28,11 @@ const BaseLayout = ({
         description={description}
         keyword={keyword}
       />
-      {pathname === "/verification_payment" ||
-      pathname === "/my/order/[id]" ||
-      pathname === "/my/store/orders/[id]" ? null : (
+      {[
+        "/verification_payment",
+        "/my/order/[id]",
+        "/my/store/orders/[id]",
+      ].includes(pathname) ? null : (
         <NavbarBase />
       )}
       {children}

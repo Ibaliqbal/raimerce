@@ -6,7 +6,8 @@ declare module "next-auth" {
   interface Session {
     user: {
       typeLogin: "google" | "credentials" | null;
-      id: string
+      role: "admin" | "member";
+      id: string;
     } & DefaultSession["user"];
     accessToken: string;
   }
@@ -21,5 +22,6 @@ declare module "next-auth/jwt" {
     role: "admin" | "member";
     id: string;
     typeLogin: "google" | "credentials" | null;
+    userHasStore: boolean;
   }
 }

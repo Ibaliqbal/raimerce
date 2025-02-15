@@ -38,7 +38,9 @@ const NavbarBase = () => {
           <Link href="/" className="font-semibold">
             Home
           </Link>
-          <Link href={"/settings"}>
+          <Link
+            href={session.data.user.role === "admin" ? "/admin" : "/settings"}
+          >
             <Avatar>
               <AvatarFallback>
                 <FaRegUser />

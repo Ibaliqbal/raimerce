@@ -6,7 +6,7 @@ import { TOrder } from "@/lib/db/schema";
 import { useRouter } from "next/router";
 import InfiniteScrollLayout from "@/layouts/infinite-scroll-layout";
 import { pageSizeOrders } from "@/utils/constant";
-import { DatePickerRange } from "@/components/date-range-picker-order";
+import { DatePickerRange } from "@/components/date-range-picker";
 
 const OrderView = () => {
   const { query } = useRouter();

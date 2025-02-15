@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { UsersTable } from "./db/schema";
+import { StoresTable, UsersTable } from "./db/schema";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -111,6 +111,7 @@ const authOptions: AuthOptions = {
       if (token) {
         session.user.typeLogin = token.typeLogin;
         session.user.id = token.id;
+        session.user.role = token.role;
         const accessToken = jwt.sign(token, secret, {
           algorithm: "HS256",
         });
@@ -118,8 +119,21 @@ const authOptions: AuthOptions = {
       }
       return session;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
+        const hasStore = await db.query.StoresTable.findFirst({
+          where: eq(StoresTable.userId, user.id),
+          columns: {
+            id: true,
+          },
+        });
+
+        if (hasStore) {
+          token.userHasStore = true;
+        } else {
+          token.userHasStore = false;
+        }
+
         token.id = user.id;
         token.role = user.role;
         token.typeLogin = user.typeLogin;

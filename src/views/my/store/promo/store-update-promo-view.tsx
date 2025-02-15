@@ -31,7 +31,7 @@ const StoreUpdatePromoView = () => {
   if (isLoading) return <Loader className="col-span-2" />;
 
   return (
-    <section className="col-span-2 flex flex-col gap-4">
+    <section className="col-span-2 flex flex-col gap-4 pb-8">
       <Button
         className="flex items-center gap-3 w-fit"
         variant="icon"

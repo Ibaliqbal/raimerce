@@ -34,7 +34,7 @@ export const productSchema = z.object({
 
 export const promoSchema = z
   .object({
-    code: z.string().min(3).max(7),
+    code: z.string().min(3).max(10),
     amount: z.union([
       z
         .string()

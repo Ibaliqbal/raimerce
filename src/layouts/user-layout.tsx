@@ -3,7 +3,7 @@ import BaseLayout from "./base-layout";
 import SidebarUser from "./siderbar/sidebar-user";
 import { cn } from "@/lib/utils";
 import { UserProvider } from "@/context/user-context";
-import SidebarMobile from "./siderbar/sidebar-mobile";
+import SidebarMobile from "./siderbar/sidebar-user-mobile";
 
 type Props = {
   children: React.ReactNode;

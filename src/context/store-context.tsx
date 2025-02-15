@@ -46,7 +46,7 @@ const keyQuery = "store-details-owner";
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, data } = useQuery({
     queryKey: [keyQuery],
-    retry: false,
+    retry: true,
     queryFn: getStoreData,
   });
 
@@ -73,8 +73,6 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       toast.success(res.data.message);
     },
   });
-
-  // const mutationUpdate = useMutation
 
   return (
     <StoreContext.Provider

@@ -1,5 +1,5 @@
 import CardOrder from "@/components/card/card-order";
-import { DatePickerRange } from "@/components/date-range-picker-order";
+import { DatePickerRange } from "@/components/date-range-picker";
 import FilterOrder from "@/components/filter/filter-order";
 import InfiniteScrollLayout from "@/layouts/infinite-scroll-layout";
 import instance from "@/lib/axios/instance";

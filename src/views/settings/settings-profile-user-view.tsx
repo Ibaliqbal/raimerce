@@ -5,18 +5,17 @@ import FormUpdateUser from "@/layouts/form/form-update-user";
 import { useTheme } from "next-themes";
 import SelectTheme from "@/components/settings/select-theme";
 import FormChangePassword from "@/layouts/form/form-change-password";
-import { signOut, useSession } from "next-auth/react";
 import { useGetUserLogin } from "@/context/user-context";
 import FormAddLocation from "@/layouts/form/form-add-location";
 import Link from "next/link";
 import { MdLocationOn } from "react-icons/md";
 import { UploadButton } from "@/utils/uploadthing";
 import { Separator } from "@/components/ui/separator";
+import ButtonLogout from "@/components/button/button-logout";
 
 const SettingProfileUserView = () => {
   const { setTheme, theme } = useTheme();
   const data = useGetUserLogin();
-  const session = useSession();
   return (
     <section className="lg:col-span-2 flex flex-col gap-5 pb-8">
       <div className="lg:border lg:border-gray-500 lg:rounded-lg lg:p-3 flex flex-col gap-4">
@@ -96,11 +95,7 @@ const SettingProfileUserView = () => {
             </Button>
           </div>
         )}
-        {session.data ? (
-          <Button onClick={() => signOut()} variant="logout" size="xl">
-            Logout
-          </Button>
-        ) : null}
+        <ButtonLogout />
       </div>
     </section>
   );

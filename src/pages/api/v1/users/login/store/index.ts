@@ -108,7 +108,6 @@ export default function handler(
         return res.status(404).json({
           message: "You don't have a store",
           statusCode: 404,
-          data: null,
         });
 
       return res.status(200).json({
