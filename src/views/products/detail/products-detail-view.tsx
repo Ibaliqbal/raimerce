@@ -1,23 +1,19 @@
 import { convertPrice } from "@/utils/helper";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import { BsCart } from "react-icons/bs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaMinus, FaPlus, FaUser } from "react-icons/fa";
 import ProductsListComment from "@/components/products/products-list-comment";
 import ProductsListVariant from "@/components/products/products-list-variant";
-import { toast } from "react-hot-toast";
 import ProductsDetailImage from "@/components/products/products-detail-image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Rating from "@/components/ui/rating";
 import Link from "next/link";
 import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
-import { RiLoader5Line } from "react-icons/ri";
-import instance from "@/lib/axios/instance";
 import { VariantSchemaT } from "@/types/product";
-import { AxiosError } from "axios";
 import ButtonFollow from "@/components/button/button-follow";
+import ButtonAddToCart from "./button-add-to-cart";
 const NumberFlow = dynamic(() => import("@number-flow/react"), {
   ssr: false,
 });
@@ -60,13 +56,6 @@ const ProductsDetailView = ({
   const [selectedVariant] = useState<VariantSchemaT>(
     variant.find((vari) => vari.name_variant === variantProps)!
   );
-  const [status, setStatus] = useState<{
-    status: "success" | "submitting" | " error";
-    type: "cart" | "checkout";
-  }>({
-    status: "success",
-    type: "cart",
-  });
 
   return (
     <section className="w-full flex lg:flex-row flex-col gap-4 relative">
@@ -121,46 +110,12 @@ const ProductsDetailView = ({
             </div>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="xl"
-          className="flex items-center gap-3 text-xl"
-          disabled={status.status === "submitting"}
-          onClick={async () => {
-            setStatus({
-              status: "submitting",
-              type: "cart",
-            });
-            try {
-              const res = await instance.post("/carts", {
-                productId: id,
-                quantity,
-                category,
-                variant: selectedVariant.name_variant,
-              });
-              setStatus((prev) => ({
-                status: "success",
-                type: prev.type,
-              }));
-              toast.success(res.data.message);
-            } catch (error) {
-              if (error instanceof AxiosError) {
-                toast.error(error.message);
-              }
-              setStatus((prev) => ({
-                status: " error",
-                type: prev.type,
-              }));
-            }
-          }}
-        >
-          {status.status === "submitting" && status.type === "cart" ? (
-            <RiLoader5Line className="animate-spin" />
-          ) : (
-            <BsCart />
-          )}
-          Add cart
-        </Button>
+        <ButtonAddToCart
+          id={id}
+          category={category}
+          quantity={quantity}
+          selectedVariant={selectedVariant.name_variant}
+        />
         <div className="flex gap-4 items-center text-lg">
           <Link
             href={`/store/${encodeURIComponent(store?.name as string)}`}

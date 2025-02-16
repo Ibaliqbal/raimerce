@@ -8,13 +8,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TUser } from "@/lib/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 const columns: ColumnDef<TUser>[] = [
   {
-    accessorKey: "id",
     header: "ID",
     size: 60,
+    id: "S.No",
+    cell: (info) => <span>{info.row.index + 1}</span>,
   },
   {
     accessorKey: "avatar",
@@ -53,13 +55,17 @@ const columns: ColumnDef<TUser>[] = [
   {
     accessorKey: "phone",
     header: "Phone",
+    cell({ row }) {
+      const phone = row.getValue("phone");
+      return phone ? phone : "-";
+    },
   },
   {
     accessorKey: "createdAt",
     header: "Joined At",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
-      return date?.toLocaleDateString();
+      const date = row.getValue("createdAt");
+      return format(date as Date, "LLL d, yyy");
     },
   },
   {
@@ -77,9 +83,6 @@ const columns: ColumnDef<TUser>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuCheckboxItem onClick={() => console.log("View", user)}>
               View details
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem onClick={() => console.log("Edit", user)}>
-              Edit user
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() => console.log("Delete", user)}

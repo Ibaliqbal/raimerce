@@ -27,6 +27,7 @@ export default async function handler(
           where: eq(UsersTable.id, decoded.id),
           columns: {
             address: true,
+            phone: true,
           },
         });
 
@@ -34,6 +35,12 @@ export default async function handler(
           return res
             .status(400)
             .json({ message: "Invalid data", statusCode: 400 });
+
+        if (!getAddress?.address || !getAddress.phone)
+          return res.status(400).json({
+            message: "Please fill your information first...",
+            statusCode: 400,
+          });
 
         await db.insert(StoresTable).values({
           name: validation.data.name,

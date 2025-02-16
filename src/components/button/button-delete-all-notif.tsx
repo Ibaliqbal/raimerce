@@ -6,7 +6,7 @@ import instance from "@/lib/axios/instance";
 import { useLoadingScreen } from "@/context/loading-screen-context";
 
 type Props = {
-  user: "client" | "store";
+  user: "client" | "store" | "admin";
 };
 
 const ButtonDeleteAllNotif = ({ user }: Props) => {
@@ -25,6 +25,8 @@ const ButtonDeleteAllNotif = ({ user }: Props) => {
             await instance.delete(
               user === "client"
                 ? "/notifications"
+                : user === "admin"
+                ? "/admin/notifications"
                 : "/users/login/store/notifications"
             ),
           {

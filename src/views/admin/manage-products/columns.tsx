@@ -8,13 +8,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TProducts } from "@/lib/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { ArrowUpDown, MoreHorizontal, Star, StarHalf } from "lucide-react";
 
-const columns: ColumnDef<TProducts>[] = [
+const columns: ColumnDef<TProducts, unknown>[] = [
   {
-    accessorKey: "id",
+    id: "S.No",
     header: "ID",
     size: 80,
+    cell: (info) => <span>{info.row.index + 1}</span>,
   },
   {
     accessorKey: "name",
@@ -67,16 +69,16 @@ const columns: ColumnDef<TProducts>[] = [
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
-      return date.toLocaleDateString();
+      const date = row.getValue("createdAt");
+      return format(date as Date, "LLL d, yyy");
     },
   },
   {
     accessorKey: "updatedAt",
     header: "Updated At",
     cell: ({ row }) => {
-      const date = row.getValue("updatedAt") as Date;
-      return date.toLocaleDateString();
+      const date = row.getValue("updatedAt");
+      return format(date as Date, "LLL d, yyy");
     },
   },
   {
@@ -96,11 +98,6 @@ const columns: ColumnDef<TProducts>[] = [
               onClick={() => console.log("View", product)}
             >
               View details
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              onClick={() => console.log("Edit", product)}
-            >
-              Edit product
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() => console.log("Delete", product)}

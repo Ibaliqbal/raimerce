@@ -161,7 +161,7 @@ export default function handler(
 
         await db.transaction(async (tx) => {
           try {
-            tx.insert(CommentsTable).values({
+            await tx.insert(CommentsTable).values({
               productId: _id,
               userId: decoded.id,
               content: validation.data.content,
@@ -170,7 +170,7 @@ export default function handler(
               variant: getSelectedVariantProductComment,
             });
 
-            tx.insert(NotificationTable).values([
+            await tx.insert(NotificationTable).values([
               {
                 userId: decoded.id,
                 type: "order_client",
@@ -193,7 +193,8 @@ export default function handler(
               },
             ]);
 
-            tx.update(OrdersTable)
+            await tx
+              .update(OrdersTable)
               .set({
                 updatedAt: sql`NOW()`,
                 products: detailOrder.products?.map((product) => {
@@ -208,7 +209,8 @@ export default function handler(
               })
               .where(eq(OrdersTable.id, _orderID));
 
-            tx.update(ProductsTable)
+            await tx
+              .update(ProductsTable)
               .set({
                 updatedAt: sql`NOW()`,
                 rating: (

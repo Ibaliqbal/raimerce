@@ -38,10 +38,11 @@ const FormUpdateUser = ({ name, email, phone }: Props) => {
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: UpdateProfileT) =>
       await instance.put(`/users/login?_type=update_profile`, data),
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({
         queryKey: ["login-user"],
       });
+      toast.success(res.data.message);
     },
     onError(error) {
       if (error instanceof AxiosError) {

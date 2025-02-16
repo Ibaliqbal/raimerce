@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { ProductsTable, StoresTable, TProducts } from "@/lib/db/schema";
+import { CategoryProduct, ProductsTable, StoresTable, TProducts } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { and, eq, gte } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -18,7 +18,8 @@ export default function handler(
 ) {
   secureMethods(acceptMethod, req, res, async () => {
     const name = req.query.name as string;
-    const categoryFilter = req.query.c as string;
+    const categoryFilter = req.query
+      .c as (typeof CategoryProduct.enumValues)[number];
     const ratingFilter = req.query.r as string;
 
     const checkAvaibleStore = await db.query.StoresTable.findFirst({

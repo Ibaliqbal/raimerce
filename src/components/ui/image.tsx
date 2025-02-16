@@ -28,12 +28,12 @@ const Image = ({
         height={height}
         priority
         unoptimized
-        onLoadingComplete={() => setLoading(false)}
+        onLoad={() => setLoading(false)}
         {...rest}
         sizes="100%"
         className={cn(
           className,
-          loading ? "animate-pulse duration-300 bg-gray-700" : ""
+          loading ? "animate-pulse duration-500 bg-gray-700" : ""
         )}
       />
     </motion.figure>

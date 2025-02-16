@@ -5,10 +5,12 @@ import Carousel from "@/components/ui/carousel";
 import { myBanners } from "@/utils/constant";
 import Image from "@/components/ui/image";
 import ListProducts from "./list-products";
+import HeroSection from "@/components/hero-section";
 
 const HomeView = () => {
   return (
     <main className="flex flex-col gap-4 wrapper-page pb-10">
+      <HeroSection />
       <div className="md:h-[500px] h-[200px]">
         <Carousel thumb={false} effect="slideAndOpacity">
           {myBanners.map((banner) => (

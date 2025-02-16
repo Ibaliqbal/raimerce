@@ -28,6 +28,11 @@ export default function handler(
       const body = req.body;
 
       if (req.method === "POST") {
+        if (decoded.role !== "member")
+          return res.status(400).json({
+            statusCode: 400,
+            message: "Only user can add to cart",
+          });
         const validation = insertCartSchema.safeParse(body);
 
         if (!validation.success)

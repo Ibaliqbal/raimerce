@@ -1,4 +1,3 @@
-import { TStore } from "@/lib/db/schema";
 import {
   ColumnFiltersState,
   flexRender,
@@ -22,6 +21,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import instance from "@/lib/axios/instance";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -31,53 +33,11 @@ export function DataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const data = React.useMemo<TStore[]>(
-    () => [
-      {
-        id: "1",
-        name: "Downtown Boutique",
-        description: "A trendy fashion store in the heart of the city",
-        address: {
-          spesific: "Jl. Peninggaran Timur 2",
-          city: "Jakarta Selatan",
-          district: "",
-          province: "DKI Jakarta",
-        },
-        headerPhoto: {
-          url: "https://example.com/store1.jpg",
-          name: "store1.jpg",
-          type: "image/jpeg",
-          keyFile: "stores/store1.jpg",
-        },
-        createdAt: new Date("2023-01-01"),
-        updatedAt: new Date("2023-06-15"),
-        userId: "user1",
-      },
-      {
-        id: "2",
-        name: "Tech Haven",
-        description: "Your one-stop shop for all things tech",
-        address: {
-          spesific: "Jl. Selar B 32 No 27",
-          city: "Bogor",
-          province: "Jawa Barat",
-          district: "Tajurhalang",
-        },
-        headerPhoto: {
-          url: "https://example.com/store2.jpg",
-          name: "store2.jpg",
-          type: "image/jpeg",
-          keyFile: "stores/store2.jpg",
-        },
-        createdAt: new Date("2023-02-15"),
-        updatedAt: new Date("2023-06-20"),
-        userId: "user2",
-      },
-      // Add more store data here...
-    ],
-    []
-  );
+  const { isLoading, data } = useQuery({
+    queryKey: ["stores"],
+    queryFn: async () => (await instance.get("/admin/stores")).data.data,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const table = useReactTable({
     data,
@@ -97,6 +57,8 @@ export function DataTable() {
       rowSelection,
     },
   });
+
+  if (isLoading) return <Skeleton className="w-full h-[200px]" />;
 
   return (
     <div className="w-full">

@@ -15,9 +15,23 @@ import { useRouter } from "next/router";
 const PaginationProducts = () => {
   const { asPath, query } = useRouter();
   const { isLoading, data } = useQuery({
-    queryKey: ["total", "products"],
-    queryFn: async () =>
-      (await instance.get("/products?_type=total")).data.data,
+    queryKey: [
+      "total",
+      "products",
+      query.c ? query.c : "without-category-filter",
+      query.r ? query.r : "without-rating-filter",
+      query.q ? query.q : "without-search-filter",
+    ],
+    queryFn: async () => {
+      const categoryQuery = query.c ? `&c=${query.c}` : "";
+      const ratingQuery = query.r ? `&r=${query.r}` : "";
+      const endpoint = query.q
+        ? `/products/search?q=${query.q}${categoryQuery}${ratingQuery}&type=total`
+        : `/products?_type=total${categoryQuery}${ratingQuery}`;
+      const res = (await instance.get(endpoint)).data.data;
+      return res;
+    },
+    enabled: !!query,
   });
   return (
     <div className="w-full flex items-center justify-center">

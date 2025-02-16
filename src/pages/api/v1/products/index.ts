@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { ProductsTable, TProducts } from "@/lib/db/schema";
+import { CategoryProduct, ProductsTable, TProducts } from "@/lib/db/schema";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { eq, gte, or } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -73,8 +73,20 @@ export default function handler(
       });
     }
 
+    const category = req.query.c as (typeof CategoryProduct.enumValues)[number];
+    const rating = req.query.r as string;
+
     if (type === "total") {
-      const data = await db.$count(ProductsTable);
+      const data = await db.$count(
+        ProductsTable,
+        category || rating
+          ? or(
+              category ? eq(ProductsTable.category, category) : undefined,
+              rating ? gte(ProductsTable.rating, rating) : undefined
+            )
+          : undefined
+      );
+
       return res.status(200).json({
         message: "Success get total products",
         statusCode: 200,
@@ -82,8 +94,6 @@ export default function handler(
       });
     }
 
-    const category = req.query.c as string;
-    const rating = req.query.r as string;
     const page = req.query.page as string;
     const limit = req.query.limit as string;
 

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { ProductsTable, TProducts } from "@/lib/db/schema";
+import { CategoryProduct, ProductsTable, TProducts } from "@/lib/db/schema";
 import { productSchema } from "@/types/product";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { getStoreID } from "@/utils/db";
@@ -26,7 +26,8 @@ export default function handler(
       const decoded = decode as JWT;
       const body = req.body;
       const storeID = await getStoreID(decoded.id);
-      const category = req.query.c as string;
+      const category = req.query
+        .c as (typeof CategoryProduct.enumValues)[number];
       const _page = req.query.page as string;
       const _limit = req.query.limit as string;
 
@@ -48,7 +49,8 @@ export default function handler(
           storeId: storeID,
           name: validation.data.name,
           description: validation.data.description,
-          category: validation.data.category,
+          category: validation.data
+            .category as (typeof CategoryProduct.enumValues)[number],
           variant: validation.data.variant,
         });
 

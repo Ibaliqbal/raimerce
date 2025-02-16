@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TProducts } from "@/lib/db/schema";
 import {
   ColumnFiltersState,
   flexRender,
@@ -23,6 +22,9 @@ import * as React from "react";
 import { columns } from "./columns";
 import { FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import instance from "@/lib/axios/instance";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -33,42 +35,11 @@ export function DataTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const data = React.useMemo<TProducts[]>(
-    () => [
-      {
-        id: "1",
-        name: "Smartphone X",
-        description: "Latest model with advanced features",
-        variant: [
-          { name_variant: "64GB", price: 799, stock: 50, medias: [] },
-          { name_variant: "128GB", price: 899, stock: 30, medias: [] },
-        ],
-        rating: "4.5",
-        category: "Electronics",
-        soldout: 1000,
-        createdAt: new Date("2023-01-01"),
-        updatedAt: new Date("2023-06-15"),
-        storeId: "",
-      },
-      {
-        id: "2",
-        name: "Ergonomic Chair",
-        description: "Comfortable office chair",
-        variant: [
-          { name_variant: "Black", price: 299, stock: 20, medias: [] },
-          { name_variant: "Gray", price: 299, stock: 15, medias: [] },
-        ],
-        rating: "4.2",
-        category: "Furniture",
-        soldout: 500,
-        createdAt: new Date("2023-02-15"),
-        updatedAt: new Date("2023-06-20"),
-        storeId: "",
-      },
-      // Add more product data here...
-    ],
-    []
-  );
+  const { isLoading, data } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => (await instance.get("/admin/products")).data.data,
+    staleTime: 1000 * 60 * 1, // 5 minutes
+  });
 
   const table = useReactTable({
     data,
@@ -88,6 +59,8 @@ export function DataTable() {
       rowSelection,
     },
   });
+
+  if (isLoading) return <Skeleton className="w-full h-[250px]" />;
 
   return (
     <div className="w-full">

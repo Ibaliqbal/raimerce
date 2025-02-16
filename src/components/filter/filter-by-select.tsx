@@ -40,10 +40,16 @@ const FilterBySelect: React.FC<FilterBySelectProps> = ({ filterBy, lists }) => {
           `${queryParam}=${currentValue}`,
           `${queryParam}=${newValue}`
         );
+        if (router.query.page) {
+          newPath = newPath.replace(`page=${router.query.page}`, "page=1");
+        }
       } else {
         newPath += `${
           newPath.includes("?") ? "&" : "?"
         }${queryParam}=${newValue}`;
+        if (router.query.page) {
+          newPath = newPath.replace(`page=${router.query.page}`, "page=1");
+        }
       }
 
       router.push(newPath);

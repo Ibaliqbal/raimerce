@@ -19,7 +19,7 @@ export type NewsSchemaT = z.infer<typeof newsSchema>;
 export const gettingStartedSchema = z.object({
   name: z.string().min(5).max(20),
   email: z.string().email(),
-  description: z.string().min(10).max(250).trim(),
+  description: z.string().min(1).max(250).trim(),
   agreeRule: z.boolean(),
   headerPhoto: mediaSchema,
 });

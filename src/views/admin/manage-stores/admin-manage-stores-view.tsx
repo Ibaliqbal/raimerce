@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { DataTable } from "./data-table";
+import { StoresSummary } from "./store-summary";
 const AdminManageStoresView = () => {
   return (
     <section className="lg:col-span-2 flex flex-col gap-4 pb-8">
@@ -10,6 +11,7 @@ const AdminManageStoresView = () => {
       >
         <h1 className="text-4xl font-bold mb-8">Stores Management</h1>
       </motion.div>
+      <StoresSummary />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -1,9 +1,10 @@
-import React, {
+import {
   useState,
   useCallback,
   ReactNode,
   Children,
   ComponentPropsWithoutRef,
+  memo,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -118,4 +119,4 @@ const Carousel = ({
   );
 };
 
-export default Carousel;
+export default memo(Carousel);

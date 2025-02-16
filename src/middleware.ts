@@ -17,9 +17,6 @@ export async function middleware(req: NextRequest) {
     //   return NextResponse.redirect(url);
     // }
 
-    if (pathname.startsWith("/my/store") && !token.userHasStore)
-      return NextResponse.redirect(new URL("/", req.url));
-
     if (
       token.role === "admin" &&
       (pathname.startsWith("/my") || pathname === "/settings")

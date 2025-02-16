@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,10 +5,11 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { TStore } from "@/lib/db/schema";
+import { TStore, TUser } from "@/lib/db/schema";
 import { Address } from "@/types/user";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import {
   ArrowUpDown,
   ExternalLink,
@@ -17,27 +17,17 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-const columns: ColumnDef<TStore>[] = [
+const columns: ColumnDef<
+  Pick<TStore, "address" | "createdAt" | "name" | "id"> & {
+    owner: Pick<TUser, "email">;
+    totalProducts: number;
+  }
+>[] = [
   {
-    accessorKey: "id",
+    id: "S.No",
     header: "ID",
     size: 80,
-  },
-  {
-    accessorKey: "headerPhoto",
-    header: "Photo",
-    size: 80,
-    cell: ({ row }) => {
-      const photo = row.getValue("headerPhoto") as TStore["headerPhoto"];
-      return (
-        <Avatar>
-          <AvatarImage src={photo?.url} alt={row.getValue("name")} />
-          <AvatarFallback>
-            {row.getValue("name")?.toString().charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      );
-    },
+    cell: (info) => <span>{info.row.index + 1}</span>,
   },
   {
     accessorKey: "name",
@@ -54,16 +44,12 @@ const columns: ColumnDef<TStore>[] = [
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => {
-      const description = row.getValue("description") as string;
-      return (
-        <div className="max-w-[200px] truncate" title={description}>
-          {description}
-        </div>
-      );
-    },
+    accessorKey: "owner.email",
+    header: "Email",
+  },
+  {
+    accessorKey: "totalProducts",
+    header: "Total Product",
   },
   {
     accessorKey: "address",
@@ -89,8 +75,8 @@ const columns: ColumnDef<TStore>[] = [
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
-      return date?.toLocaleDateString();
+      const date = row.getValue("createdAt");
+      return format(date as Date, "LLL d, yyy");
     },
   },
   {
@@ -110,11 +96,6 @@ const columns: ColumnDef<TStore>[] = [
               onClick={() => console.log("View", store)}
             >
               View details
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              onClick={() => console.log("Edit", store)}
-            >
-              Edit store
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() => console.log("Delete", store)}

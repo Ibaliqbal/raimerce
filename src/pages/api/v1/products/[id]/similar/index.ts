@@ -38,7 +38,7 @@ export default function handler(
         ne(ProductsTable.id, id),
         or(
           ilike(ProductsTable.name, detailProduct.name),
-          eq(ProductsTable.category, detailProduct.category as string)
+          eq(ProductsTable.category, detailProduct.category)
         )
       ),
       columns: {

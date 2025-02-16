@@ -6,7 +6,7 @@ import instance from "@/lib/axios/instance";
 import { useLoadingScreen } from "@/context/loading-screen-context";
 
 type Props = {
-  user: "client" | "store";
+  user: "client" | "store" | "admin";
 };
 
 const ButtonMarkAllNotif = ({ user }: Props) => {
@@ -25,6 +25,8 @@ const ButtonMarkAllNotif = ({ user }: Props) => {
             await instance.put(
               user === "client"
                 ? "/notifications"
+                : user === "admin"
+                ? "/admin/notifications"
                 : "/users/login/store/notifications"
             ),
           {

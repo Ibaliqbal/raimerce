@@ -74,10 +74,12 @@ export const UsersTable = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
     phone: varchar("phone", { length: 255 }),
     address: jsonb("address").$type<Address>(),
+    nonActive: boolean("non_active").default(false).notNull(),
   },
   (table) => {
     return {
       idIndex: index("idUserIndex").on(table.id),
+      nonActiveUser: index("nonActiveUser").on(table.nonActive),
     };
   }
 );
@@ -97,12 +99,14 @@ export const StoresTable = pgTable(
       .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
+    nonActive: boolean("non_active").default(false).notNull(),
   },
   (table) => {
     return {
       idIndex: index("idStoreIndex").on(table.id),
       nameIndex: index("nameStoreIndex").on(table.name),
       ownerIndex: index("ownerStoreIndex").on(table.userId),
+      nonActiveStore: index("nonActiveStore").on(table.nonActive),
     };
   }
 );
@@ -153,7 +157,7 @@ export const ProductsTable = pgTable(
     rating: numeric("rating", { precision: 10, scale: 2 })
       .default("0")
       .notNull(),
-    category: varchar("category", { length: 255 }).default(""),
+    category: CategoryProduct("category").default("Fashion").notNull(),
     soldout: bigint("soldout", { mode: "number" }).default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

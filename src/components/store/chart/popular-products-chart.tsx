@@ -43,9 +43,13 @@ const PopularProductsChart = () => {
               {
                 label: "Soldout",
                 data: data?.map((product) => product.soldout),
-                backgroundColor: "rgba(245, 109, 39, 0.4)",
-                borderColor: "rgba(245, 109, 39, 1)",
-                borderWidth: 1,
+                backgroundColor: [
+                  "rgba(255, 99, 132, 0.6)",
+                  "rgba(54, 162, 235, 0.6)",
+                  "rgba(255, 206, 86, 0.6)",
+                  "rgba(75, 192, 192, 0.6)",
+                  "rgba(153, 102, 255, 0.6)",
+                ],
               },
             ],
           }}

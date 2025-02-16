@@ -24,10 +24,11 @@ const ProfileStore = ({
   followersCount,
   id,
   owner,
+  address,
 }: Props) => {
   return (
     <section className="flex flex-col gap-4 pb-4 border-b border-gray-500">
-      {headerPhoto ? (
+      {headerPhoto?.url ? (
         <Image
           figureClassName="w-full md:h-[400px] h-[250px] relative"
           width={500}
@@ -37,7 +38,7 @@ const ProfileStore = ({
           src={headerPhoto.url}
         />
       ) : (
-        <div className="w-full inset-0 md:h-[400px] h-[250px] rounded-xl bg-slate-600" />
+        <div className="w-full inset-0 md:h-[400px] h-[250px] rounded-xl bg-gray-800" />
       )}
       <div className="flex flex-col gap-4 px-3 -mt-24">
         <div className="w-40 h-40 p-2 bg-white z-[2] rounded-full dark:bg-[#121212]">
@@ -53,20 +54,27 @@ const ProfileStore = ({
           </Avatar>
         </div>
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold">{name}</h1>
             <ButtonFollow id={id} />
           </div>
-          <div className="flex items-center gap-4 ">
-            <p className="flex items-center gap-1">
+          <div className="flex items-center gap-4">
+            <p className="flex items-center gap-2">
               <MdLocationOn className="text-gray-500 text-lg" />
-              <span>Jakarta, Indonesia</span>
+              <a
+                target="_blank"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  address?.spesific + ", " + address?.city + ", Indonesia"
+                )}`}
+              >
+                {address?.city}, Indonesia
+              </a>
             </p>
-            <p className="flex items-center gap-1">
+            <p className="flex items-center gap-2">
               <FaUsers className="text-gray-500 text-lg" />{" "}
               <span>{followersCount}</span>
             </p>
-            <p className="flex items-center gap-1">
+            <p className="flex items-center gap-2">
               <IoBagHandleSharp className="text-gray-500 text-lg" />
               <span>{productsCount}</span>
             </p>

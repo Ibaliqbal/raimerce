@@ -2,6 +2,7 @@ import Card from "@/components/ui/card";
 import { Skeleton } from "../ui/skeleton";
 import { TPromo } from "@/lib/db/schema";
 import DropdownPromo from "../dropdown/dropdown-promo";
+import { format } from "date-fns";
 
 type Props = Pick<
   TPromo,
@@ -27,7 +28,7 @@ const CardPromo = ({ code, uses, expiredAt, id }: Props) => {
           <strong>Code Promo</strong> : {code}
         </h2>
         <p>
-          <strong>Expire</strong> : {expiredAt}
+          <strong>Expire</strong> : {format(expiredAt, "LLL d, yyy")}
         </p>
         <p>
           <strong>Uses</strong> : {uses}
