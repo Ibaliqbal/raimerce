@@ -10,6 +10,7 @@ import { TUser } from "@/lib/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 const columns: ColumnDef<TUser>[] = [
   {
@@ -81,13 +82,10 @@ const columns: ColumnDef<TUser>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem onClick={() => console.log("View", user)}>
-              View details
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              onClick={() => console.log("Delete", user)}
-            >
-              Delete user
+            <DropdownMenuCheckboxItem>
+              <Link href={`/admin/manage-users/${user.id}`} className="w-full">
+                View details
+              </Link>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>

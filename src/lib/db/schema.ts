@@ -229,7 +229,7 @@ export const OrdersTable = pgTable(
           status: "confirmed" | "received" | "not-confirmed";
         }>
       >(),
-    status: StatusOrder("status").default("pending"),
+    status: StatusOrder("status").default("pending").notNull(),
     promoCodes: jsonb("promo_codes")
       .array()
       .default(sql`ARRAY[]::jsonb[]`)

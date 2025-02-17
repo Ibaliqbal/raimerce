@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,19 +5,14 @@ import {
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
 import { TStore, TUser } from "@/lib/db/schema";
-import { Address } from "@/types/user";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import {
-  ArrowUpDown,
-  ExternalLink,
-  MapPin,
-  MoreHorizontal,
-} from "lucide-react";
+import { ArrowUpDown, ExternalLink, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 const columns: ColumnDef<
-  Pick<TStore, "address" | "createdAt" | "name" | "id"> & {
+  Pick<TStore, "address" | "createdAt" | "name" | "id" | "nonActive"> & {
     owner: Pick<TUser, "email">;
     totalProducts: number;
   }
@@ -52,26 +46,6 @@ const columns: ColumnDef<
     header: "Total Product",
   },
   {
-    accessorKey: "address",
-    header: "Address",
-    cell: ({ row }) => {
-      const address = row.getValue("address") as Address;
-      return address ? (
-        <div className="flex items-center">
-          <MapPin className="mr-2 h-4 w-4 text-gray-400" />
-          <span
-            className="max-w-[200px] truncate"
-            title={`${address.spesific}, ${address.city}, ${address.province}, Indonesia`}
-          >
-            {address.city}, Indonesia
-          </span>
-        </div>
-      ) : (
-        <Badge variant="outline">No Address</Badge>
-      );
-    },
-  },
-  {
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => {
@@ -92,15 +66,18 @@ const columns: ColumnDef<
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem
-              onClick={() => console.log("View", store)}
-            >
-              View details
+            <DropdownMenuCheckboxItem>
+              <Link
+                href={`/stores/${encodeURIComponent(store.name)}`}
+                className="w-full"
+              >
+                View details
+              </Link>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() => console.log("Delete", store)}
             >
-              Delete store
+              {store.nonActive ? "Activied" : "Nonactive"} store
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() =>

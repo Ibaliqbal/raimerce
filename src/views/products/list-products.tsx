@@ -3,7 +3,7 @@ import instance from "@/lib/axios/instance";
 import { TProducts } from "@/lib/db/schema";
 import { pageSizeProduct } from "@/utils/constant";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
 const ListProducts: React.FunctionComponent = () => {
@@ -45,13 +45,17 @@ const ListProducts: React.FunctionComponent = () => {
           <CardProduct.Skeleton key={i} />
         ))
       ) : data?.length ?? 0 > 0 ? (
-        <AnimatePresence mode="popLayout">
-          {data?.map((product, i) => (
-            <motion.div layout className="relative" key={i}>
-              <CardProduct {...product} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        data?.map((product, i) => (
+          <motion.div
+            initial={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ duration: 0.4 }}
+            className="relative"
+            key={i}
+          >
+            <CardProduct {...product} />
+          </motion.div>
+        ))
       ) : (
         <section className="col-span-4 flex items-center justify-center">
           <h1 className="text-xl italic">Products not found</h1>

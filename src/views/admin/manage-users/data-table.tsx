@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import instance from "@/lib/axios/instance";
 import { Skeleton } from "@/components/ui/skeleton";
+import ButtonExportToCSV from "@/components/button/button-export-to-csv";
+import { TUser } from "@/lib/db/schema";
 
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -50,7 +52,6 @@ export function DataTable() {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    pageCount: 10,
     state: {
       sorting,
       columnFilters,
@@ -63,7 +64,7 @@ export function DataTable() {
 
   return (
     <div className="w-full">
-      <div className="mb-6">
+      <div className="mb-6 flex flex-wrap justify-between items-center gap-4">
         <div className="relative w-64">
           <Input
             type="text"
@@ -86,6 +87,25 @@ export function DataTable() {
             <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
+        <ButtonExportToCSV
+          title="Users"
+          nameFile="users-raimerce.xlsx"
+          data={data.map((user: TUser) => ({
+            ...Object.fromEntries(
+              Object.entries(user).filter(
+                ([key]) =>
+                  key !== "typeLogin" &&
+                  key !== "nonActive" &&
+                  key !== "password" &&
+                  key !== "avatar"
+              )
+            ),
+            address: user.address
+              ? `${user.address?.spesific}, ${user.address?.district}, ${user.address?.city},
+              Indonesia`
+              : "",
+          }))}
+        />
       </div>
 
       <div className="rounded-md border">

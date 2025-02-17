@@ -20,11 +20,12 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 import { columns } from "./columns";
-import { FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import instance from "@/lib/axios/instance";
 import { Skeleton } from "@/components/ui/skeleton";
+import ButtonExportToCSV from "@/components/button/button-export-to-csv";
+import { TProducts } from "@/lib/db/schema";
 
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -87,9 +88,15 @@ export function DataTable() {
             <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <Button variant="outline">
-          <FileDown className="mr-2 h-4 w-4" /> Export to CSV
-        </Button>
+        <ButtonExportToCSV
+          data={data.map((product: TProducts) =>
+            Object.fromEntries(
+              Object.entries(product).filter(([key]) => key !== "variant")
+            )
+          )}
+          title="Products"
+          nameFile="products.xlsx"
+        />
       </div>
       <div className="rounded-md border">
         <Table>

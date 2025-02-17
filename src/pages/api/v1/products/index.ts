@@ -7,7 +7,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 type Data = ApiResponse & {
   data?:
     | Array<
-        Pick<TProducts, "id" | "description" | "name" | "rating" | "variant">
+        | Pick<TProducts, "id" | "description" | "name" | "rating" | "variant">
+        | {
+            name: string;
+            total: number;
+          }
       >
     | number;
 };

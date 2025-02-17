@@ -10,6 +10,7 @@ import { TProducts } from "@/lib/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown, MoreHorizontal, Star, StarHalf } from "lucide-react";
+import Link from "next/link";
 
 const columns: ColumnDef<TProducts, unknown>[] = [
   {
@@ -74,14 +75,6 @@ const columns: ColumnDef<TProducts, unknown>[] = [
     },
   },
   {
-    accessorKey: "updatedAt",
-    header: "Updated At",
-    cell: ({ row }) => {
-      const date = row.getValue("updatedAt");
-      return format(date as Date, "LLL d, yyy");
-    },
-  },
-  {
     id: "actions",
     cell: ({ row }) => {
       const product = row.original;
@@ -94,10 +87,15 @@ const columns: ColumnDef<TProducts, unknown>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem
-              onClick={() => console.log("View", product)}
-            >
-              View details
+            <DropdownMenuCheckboxItem>
+              <Link
+                href={`/products/${product.id}?variant=${encodeURIComponent(
+                  product.variant[0].name_variant
+                )}`}
+                className="w-full"
+              >
+                View details
+              </Link>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               onClick={() => console.log("Delete", product)}

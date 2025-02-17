@@ -7,7 +7,7 @@ import { AnyPgColumn } from "drizzle-orm/pg-core";
 
 type Data = ApiResponse & {
   data?: Array<
-    Pick<TStore, "name" | "address" | "createdAt" | "id"> & {
+    Pick<TStore, "name" | "address" | "createdAt" | "id" | "nonActive"> & {
       owner: Pick<TUser, "email">;
       totalProducts: number;
     }
@@ -53,6 +53,7 @@ export default function handler(
         address: true,
         createdAt: true,
         id: true,
+        nonActive: true,
       },
       with: {
         owner: {

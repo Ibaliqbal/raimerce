@@ -6,10 +6,14 @@ import { and, eq, gte, lte, ne } from "drizzle-orm";
 import {
   OrdersTable,
   ProductsTable,
+  StatusOrder,
   StoresTable,
+  TUser,
   UsersTable,
 } from "@/lib/db/schema";
 import { fee, months } from "@/utils/constant";
+import { addDays } from "date-fns";
+import { calculateTotalWithPromo } from "@/utils/helper";
 
 type Data = ApiResponse & {
   totalUsers?: number;
@@ -17,7 +21,14 @@ type Data = ApiResponse & {
   totalProducts?: number;
   totalRevenue?: number;
   data?: Array<
-    { month: string; total: number } | { name: string; total: number }
+    | { month: string; total: number }
+    | { name: string; total: number }
+    | {
+        transactionCode: string;
+        total: number;
+        status: (typeof StatusOrder.enumValues)[number];
+        user: Pick<TUser, "avatar" | "name">;
+      }
   >;
 };
 
@@ -101,22 +112,54 @@ export default function handler(
           }, [])
           .sort((a, b) => b.total - a.total);
 
-        // const sortSumProductsByCategory = categories.map((category) => {
-        //   const filteredProduct = products.filter(
-        //     (product) =>
-        //       (product.category as string).toLowerCase() ??
-        //       "" === category.name.toLowerCase()
-        //   );
-
-        //   console.log(filteredProduct);
-
-        //   return { name: category.name, total: filteredProduct.length };
-        // });
-
         return res.status(200).json({
           message: "Success get products chart",
           statusCode: 200,
           data: sortSumProductsByCategory.slice(0, 5),
+        });
+      }
+
+      if (_type === "recent_orders") {
+        const sevenDaysAgo = addDays(new Date(), -7);
+
+        const orders = await db.query.OrdersTable.findMany({
+          where: gte(OrdersTable.createdAt, sevenDaysAgo),
+          columns: {
+            transactionCode: true,
+            products: true,
+            promoCodes: true,
+            status: true,
+          },
+          with: {
+            user: {
+              columns: {
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+          orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+          limit: 7,
+        });
+
+        const data = orders.map((order) => ({
+          transactionCode: order.transactionCode,
+          total:
+            calculateTotalWithPromo(
+              { products: order.products },
+              { promoCodes: order.promoCodes }
+            ) + fee,
+          user: {
+            avatar: order.user.avatar,
+            name: order.user.name,
+          },
+          status: order.status,
+        }));
+
+        return res.status(200).json({
+          message: "Success get recent orders",
+          statusCode: 200,
+          data,
         });
       }
 

@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
-    <section className="h-[70dvh] flex justify-center items-center">
+    <section className="h-[70dvh] flex gap-4 flex-col justify-center items-center">
       <motion.div
-        initial={{ opacity: 0 }} // Keadaan awal
-        animate={{ opacity: 1 }} // Keadaan animasi
-        exit={{ opacity: 0 }} // Keadaan keluar
+        initial={{ opacity: 0, translateY: 30 }} // Keadaan awal
+        animate={{ opacity: 1, translateY: 0 }} // Keadaan animasi
+        exit={{ opacity: 0, translateY: 30 }} // Keadaan keluar
         transition={{ duration: 0.5, ease: "easeInOut" }} // Transisi
         className="text-center"
       >
@@ -47,6 +47,35 @@ const HeroSection = () => {
             View on GitHub
           </Button>
         </div>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8"
+      >
+        {[
+          {
+            icon: ArrowRight,
+            title: "Scalable",
+            description: "Grow your business without limitations",
+          },
+          {
+            icon: Github,
+            title: "Open Source",
+            description: "Benefit from community-driven development",
+          },
+        ].map((feature, index) => (
+          <div key={index} className="flex flex-col items-center text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-full mb-4">
+              <feature.icon className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              {feature.description}
+            </p>
+          </div>
+        ))}
       </motion.div>
     </section>
   );
