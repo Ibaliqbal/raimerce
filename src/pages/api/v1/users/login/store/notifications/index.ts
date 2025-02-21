@@ -21,24 +21,22 @@ export default function handler(
       const decoded = decode as JWT;
 
       if (req.method === "DELETE") {
-        if (req.method === "DELETE") {
-          await db
-            .delete(NotificationTable)
-            .where(
-              and(
-                or(
-                  eq(NotificationTable.type, "order_store"),
-                  eq(NotificationTable.type, "report_to_store")
-                ),
-                eq(NotificationTable.userId, decoded.id)
-              )
-            );
+        await db
+          .delete(NotificationTable)
+          .where(
+            and(
+              or(
+                eq(NotificationTable.type, "order_store"),
+                eq(NotificationTable.type, "report_to_store")
+              ),
+              eq(NotificationTable.userId, decoded.id)
+            )
+          );
 
-          return res.status(200).json({
-            message: "All notifications deleted",
-            statusCode: 200,
-          });
-        }
+        return res.status(200).json({
+          message: "All notifications deleted",
+          statusCode: 200,
+        });
       }
 
       if (req.method === "PUT") {

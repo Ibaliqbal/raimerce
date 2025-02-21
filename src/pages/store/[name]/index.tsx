@@ -1,3 +1,4 @@
+import Popupwhatsapp from "@/components/popup-whatsapp";
 import StoreLayout from "@/layouts/store-layout";
 import instance from "@/lib/axios/instance";
 import { TStore, TUser } from "@/lib/db/schema";
@@ -6,11 +7,11 @@ import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 type Props = Pick<
   TStore,
-  "address" | "name" | "headerPhoto" | "description" | "id"
+  "address" | "name" | "headerPhoto" | "description" | "id" | "popupWhatsapp"
 > & {
   productsCount: number;
   followersCount: number;
-  owner: Pick<TUser, "avatar">
+  owner: Pick<TUser, "avatar" | "phone">;
 };
 
 // fetching in server side
@@ -45,6 +46,9 @@ const Page = ({
       {...data}
     >
       <StoreNewsView />
+      {data.popupWhatsapp && (
+        <Popupwhatsapp phoneNumber={(data.owner.phone as string) ?? ""} />
+      )}
     </StoreLayout>
   );
 };

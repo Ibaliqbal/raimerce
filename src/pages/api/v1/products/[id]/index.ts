@@ -25,8 +25,8 @@ type Data = ApiResponse & {
   > & {
     productsCount: number;
     followersCount: number;
-    store: Pick<TStore, "name" | "id"> & {
-      owner: Pick<TUser, "avatar">;
+    store: Pick<TStore, "name" | "id" | "popupWhatsapp"> & {
+      owner: Pick<TUser, "avatar" | "phone">;
     };
     comments: Array<
       Pick<
@@ -66,11 +66,13 @@ export default function handler(
                 columns: {
                   name: true,
                   id: true,
+                  popupWhatsapp: true,
                 },
                 with: {
                   owner: {
                     columns: {
                       avatar: true,
+                      phone: true,
                     },
                   },
                 },

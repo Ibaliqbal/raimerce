@@ -1,3 +1,4 @@
+import Popupwhatsapp from "@/components/popup-whatsapp";
 import BaseLayout from "@/layouts/base-layout";
 import instance from "@/lib/axios/instance";
 import { TComment, TProducts, TStore, TUser } from "@/lib/db/schema";
@@ -11,8 +12,8 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name" | "id"> & {
-    owner: Pick<TUser, "avatar">;
+  store: Pick<TStore, "name" | "id" | "popupWhatsapp"> & {
+    owner: Pick<TUser, "avatar" | "phone">;
   };
   comments: Array<
     Pick<
@@ -29,8 +30,6 @@ type Props = Pick<
 export const getServerSideProps = (async ({ params, query }) => {
   const { data } = await instance.get(`/products/${params?.id}`);
   const product = data.data as Props;
-
-  console.log(product);
 
   return {
     props: {
@@ -67,6 +66,11 @@ const Page = ({
           key={selectedVariant}
         />
         <ProductsSimilarView id={data.id} />
+        {data.store.popupWhatsapp && (
+          <Popupwhatsapp
+            phoneNumber={(data.store.owner.phone as string) ?? ""}
+          />
+        )}
       </main>
     </BaseLayout>
   );

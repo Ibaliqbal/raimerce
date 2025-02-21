@@ -1,16 +1,14 @@
-import { motion } from "framer-motion";
 import { ArrowRight, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
-    <section className="h-[70dvh] flex gap-4 flex-col justify-center items-center">
-      <motion.div
-        initial={{ opacity: 0, translateY: 30 }} // Keadaan awal
-        animate={{ opacity: 1, translateY: 0 }} // Keadaan animasi
-        exit={{ opacity: 0, translateY: 30 }} // Keadaan keluar
-        transition={{ duration: 0.5, ease: "easeInOut" }} // Transisi
-        className="text-center"
+    <section className="flex gap-4 flex-col justify-center items-center py-4">
+      <div
+        className="text-center animate-fade-up duration-500"
+        style={{
+          animationFillMode: "both",
+        }}
       >
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-100">
           Open Source E-Commerce
@@ -47,12 +45,12 @@ const HeroSection = () => {
             View on GitHub
           </Button>
         </div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8"
+      </div>
+      <div
+        className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-up delay-200"
+        style={{
+          animationFillMode: "both",
+        }}
       >
         {[
           {
@@ -76,7 +74,7 @@ const HeroSection = () => {
             </p>
           </div>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 };

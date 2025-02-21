@@ -9,11 +9,11 @@ import ButtonFollow from "../button/button-follow";
 
 type Props = Pick<
   TStore,
-  "address" | "name" | "headerPhoto" | "description" | "id"
+  "address" | "name" | "headerPhoto" | "description" | "id" | "popupWhatsapp"
 > & {
   productsCount: number;
   followersCount: number;
-  owner: Pick<TUser, "avatar">;
+  owner: Pick<TUser, "avatar" | "phone">;
 };
 
 const ProfileStore = ({
@@ -63,6 +63,7 @@ const ProfileStore = ({
               <MdLocationOn className="text-gray-500 text-lg" />
               <a
                 target="_blank"
+                className="hover:border-b"
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                   address?.spesific + ", " + address?.city + ", Indonesia"
                 )}`}

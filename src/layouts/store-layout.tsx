@@ -8,11 +8,14 @@ type Props = {
   children: ReactNode;
   productsCount: number;
   followersCount: number;
-  owner: Pick<TUser, "avatar">;
+  owner: Pick<TUser, "avatar" | "phone">;
   title: string;
   descriptionWeb?: string;
   keyword?: string[];
-} & Pick<TStore, "address" | "name" | "headerPhoto" | "description" | "id">;
+} & Pick<
+  TStore,
+  "address" | "name" | "headerPhoto" | "description" | "id" | "popupWhatsapp"
+>;
 
 const StoreLayout = ({
   children,

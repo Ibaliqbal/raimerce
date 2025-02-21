@@ -33,7 +33,7 @@ export default function App({
               <Toaster position="bottom-center" />
             </main>
           </LoadingScreenProvider>
-          <ReactQueryDevtools />
+          {/* <ReactQueryDevtools /> */}
         </SessionProvider>
       </QueryClientProvider>
     </ThemeProvider>

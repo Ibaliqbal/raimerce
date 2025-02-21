@@ -24,8 +24,8 @@ type Props = Pick<
 > & {
   productsCount: number;
   followersCount: number;
-  store: Pick<TStore, "name" | "id"> & {
-    owner: Pick<TUser, "avatar">;
+  store: Pick<TStore, "name" | "id" | "popupWhatsapp"> & {
+    owner: Pick<TUser, "avatar" | "phone">;
   };
   selectedVariant: string;
   comments: Array<

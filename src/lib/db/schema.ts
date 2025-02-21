@@ -100,6 +100,7 @@ export const StoresTable = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
     nonActive: boolean("non_active").default(false).notNull(),
+    popupWhatsapp: boolean("popup_whatsapp").default(false).notNull(),
   },
   (table) => {
     return {

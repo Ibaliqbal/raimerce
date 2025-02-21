@@ -32,6 +32,12 @@ type StoreContextType = {
     TMedia,
     unknown
   >;
+  handleUpdatePopup: UseMutationResult<
+    AxiosResponse<void, Error>,
+    Error,
+    void,
+    unknown
+  >;
 };
 
 const StoreContext = React.createContext<StoreContextType | null>(null);
@@ -63,6 +69,19 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     },
   });
 
+  const handleUpdatePopup = useMutation({
+    mutationFn: async () =>
+      await instance.put(`/users/login/store?_type=popup`, {
+        popupWhatsapp: !data.popupWhatsapp,
+      }),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({
+        queryKey: [keyQuery],
+      });
+      toast.success(res.data.message);
+    },
+  });
+
   const handleUpdateHeaderPhoto = useMutation({
     mutationFn: async (data: TMedia) =>
       await instance.put("/users/login/store?_type=update_header", data),
@@ -81,6 +100,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         store: data,
         handleDeleteNews: mutation,
         handleUpdateHeader: handleUpdateHeaderPhoto,
+        handleUpdatePopup,
       }}
     >
       {children}

@@ -13,11 +13,11 @@ import { ApiResponse, secureMethods } from "@/utils/api";
 type Data = ApiResponse & {
   data?: Pick<
     TStore,
-    "address" | "name" | "headerPhoto" | "description" | "id"
+    "address" | "name" | "headerPhoto" | "description" | "id" | "popupWhatsapp"
   > & {
     productsCount: number;
     followersCount: number;
-    owner: Pick<TUser, "avatar">;
+    owner: Pick<TUser, "avatar" | "phone">;
   };
 };
 const acceptMethod = ["GET"];
@@ -36,11 +36,13 @@ export default async function handler(
         headerPhoto: true,
         address: true,
         id: true,
+        popupWhatsapp: true,
       },
       with: {
         owner: {
           columns: {
             avatar: true,
+            phone: true,
           },
         },
       },

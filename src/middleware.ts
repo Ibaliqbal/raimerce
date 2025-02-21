@@ -12,10 +12,10 @@ export async function middleware(req: NextRequest) {
     if (["/signin", "/signup"].includes(pathname))
       return NextResponse.redirect(new URL("/", req.url));
 
-    // if (token.role === "member" && pathname.startsWith("/admin")) {
-    //   const url = new URL("/", req.url);
-    //   return NextResponse.redirect(url);
-    // }
+    if (token.role === "member" && pathname.startsWith("/admin")) {
+      const url = new URL("/", req.url);
+      return NextResponse.redirect(url);
+    }
 
     if (
       token.role === "admin" &&
@@ -49,10 +49,10 @@ export const config = {
      * - favicon.ico (favicon file)
      */
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
-    "/settings",
-    "/my/:path*",
-    "/signin",
-    "/signup",
-    "/admin/:path*",
+    // "/settings",
+    // "/my/:path*",
+    // "/signin",
+    // "/signup",
+    // "/admin/:path*",
   ],
 };

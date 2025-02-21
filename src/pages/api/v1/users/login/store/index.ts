@@ -7,6 +7,7 @@ import { JWT } from "next-auth/jwt";
 import { ApiResponse, secureMethods } from "@/utils/api";
 import { TMedia } from "@/types/product";
 import instance from "@/lib/axios/instance";
+import { getStoreID } from "@/utils/db";
 
 type Data = ApiResponse & {
   data?:
@@ -66,14 +67,41 @@ export default function handler(
             }
           }
 
-          await db.update(StoresTable).set({
-            updatedAt: sql`NOW()`,
-            headerPhoto: data,
-          });
+          await db
+            .update(StoresTable)
+            .set({
+              updatedAt: sql`NOW()`,
+              headerPhoto: data,
+            })
+            .where(eq(StoresTable.id, checkHasHeader?.id as string));
 
           return res.status(200).json({
             message: "Success update header photo",
             statusCode: 200,
+          });
+        }
+
+        if (_typeUpdate === "popup") {
+          const data = req.body;
+          const storeID = await getStoreID(decoded.id);
+
+          if (!storeID)
+            return res.status(404).json({
+              message: "Store not found",
+              statusCode: 404,
+            });
+
+          await db
+            .update(StoresTable)
+            .set({
+              popupWhatsapp: data.popupWhatsapp,
+              updatedAt: sql`NOW()`,
+            })
+            .where(eq(StoresTable.id, storeID));
+
+          return res.status(200).json({
+            statusCode: 200,
+            message: "Success update data",
           });
         }
 

@@ -50,7 +50,7 @@ const FormChangePassword = () => {
   return (
     <Form {...form}>
       <form
-        className="mt-4 flex gap-5 flex-col"
+        className="mt-4 flex gap-3 flex-col"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <h3>Change password</h3>
@@ -63,42 +63,44 @@ const FormChangePassword = () => {
             <AlertDescription>Change password successfully</AlertDescription>
           </Alert>
         ) : null}
-        <FormField
-          control={form.control}
-          name="oldPassword"
-          render={({ field }) => (
-            <FormItem className="flex flex-col gap-3 lg:w-[40%] md:w-[60%] w-full">
-              <FormLabel htmlFor={field.name}>Old Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Input your old password..."
-                className="py-5 border border-slate-700"
-                id={field.name}
-                {...field}
-              />
-              <FormMessage />
-              <FormDescription>Masukkan kata sandi lama mu</FormDescription>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPassword"
-          render={({ field }) => (
-            <FormItem className="flex flex-col gap-3 lg:w-[40%] md:w-[60%] w-full">
-              <FormLabel htmlFor={field.name}>New Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Input your new password..."
-                className="py-5 border border-slate-700"
-                id={field.name}
-                {...field}
-              />
-              <FormMessage />
-              <FormDescription>Masukkan kata sandi baru mu</FormDescription>
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-3 items-center">
+          <FormField
+            control={form.control}
+            name="oldPassword"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-3 lg:w-[40%] md:w-[60%] w-full">
+                <FormLabel htmlFor={field.name}>Old Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Input your old password..."
+                  className="py-5 border border-slate-700"
+                  id={field.name}
+                  {...field}
+                />
+                <FormMessage />
+                <FormDescription>Masukkan kata sandi lama mu</FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="newPassword"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-3 lg:w-[40%] md:w-[60%] w-full">
+                <FormLabel htmlFor={field.name}>New Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Input your new password..."
+                  className="py-5 border border-slate-700"
+                  id={field.name}
+                  {...field}
+                />
+                <FormMessage />
+                <FormDescription>Masukkan kata sandi baru mu</FormDescription>
+              </FormItem>
+            )}
+          />
+        </div>
         <SubmitButton
           textBtn={form.formState.isSubmitting ? "Resetting..." : "Reset"}
           disabled={form.formState.isSubmitting}

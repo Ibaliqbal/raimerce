@@ -2,7 +2,7 @@ import CardProduct from "@/components/card/card-product";
 import instance from "@/lib/axios/instance";
 import { TProducts } from "@/lib/db/schema";
 import { pageSizeProduct } from "@/utils/constant";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
@@ -36,6 +36,7 @@ const ListProducts: React.FunctionComponent = () => {
       return res.data.data;
     },
     enabled: !!query,
+    placeholderData: keepPreviousData,
   });
 
   return (
